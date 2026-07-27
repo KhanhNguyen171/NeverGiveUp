@@ -1,0 +1,21 @@
+# Jupyter Notebook checkpoints 
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# Ý tưởng/Cấu hình của các IDE 
+.vscode/
+.idea/
+
+# Thư mục lưu cache của Python (Tránh làm rác Git)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Môi trường ảo 
+.venv/
+venv/
+env/
+
+# File cấu hình cá nhân chứa token/mật khẩu
+.env
