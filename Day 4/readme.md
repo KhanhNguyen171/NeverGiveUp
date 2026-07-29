@@ -64,3 +64,155 @@ Ta dùng Freeze vì khi dataset nhỏ thì mô hình dễ bị overfitting nếu
 # Hugging Face API
 
 __Hugging Face API__ chủ yếu cung cấp model và inference; fine-tuning model lớn thường được thực hiện bằng `Transformers + PEFT/LoRA + TRL` trên GPU, sau đó upload model/adapter đã fine-tune trở lại Hub.
+
+## Lựa chọn Model phù hợp
+
+### Theo quy mô
+
+| Quy mô                           | Đặc điểm                          | Cách fine-tune nên cân nhắc                           |
+| -------------------------------- | --------------------------------- | ----------------------------------------------------- |
+| **< 1B**                         | Nhẹ hơn, dễ thử nghiệm            | Full FT hoặc LoRA                                     |
+| **1B–7B**                        | Bắt đầu tốn nhiều VRAM            | LoRA là lựa chọn thực tế                              |
+| **7B–13B**                       | Full FT thường rất tốn tài nguyên | LoRA / QLoRA                                          |
+| **13B+**                         | Chi phí full FT rất lớn           | PEFT + LoRA/QLoRA + quantization/distributed training |
+| **Vision / Diffusion model lớn** | Cấu trúc khác LLM                 | LoRA/PEFT hoặc fine-tune component cần thiết          |
+
+> **Lưu ý:** Không nên chọn phương pháp chỉ dựa trên số B parameters. Dataset size, task, GPU memory và architecture cũng quyết định phương pháp phù hợp.
+
+PEFT hỗ trợ nhiều phương pháp như **LoRA, AdaLoRA, IA3, prompt tuning, prefix tuning,...**; LoRA là điểm bắt đầu phổ biến cho large models.
+
+---
+
+### Phương pháp Fine-tuning
+
+| Method                   | Base model             | Parameters train | Khi dùng                                          |
+| ------------------------ | ---------------------- | ---------------- | ------------------------------------------------- |
+| **Full Fine-tuning**     | Toàn bộ model          | 100%             | Model nhỏ / đủ GPU                                |
+| **LoRA**                 | Freeze base + adapter  | Rất ít           | Lựa chọn mặc định cho LLM lớn                     |
+| **QLoRA**                | Quantized base + LoRA  | Rất ít           | Khi VRAM hạn chế                                  |
+| **AdaLoRA**              | Base + adaptive LoRA   | Ít               | Muốn phân bổ parameter budget linh hoạt           |
+| **IA3**                  | Base + learned vectors | Rất ít           | PEFT nhẹ, task phù hợp                            |
+| **Prompt/Prefix Tuning** | Base frozen            | Rất ít           | Điều chỉnh behavior bằng learned prompts/prefixes |
+
+LoRA giữ nguyên pretrained weights và thêm các ma trận low-rank trainable; QLoRA-style training có thể áp dụng LoRA trên các linear layers của model.
+
+---
+
+### Theo model
+
+| Model / Family             | Task phổ biến                 | Fine-tuning                  |
+| -------------------------- | ----------------------------- | ---------------------------- |
+| **BERT / RoBERTa**         | Classification, NER           | Full FT hoặc LoRA            |
+| **T5 / FLAN-T5**           | Seq2Seq, generation           | Full FT hoặc LoRA            |
+| **Llama / Qwen / Mistral** | Chat, instruction, generation | **LoRA / QLoRA + SFT**       |
+| **Vision Transformer**     | Image classification          | Full FT hoặc LoRA            |
+| **CLIP**                   | Vision-Language               | LoRA / component-specific FT |
+| **Stable Diffusion**       | Image generation              | **LoRA**                     |
+
+Không nên hiểu rằng mỗi model **bắt buộc** dùng một method duy nhất; Hugging Face PEFT hỗ trợ nhiều task/model architecture và method khác nhau.
+
+## Pipeline Finetune theo Hugging face
+
+```mermaid
+flowchart LR
+    A["Hugging Face Hub"] --> B["Load Pre-trained Model"]
+    C["Dataset"] --> D["Prepare / Tokenize"]
+    B --> E["PEFT / LoRA"]
+    D --> F["Trainer / SFTTrainer"]
+    E --> F
+    F --> G["Train"]
+    G --> H["Evaluate"]
+    H --> I["Save Adapter / Model"]
+    I --> J["Push to Hub"]
+```
+
+## Quy trình mẫu
+
+### Step 1 — Load model từ Hub
+
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_id = "Qwen/Qwen3-0.6B"
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    device_map="auto"
+)
+```
+
+Hugging Face `Transformers` cung cấp API `from_pretrained()` để load pretrained model từ Hub.
+
+---
+
+### Step 2 — Load và chuẩn bị Dataset
+
+```python
+from datasets import load_dataset
+
+dataset = load_dataset(
+    "your_dataset",
+    split="train"
+)
+```
+
+Với instruction/chat model, dataset thường được chuẩn hóa thành dạng **prompt-completion** hoặc **conversational messages** trước khi SFT.
+
+---
+
+### Step 3 — Chọn PEFT method
+
+Ví dụ **LoRA**:
+
+```python
+from peft import LoraConfig
+
+peft_config = LoraConfig(
+    r=16,
+    lora_alpha=32,
+    lora_dropout=0.05,
+    target_modules="all-linear",
+    task_type="CAUSAL_LM"
+)
+```
+
+Base model được freeze; chỉ LoRA parameters được cập nhật.
+
+---
+
+### Step 4 — SFT với TRL
+
+```python
+from trl import SFTConfig, SFTTrainer
+
+training_args = SFTConfig(
+    output_dir="./output",
+    num_train_epochs=3,
+    learning_rate=1e-4
+)
+
+trainer = SFTTrainer(
+    model=model,
+    args=training_args,
+    train_dataset=dataset,
+    peft_config=peft_config
+)
+
+trainer.train()
+```
+
+`SFTTrainer` của TRL được thiết kế cho **Supervised Fine-Tuning** các language models và tích hợp với PEFT.
+
+---
+
+### Step 5 — Save / Push lên Hugging Face Hub
+
+```python
+trainer.save_model("./adapter")
+
+trainer.push_to_hub()
+```
+
+Với PEFT, có thể lưu và chia sẻ **adapter** thay vì phải lưu toàn bộ base model. Khi sử dụng adapter từ Hub, cần base model tương ứng.
