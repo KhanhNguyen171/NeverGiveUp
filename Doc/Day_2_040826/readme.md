@@ -148,3 +148,69 @@ $$\{\lambda_1, \lambda_2, ..., \lambda_d \}$$
 được gọi là __Hessian Spectrum__.
 
 Spectrum mô tả độ cong theo từng hướng trong không gian tham số.
+
+## 3. Flat Minima vs Sharp Minima
+
+### 3.1 Flat Minima
+
+__Flat Minimum__ là nghiệm mà __Loss thay đổi rất ít khi tham số bị nhiễu nhỏ__. Về mặt toán học, nế một nhiễu nhỏ $\delta$: $L(\theta + \delta_ \approx L(\theta)$ thì nghiệm được xem là __Flat__.
+
+Đặc điểm:
+- Hessian có các eigenvalue nhỏ.
+- Curvature thấp.
+- Basin rộng.
+- Ít nhạy với nhiễu hoặc perturbation của trọng số.
+- Thường cho khả năng __generalization__ tốt hơn.
+
+### 3.2 Sharp Minima
+
+__Sharp Minimum__ là nghiệm mà __Loss tăng nhanh khi tham số thay đổi một lượng rất nhỏ__. Tức là: $L(\theta + \delta) \gg L(\theta)$ ngay cả khi $\delta$ rất nhỏ.
+
+Đặc điểm:
+
+- Hessian có một hoặc nhiều eigenvalue lớn.
+- Curvature cao.
+- Basin hẹp.
+- Nhạy với perturbation của trọng số.
+- Thường kém ổn định hơn đối với dữ liệu chưa thấy.
+
+> Flat Minima không phải lúc nào cũng đảm bảo generalization tốt hơn. Các nghiên cứu như của Quoc V. Le và Laurent Dinh đã chỉ ra rằng khái niệm flatness phụ thuộc vào cách biểu diễn tham số (reparameterization). Vì vậy, trong nghiên cứu hiện đại, Flat Minima được xem là một chỉ báo hữu ích, không phải điều kiện đủ cho khả năng tổng quát hóa.
+
+## 4. SGD Noise như một quá trình Langevin Dynamics
+
+Gradient của SGD không được tính trên toàn bộ dataset mà chỉ trên một mini-batch. Vì vậy, gradient thu được chỉ là một xấp xỉ của gradient thật:
+
+$$g(\theta) = \nabla L(\theta) + \xi$$
+
+Trong đó:
+- $\nabla L(\theta)$: gradient của toàn bộ dữ liệu.
+- $\xi$: nhiễu ngẫu nhiên (stochastic noise) do lấy mẫu mini-batch.
+
+Do đó, quy tắc cập nhật của SGD trở thành:
+
+$$\theta_{t+1} = \theta_t - \eta (\nabla L(\theta_t) + \xi_t)$$
+
+Khác với Gradient Descent, SGD luôn chứa một thành phần ngẫu nhiên trong mỗi bước cập nhật.
+
+### Liên hệ với langevin Dynamics
+
+Khi __learning rate nhỏ__ và __batch size đủ lớn__, động lực học của SGD có thể được xấp xỉ bởi __Stochastic Differential Equation (SDE)__:
+
+$$d\theta = - \nabla L(\theta) dt + \sqrt{2D} dW_t$$
+
+trong đó:
+
+- Thành phần $-\nabla L(\theta)$ kéo tham số đi về vùng có loss thấp.
+- Thành phần $dW_t$ là __Brownian Motion__, biểu diễn nhiễu ngẫu nhiên.
+- $D$ là hệ số khuếch tán (diffusion coefficient), phụ thuộc vào learning rate và batch size.
+
+Mô hình này chính là __Langevin Dynamics__.
+
+### Ý nghĩa
+Nhờ thành phần nhiễu, SGD không chỉ đi theo hướng giảm loss mà còn __dao động quanh nghiệm__, giúp:
+
+- thoát khỏi các vùng cực tiểu hẹp (Sharp Minima),
+- khám phá nhiều vùng nghiệm hơn,
+- có xu hướng hội tụ đến các __Flat Minima__.
+
+Đây là cơ sở lý thuyết của __Implicit Regularization__ trong SGD.

@@ -461,8 +461,8 @@ Gradient được tính tại __điểm dự đoán phía trước__ thay vì đ
 
 Giả sử một quả bóng đang lao xuống núi.
 
-- Momentum chỉ nhìn vị trí hiện tại rồi tiếp tục lăn.
-- Nesterov nhìn trước vài mét để xem địa hình phía trước dốc hay bằng phẳng rồi mới quyết định lực đẩy.
+- __Momentum__ chỉ nhìn vị trí hiện tại rồi tiếp tục lăn.
+- __Nesterov__ nhìn trước vài mét để xem địa hình phía trước dốc hay bằng phẳng rồi mới quyết định lực đẩy.
 
 Nhờ vậy thuật toán phản ứng sớm hơn khi sắp đến cực tiểu.
 
@@ -559,3 +559,215 @@ Do đó RMSProp:
 - Hội tụ nhanh hơn AdaGrad.
 - Phù hợp với Deep Learning.
 - Hoạt động tốt khi gradient thay đổi liên tục.
+
+## Built It
+
+### Step 1: Define a Test Function
+
+Rosenbrock Function là một **hàm kiểm thử (benchmark function)** được sử dụng phổ biến để đánh giá hiệu quả của các thuật toán tối ưu. Hàm có **Global Minimum** tại `(1, 1)` nhưng nằm trong một **thung lũng cong và hẹp (narrow curved valley)**, khiến việc tìm được vùng cực tiểu dễ hơn việc hội tụ chính xác đến nghiệm tối ưu.
+
+#### Rosenbrock Function
+
+$$f(x,y)=(1-x)^2+100(y-x^2)^2$$
+
+Global Minimum:
+
+$$f(1,1)=0$$
+
+#### Implementation
+
+```python
+def rosenbrock(params):
+    x, y = params
+    return (1 - x) ** 2 + 100 * (y - x ** 2) ** 2
+
+
+def rosenbrock_gradient(params):
+    x, y = params
+
+    df_dx = -2 * (1 - x) + 200 * (y - x ** 2) * (-2 * x)
+    df_dy = 200 * (y - x ** 2)
+
+    return [df_dx, df_dy]
+```
+
+#### Analysis
+
+- `rosenbrock()` định nghĩa **loss function** mà optimizer cần tối thiểu hóa.
+- `rosenbrock_gradient()` tính **gradient** của hàm theo hai biến `x` và `y`; gradient này được sử dụng để cập nhật tham số trong các thuật toán tối ưu.
+- Hệ số `100` tạo ra một **thung lũng hẹp và có độ cong lớn**, làm cho bài toán tối ưu trở nên khó hơn mặc dù chỉ có một Global Minimum.
+- Rosenbrock Function được sử dụng để so sánh khả năng hội tụ, độ ổn định và tốc độ của các optimizer như **Gradient Descent, SGD, Momentum và Adam**.
+- Đây là một benchmark tiêu chuẩn vì thuật toán không chỉ phải tìm đúng hướng giảm của loss mà còn phải theo được đường cong của thung lũng để hội tụ đến nghiệm `(1, 1)`.
+
+### Step 2: Vanilla Gradient Descent
+
+Gradient Descent là thuật toán tối ưu cơ bản nhất, cập nhật tham số theo hướng **ngược với gradient** của hàm mất mát nhằm làm giảm giá trị loss sau mỗi bước lặp.
+
+#### Update Rule
+
+$$w_{t+1}=w_t-\eta\nabla L(w_t)$$
+
+Trong đó:
+
+- $w$: tham số của mô hình.
+- $\eta$: learning rate.
+- $\nabla L(w)$: gradient của hàm mất mát.
+
+### Implementation
+
+```python
+class GradientDescent:
+    def __init__(self, lr=0.001):
+        self.lr = lr
+
+    def step(self, params, grads):
+        return [p - self.lr * g for p, g in zip(params, grads)]
+```
+
+#### Analysis
+
+- `lr` (learning rate) xác định kích thước của mỗi bước cập nhật.
+- `params` là các tham số hiện tại của mô hình.
+- `grads` là gradient của từng tham số được tính từ bước Backpropagation.
+- Phương thức `step()` cập nhật từng tham số theo quy tắc $w=w-\eta\nabla L(w)$, trong đó mỗi trọng số được di chuyển theo hướng ngược với gradient để giảm giá trị của hàm mất mát.
+- Đây là thuật toán tối ưu đơn giản nhất và là nền tảng của các optimizer hiện đại như **Momentum**, **RMSProp** và **Adam**.
+- Gradient Descent chỉ sử dụng gradient tại thời điểm hiện tại, không lưu thông tin từ các bước trước và không điều chỉnh learning rate theo từng tham số, vì vậy dễ dao động trong các vùng có độ cong lớn và hội tụ chậm trên các bài toán tối ưu phức tạp.
+
+### Step 3: SGD with Momentum
+
+SGD with Momentum cải tiến **Gradient Descent** bằng cách tích lũy hướng cập nhật từ các bước trước thông qua một biến **velocity**. Thay vì chỉ sử dụng gradient hiện tại, thuật toán kết hợp gradient mới với lịch sử gradient để tăng tốc hội tụ và giảm dao động trong quá trình tối ưu.
+
+#### Update Rule
+
+$$v_t=\beta v_{t-1}+\nabla L(w_t)$$
+
+$$w_{t+1}=w_t-\eta v_t$$
+
+Trong đó:
+
+- $v_t$: velocity (momentum).
+- $\beta$: hệ số momentum (thường là 0.9).
+- $\eta$: learning rate.
+- $\nabla L(w_t)$: gradient tại bước hiện tại.
+
+#### Implementation
+
+```python
+class SGDMomentum:
+    def __init__(self, lr=0.001, momentum=0.9):
+        self.lr = lr
+        self.momentum = momentum
+        self.velocity = None
+
+    def step(self, params, grads):
+        if self.velocity is None:
+            self.velocity = [0.0] * len(params)
+
+        self.velocity = [
+            self.momentum * v + g
+            for v, g in zip(self.velocity, grads)
+        ]
+
+        return [p - self.lr * v for p, v in zip(params, self.velocity)]
+```
+
+#### Analysis
+
+- `velocity` lưu lịch sử hướng cập nhật của từng tham số và được khởi tạo bằng `0` ở bước đầu tiên.
+- Mỗi lần cập nhật, `velocity` được tính bằng cách kết hợp gradient hiện tại với `velocity` của bước trước thông qua hệ số `momentum`.
+- Tham số được cập nhật bằng `velocity` thay vì gradient tức thời, giúp duy trì quán tính theo hướng giảm loss.
+- So với Vanilla Gradient Descent, SGD with Momentum giảm hiện tượng **zig-zag** trong các vùng có độ cong lớn (narrow valleys), tăng tốc hội tụ theo hướng nhất quán và hỗ trợ vượt qua các **Saddle Points** hiệu quả hơn.
+- Thuật toán vẫn sử dụng **một learning rate chung** cho toàn bộ tham số và **không điều chỉnh learning rate theo từng trọng số**, do đó chưa thuộc nhóm **Adaptive Optimizers**.
+
+### Step 4: Adam
+
+Adam (Adaptive Moment Estimation) là thuật toán tối ưu kết hợp **Momentum** và **Adaptive Learning Rate**. Thuật toán lưu đồng thời **trung bình động của gradient (First Moment)** và **trung bình động của bình phương gradient (Second Moment)** để điều chỉnh tốc độ cập nhật riêng cho từng tham số.
+
+#### Update Rule
+
+$$m_t=\beta_1m_{t-1}+(1-\beta_1)\nabla L(w_t)$$
+
+$$v_t=\beta_2v_{t-1}+(1-\beta_2)\nabla L(w_t)^2$$
+
+Bias Correction:
+
+$$\hat{m}_t=\frac{m_t}{1-\beta_1^t}$$
+
+$$\hat{v}_t=\frac{v_t}{1-\beta_2^t}$$
+
+Parameter Update:
+
+$$w_{t+1}=w_t-\eta\frac{\hat{m}_t}{\sqrt{\hat{v}_t}+\epsilon}$$
+
+Trong đó:
+
+- $m_t$: First Moment (Momentum).
+- $v_t$: Second Moment (Moving Average của gradient²).
+- $\beta_1$: hệ số Momentum (thường 0.9).
+- $\beta_2$: hệ số Moving Average (thường 0.999).
+- $\epsilon$: hằng số nhỏ tránh chia cho 0.
+
+#### Implementation
+
+```python
+class Adam:
+    def __init__(self, lr=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
+        self.lr = lr
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.epsilon = epsilon
+        self.m = None
+        self.v = None
+        self.t = 0
+
+    def step(self, params, grads):
+        if self.m is None:
+            self.m = [0.0] * len(params)
+            self.v = [0.0] * len(params)
+
+        self.t += 1
+
+        self.m = [
+            self.beta1 * m + (1 - self.beta1) * g
+            for m, g in zip(self.m, grads)
+        ]
+
+        self.v = [
+            self.beta2 * v + (1 - self.beta2) * (g ** 2)
+            for v, g in zip(self.v, grads)
+        ]
+
+        m_hat = [m / (1 - self.beta1 ** self.t) for m in self.m]
+        v_hat = [v / (1 - self.beta2 ** self.t) for v in self.v]
+
+        return [
+            p - self.lr * mh / (vh ** 0.5 + self.epsilon)
+            for p, mh, vh in zip(params, m_hat, v_hat)
+        ]
+```
+
+#### Analysis
+
+- `m` lưu **First Moment**, là trung bình động của gradient, đóng vai trò tương tự **Momentum** để làm mượt hướng cập nhật.
+- `v` lưu **Second Moment**, là trung bình động của bình phương gradient, dùng để ước lượng độ lớn của gradient của từng tham số.
+- `t` đếm số lần cập nhật và được sử dụng để thực hiện **Bias Correction**, giúp giảm sai lệch của `m` và `v` ở các bước đầu.
+- `m_hat` và `v_hat` là giá trị đã được hiệu chỉnh sai lệch, được sử dụng trực tiếp trong công thức cập nhật tham số.
+- Mỗi tham số được cập nhật với **learning rate riêng**, trong đó các tham số có gradient lớn sẽ được giảm bước cập nhật, còn các tham số có gradient nhỏ sẽ được tăng bước cập nhật.
+- Adam kết hợp ưu điểm của **Momentum** (tăng tốc hội tụ) và **Adaptive Learning Rate** (điều chỉnh learning rate theo từng tham số), nhờ đó hội tụ nhanh, ổn định và là một trong những optimizer được sử dụng phổ biến nhất trong Deep Learning.
+
+## Key Terms
+
+| Term | What people say | What it actually means |
+|------|------------------|------------------------|
+| **Gradient Descent** | "Go downhill" | Thuật toán tối ưu cơ bản cập nhật tham số bằng cách trừ gradient nhân với learning rate để giảm giá trị của hàm mất mát. |
+| **Learning Rate** | "Step size" | Hệ số xác định kích thước của mỗi lần cập nhật trọng số. Learning rate quá lớn gây divergence, quá nhỏ làm hội tụ rất chậm. |
+| **Momentum** | "Keep rolling" | Cộng dồn gradient của các bước trước thành một **velocity** để giảm dao động và tăng tốc hội tụ theo hướng nhất quán. |
+| **SGD (Stochastic Gradient Descent)** | "Random sampling" | Tính gradient trên một tập con dữ liệu thay vì toàn bộ dataset. Trong thực tế thường ám chỉ **Mini-batch SGD**. |
+| **Mini-batch** | "A chunk of data" | Một nhóm nhỏ dữ liệu (thường 32–256 mẫu) dùng để ước lượng gradient, cân bằng giữa tốc độ tính toán và độ chính xác của gradient. |
+| **Adam** | "The default optimizer" | Adaptive Moment Estimation. Kết hợp **Momentum** và **Adaptive Learning Rate**, theo dõi First Moment và Second Moment để cập nhật learning rate riêng cho từng tham số. |
+| **Bias Correction** | "Fix the cold start" | Hiệu chỉnh sai lệch của First Moment và Second Moment trong các bước đầu bằng cách chia cho \(1-\beta^t\). |
+| **Learning Rate Schedule** | "Change lr over time" | Chiến lược thay đổi learning rate trong quá trình huấn luyện, thường sử dụng learning rate lớn ở giai đoạn đầu và nhỏ ở giai đoạn cuối. |
+| **Convex Function** | "One valley" | Hàm chỉ có một Global Minimum; mọi Local Minimum đều là Global Minimum nên Gradient Descent luôn hội tụ đến nghiệm tối ưu. |
+| **Saddle Point** | "Flat but not a minimum" | Điểm có gradient bằng 0 nhưng không phải cực tiểu; là cực tiểu theo một số hướng và cực đại theo các hướng khác, rất phổ biến trong không gian nhiều chiều. |
+| **Loss Landscape** | "The terrain" | Bề mặt biểu diễn giá trị của hàm mất mát theo không gian tham số của mô hình, dùng để phân tích quá trình tối ưu và khả năng hội tụ của optimizer. |
+| **Convergence** | "Getting there" | Trạng thái mà optimizer đã đạt đến điểm gần tối ưu, các bước cập nhật tiếp theo không còn làm giảm giá trị loss đáng kể. |
