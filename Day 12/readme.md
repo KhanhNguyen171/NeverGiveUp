@@ -1155,25 +1155,13 @@ Target Blocks.
 
 ## Learning Objective
 
-Mục tiêu là
-
-Predicted Embedding
-
-gần
-
-Target Embedding.
+Mục tiêu là Predicted Embedding gần Target Embedding.
 
 Loss được định nghĩa
 
 $$L=\frac{1}{M}\sum_{i=1}^{M}D(\hat{s}_y^{(i)},s_y^{(i)})$$
 
-Trong đó
-
-$$D$$
-
-là khoảng cách
-
-L2
+Trong đó $D$ là khoảng cách L2
 
 $$D=\sum_{j\in B_i}\|\hat{s}_{y_j}-s_{y_j}\|_2^2$$
 
@@ -1181,21 +1169,7 @@ $$D=\sum_{j\in B_i}\|\hat{s}_{y_j}-s_{y_j}\|_2^2$$
 
 ## Meaning
 
-Loss đo khoảng cách giữa
-
-- Embedding dự đoán
-
-và
-
-- Embedding mục tiêu.
-
-Khác với MAE,
-
-Loss **không tính trên pixel**.
-
-Toàn bộ quá trình học diễn ra trong
-
-**representation space**.
+Loss đo khoảng cách giữa __Embedding dự đoán và Embedding mục tiêu.__ Khác với MAE, Loss **không tính trên pixel**. Toàn bộ quá trình học diễn ra trong **representation space**.
 
 ---
 
@@ -1229,9 +1203,7 @@ Thay vào đó
 
 $$\bar{\theta}\leftarrow\tau\bar{\theta}+(1-\tau)\theta$$
 
-đây là
-
-**Exponential Moving Average (EMA).**
+đây là **Exponential Moving Average (EMA).**
 
 ---
 
@@ -1371,17 +1343,7 @@ Mô hình học mối quan hệ không gian (spatial context) giữa các vùng 
 
 Một số nghiên cứu khác coi **Image Colorization** là bài toán self-supervised.
 
-Input
-
-Ảnh xám
-
-↓
-
-Predict
-
-Ảnh màu
-
-Mục tiêu là học được semantic information thông qua việc suy luận màu sắc.
+Input `Ảnh xám` -> Predict `Ảnh màu` Mục tiêu là học được semantic information thông qua việc suy luận màu sắc.
 
 ---
 
@@ -1412,11 +1374,7 @@ Decoder --> ReconstructedPatches
 
 ### Core Idea
 
-MAE chỉ đưa **visible patches** vào encoder.
-
-Các patch bị che chỉ được xử lý ở decoder.
-
-Điều này giúp giảm đáng kể chi phí tính toán.
+MAE chỉ đưa **visible patches** vào encoder. Các patch bị che chỉ được xử lý ở decoder. Điều này giúp giảm đáng kể chi phí tính toán.
 
 ---
 
@@ -1464,11 +1422,7 @@ những đặc trưng không nhất thiết phản ánh ý nghĩa ngữ nghĩa c
 
 ## BEiT
 
-BEiT không tái tạo pixel trực tiếp.
-
-Thay vào đó,
-
-mỗi patch được chuyển thành một **discrete token** thông qua một **frozen discreteVAE**.
+BEiT không tái tạo pixel trực tiếp. Thay vào đó, mỗi patch được chuyển thành một **discrete token** thông qua một **frozen discreteVAE**.
 
 ```text
 Image
@@ -1497,25 +1451,13 @@ Predict Missing Tokens
 
 ### Limitation
 
-Theo bài báo,
-
-MAE vẫn đạt kết quả fine-tuning tốt hơn BEiT.
-
-Ngoài ra,
-
-BEiT phụ thuộc vào một **discreteVAE** đã được huấn luyện trước trên khoảng **250 triệu ảnh**, làm tăng độ phức tạp của hệ thống.
+Theo bài báo, MAE vẫn đạt kết quả fine-tuning tốt hơn BEiT. Ngoài ra, BEiT phụ thuộc vào một **discreteVAE** đã được huấn luyện trước trên khoảng **250 triệu ảnh**, làm tăng độ phức tạp của hệ thống.
 
 ---
 
 ## SimMIM
 
-SimMIM nghiên cứu các mục tiêu tái tạo khác ngoài pixel.
-
-Thay vì reconstruction trực tiếp trong pixel space,
-
-SimMIM sử dụng đặc trưng **Histogram of Oriented Gradients (HOG)** làm mục tiêu học.
-
-Điều này giúp cải thiện chất lượng biểu diễn so với reconstruction pixel thuần túy.
+SimMIM nghiên cứu các mục tiêu tái tạo khác ngoài pixel. Thay vì reconstruction trực tiếp trong pixel space, SimMIM sử dụng đặc trưng **Histogram of Oriented Gradients (HOG)** làm mục tiêu học. Điều này giúp cải thiện chất lượng biểu diễn so với reconstruction pixel thuần túy.
 
 ---
 
@@ -1670,11 +1612,7 @@ I-JEPA được thiết kế để khắc phục các hạn chế trên.
 
 ## Single View Learning
 
-Khác với các phương pháp Joint-Embedding truyền thống,
-
-I-JEPA chỉ cần xử lý **một view duy nhất** của mỗi ảnh.
-
-Điều này giúp giảm đáng kể số lần chạy qua encoder.
+Khác với các phương pháp Joint-Embedding truyền thống, I-JEPA chỉ cần xử lý **một view duy nhất** của mỗi ảnh. Điều này giúp giảm đáng kể số lần chạy qua encoder.
 
 ---
 
@@ -2304,9 +2242,7 @@ MAE học bằng
 Pixel Reconstruction
 ```
 
-trong khi
-
-I-JEPA học bằng
+trong khi I-JEPA học bằng
 
 ```
 Representation Prediction
