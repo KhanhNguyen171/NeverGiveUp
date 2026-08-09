@@ -4,7 +4,7 @@
 
 * **Type:** Build
 * **Ngôn ngữ:** Python
-* **Prerequisites:** Self-Attention → Multi-Head Attention → Positional Encoding
+* **Prerequisites:** Self-Attention (day11) → Multi-Head Attention (day15) → Positional Encoding (day16)
 
 ## The Problem
 
@@ -234,6 +234,10 @@ Sử dụng lớp `Matrix` nhỏ (được sao chép vào file này để độc
 * `gelu(x)` và `silu(x) * W3 x` (SwiGLU).
 * `ffn_swiglu(x, W1, W2, W3)`.
 * `encoder_block(x, params)` và `decoder_block(x, enc_out, params)`.
+
+Link: https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/phases/07-transformers-deep-dive/05-full-transformer/code/main.py
+
+Hoặc xem trong file main.py
 
 ### Step 2: Kết nối Encoder 2 lớp và Decoder 2 lớp
 
