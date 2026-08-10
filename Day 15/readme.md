@@ -48,7 +48,7 @@ $$\operatorname{MultiHead}(Q,K,V)=\operatorname{Concat}(head_1,\ldots,head_h)W^O
 
 Thay vì để mỗi head hoạt động trên toàn bộ không gian $d_{model}$, Multi-Head Attention chia không gian đó thành các **subspace nhỏ hơn**.
 
-Nếu có (h) heads:
+Nếu có $h$ heads:
 
 $$d_{head}=\frac{d_{model}}{h}$$
 
