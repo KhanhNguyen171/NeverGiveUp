@@ -236,3 +236,11 @@ Test  : 2023-03-23 00:00:00 -> 2023-12-31 00:00:00
 > Khác với tabular, dữ liệu time-series **tuyệt đối không được chia ngẫu nhiên**. Nếu chia ngẫu nhiên, các điểm trong tương lai có thể rơi vào tập huấn luyện, gây ra hiện tượng **rò rỉ dữ liệu (data leakage)**, tức là mô hình sử dụng thông tin tương lai trong quá trình huấn luyện và cho ra kết quả đánh giá không trung thực. Quy tắc đúng là tập huấn luyện luôn ở quá khứ, tập kiểm thử ở tương lai.
 
 ## Tài liệu tham khảo
+
+1. McKinney, W. (2010). Data structures for statistical computing in Python. *Proceedings of the 9th Python in Science Conference*, 56–61. https://doi.org/10.25080/Majora-92bf1922-00a
+
+2. Hyndman, R. J., & Athanasopoulos, G. (2021). *Forecasting: principles and practice* (3rd ed.). OTexts. https://otexts.com/fpp3/
+
+3. Pedregosa, F., et al. (2011). Scikit-learn: Machine learning in Python. *Journal of Machine Learning Research*, 12, 2825–2830.
+
+4. Seabold, S., & Perktold, J. (2010). Statsmodels: Econometric and statistical modeling with Python. *Proceedings of the 9th Python in Science Conference*.
