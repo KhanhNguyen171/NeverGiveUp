@@ -468,5 +468,230 @@ Một số thông tin cần được **trích xuất bằng pattern-based extrac
 
 ![](img/Fig1.png)
 
-        Figure 1: Overview of the nMAS heart-failure feature-extraction pipeline.
+        **Hình 1:** Tổng quan pipeline **nMAS** trích xuất và xây dựng feature cho bệnh suy tim. 
 
+### 4.1. Tổng quan Workflow
+
+Pipeline bắt đầu từ **EHR exports** và các feature mục tiêu được định nghĩa trong **versioned rubric**.
+
+```text
+EHR Exports → Achievability Agent → Query Parser → Feature Engineering → Audit → Validation
+```
+
+* **Achievability Agent:** kiểm tra dữ liệu nguồn có đủ thông tin để tạo feature hay không. Nếu thiếu dữ liệu → đánh dấu **unsupported**, không tự suy đoán. 
+* **Query Parser:** định tuyến yêu cầu đến pipeline phù hợp.
+* Nghiên cứu này tập trung vào **feature-engineering pipeline**, không tập trung vào feature extraction đơn thuần.
+
+### 4.2. Stage 1 — Chuẩn hóa và hợp nhất EHR
+
+Mục tiêu là biến **9 bảng EHR** thành **một bảng patient-level**.
+
+```text
+9 EHR Tables → Standardize → Deduplicate → Temporal Aggregate → Merge → Patient-level Table
+```
+
+Cụ thể:
+
+1. **Standardization:** chuẩn hóa whitespace, null values, identifiers và datetime.
+2. **Deduplication:** loại bản ghi trùng dựa trên event key có ý nghĩa lâm sàng.
+3. **Temporal aggregation:** tổng hợp dữ liệu theo từng bệnh nhân.
+4. **Merge:** hợp nhất các bảng thành **một dòng cho mỗi bệnh nhân**. 
+
+### 4.3. Stage 2 — Clinical Feature Engineering
+
+Từ bảng patient-level, nMAS tạo các **composite features** dựa trên rubric lâm sàng.
+
+Các feature được:
+
+* tính điểm theo **clinical rubric**;
+* liên kết với **evidence trace**;
+* giữ liên kết với **source EHR data**;
+* tổ chức thành các nhóm feature lâm sàng. 
+
+Ví dụ các nhóm chính gồm:
+
+```text
+Disease Severity
+Cardiovascular Risk
+Kidney Burden
+Lung Burden
+Metabolic Burden
+Blood Burden
+Brain-health Risk
+Demographic Vulnerability
+```
+
+Các composite feature được xây dựng từ những tín hiệu như **EF, biomarkers, medications, diagnoses, procedures và comorbidities**, theo rubric đã định nghĩa. 
+
+### 4.4. LLM Audit và Validation
+
+Sau khi tạo feature, nMAS sử dụng **LLM auditor** để kiểm tra feature dựa **chỉ trên patient evidence và rubric logic**.
+
+Sau đó pipeline kiểm tra:
+
+* **Structural integrity**
+* **Rubric compliance**
+* **Monotonicity**
+* **Evidence traceability**
+
+Chỉ các feature vượt qua các kiểm tra này mới được đưa ra sử dụng. 
+
+### Ý chính của Method
+
+> **nMAS biến EHR phân mảnh → bảng patient-level → clinical features theo rubric → evidence-linked features → audit và validation.**
+
+Điểm cốt lõi là **clinical reasoning được mã hóa trong rubric**, còn LLM chủ yếu đóng vai trò **kiểm tra/audit**, thay vì tự do quyết định cách tạo feature.
+
+
+## 5. Results — Kết quả
+
+### 5.1. Kết quả chính
+
+**Stage 1** hợp nhất 9 bảng EHR thành **500 dòng patient-level**, không có duplicate và tạo **132 structured columns**. Tuy nhiên, chỉ **3,0%** bệnh nhân có EF dạng số, nên hệ thống phải sử dụng tên chẩn đoán để hỗ trợ xác định phenotype khi thiếu EF. 
+
+**Stage 2** tạo thêm **70 aggregated features** và toàn bộ 500 bệnh nhân đều được audit bằng **Qwen 2.5-1.5B-Instruct**. Mỗi feature có **evidence trace**, ghi lại thành phần, điểm số, source columns và tình trạng availability của dữ liệu. 
+
+Khi thêm các aggregated features vào XGBoost, hiệu năng tăng ở cả hai bài toán:
+
+| Task      |          Accuracy |             AUROC |             F1 |
+| --------- | ----------------: | ----------------: | -------------: |
+| **HFrEF** | 0.776 → **0.896** | 0.895 → **0.963** | tăng **0.118** |
+| **HFpEF** | 0.752 → **0.809** | 0.870 → **0.910** | tăng **0.054** |
+
+ 
+
+**Ý nghĩa:** các feature được tạo bởi nMAS bổ sung thông tin hữu ích vượt lên trên các structured EHR variables ban đầu.
+
+---
+
+### 5.2. Feature Importance
+
+Phân tích **SHAP** cho thấy các feature do rubric tạo ra xuất hiện trong nhóm feature quan trọng nhất của mô hình.
+
+* **HFrEF:** 6/10 feature quan trọng nhất là rubric-derived features.
+* **HFpEF:** 2/10 feature quan trọng nhất là rubric-derived features. 
+
+Điều này cho thấy các aggregated features không chỉ làm tăng số lượng feature mà còn đóng góp thông tin cho prediction.
+
+---
+
+### 5.3. LLM-based Evaluation
+
+Một LLM độc lập (**Claude Opus 4.8**) đánh giá feature theo 5 tiêu chí liên quan đến:
+
+* bằng chứng bên ngoài;
+* nguy cơ trong xây dựng predictor;
+* khả năng tái tạo;
+* chất lượng dữ liệu EHR;
+* tính hợp lệ về mặt lâm sàng.
+
+Điểm tổng thể đạt **81,5%**. Phần lớn các category đạt trên **85%**, trong khi **demographic vulnerability** và các **gap/care features** có điểm thấp hơn; care recommendation là nhóm thấp nhất với **38,5%**. 
+
+---
+
+### 5.4. Ablation Study
+
+Ablation cho thấy **cách thiết kế rubric quan trọng**, không chỉ đơn thuần là số lượng feature.
+
+Khi thay trọng số lâm sàng bằng trọng số đều:
+
+$$\Delta AUROC_{HFrEF}=-0.060,\quad \Delta AUROC_{HFpEF}=-0.041$$
+
+Khi dùng trọng số ngẫu nhiên:
+
+$$\Delta AUROC_{HFrEF}=-0.058,\quad \Delta AUROC_{HFpEF}=-0.040$$
+
+Khi chỉ sử dụng **direct evidence** và loại supportive evidence:
+
+$$\Delta AUROC_{HFrEF}=-0.065,\quad \Delta AUROC_{HFpEF}=-0.040$$
+
+
+
+**Kết luận:** performance improvement đến từ **clinical weighting và việc kết hợp nhiều nguồn evidence**, không đơn giản chỉ do thêm nhiều feature.
+
+---
+
+### 5.5. Phân tích đóng góp của Feature Categories
+
+Khi loại từng category:
+
+* Với **HFrEF**, loại **care-gap features** làm AUROC giảm nhiều nhất:
+
+$$\Delta AUROC=-0.039$$
+
+* Với **HFpEF**, **disease severity** là category quan trọng nhất:
+
+$$\Delta AUROC=-0.033$$
+
+Các feature riêng lẻ khi loại bỏ chỉ gây ảnh hưởng nhỏ hơn, cho thấy hiệu quả chủ yếu đến từ **sự kết hợp của nhiều clinical evidence liên quan** thay vì phụ thuộc vào một feature duy nhất. 
+
+---
+
+### 5.6. Blind-Spot / Comparator Analysis
+
+Khi cho một LLM tự xây dựng feature trực tiếp từ raw EHR, LLM tạo ra nhiều feature có ý nghĩa như:
+
+* ICD-10 phenotype;
+* EF;
+* medication/GDMT count;
+* laboratory abnormalities;
+* healthcare utilization.
+
+Nhưng một số feature có vấn đề vì **quá gần với label**, tạo nguy cơ **predictor construction / label leakage**. Các feature dựa trên healthcare utilization cũng phản ánh **mô hình chăm sóc** hơn là mức độ nghiêm trọng bệnh đã được xác nhận. 
+
+> **nMAS thành công trong việc biến EHR phân mảnh thành 132 structured features và 70 rubric-scored features có evidence trace. Các feature này cải thiện rõ rệt khả năng phân loại HFrEF/HFpEF; ablation cho thấy clinical rubric và việc kết hợp nhiều nguồn evidence thực sự tạo ra giá trị, trong khi comparator LLM cho thấy feature “hợp lý” chưa đủ — feature còn phải độc lập, evidence-grounded và tránh leakage.**
+
+## 6. Discussion — Thảo luận
+
+Nghiên cứu cho thấy **nMAS có khả năng biến dữ liệu EHR phân mảnh thành các feature cấp bệnh nhân có cấu trúc, có bằng chứng và có thể audit**. Việc bổ sung các feature này cải thiện rõ rệt hiệu năng phân loại HFrEF và HFpEF; đồng thời các rubric-derived features xuất hiện trong nhóm feature quan trọng của mô hình. 
+
+### 6.1. Ý nghĩa của nMAS
+
+Điểm quan trọng không chỉ là tăng AUROC, mà là nMAS giữ được **traceability**:
+
+```text
+EHR Source → Clinical Rule → Feature → Evidence
+```
+
+Feature có thể truy ngược về **source variables, scoring criteria và supporting evidence**, giúp quá trình feature engineering có tính **reproducible và auditable**. 
+
+Thiết kế này cũng tách **clinical knowledge** khỏi **data-processing pipeline**, nên rubric có thể được cập nhật mà không cần xây dựng lại toàn bộ pipeline. Vì vậy, cách tiếp cận có tiềm năng mở rộng sang các bệnh mạn tính khác có cùng vấn đề feature engineering. 
+
+### 6.2. Rule-based + LLM
+
+nMAS kết hợp hai ưu điểm:
+
+* **Deterministic rules:** minh bạch và có thể tái tạo.
+* **LLM:** hỗ trợ xây dựng và audit rubric nhưng bị giới hạn bởi evidence và các trường được phép sửa.
+
+Cách kết hợp này nhằm tránh hai vấn đề: rule-based system có thể trở nên cứng nhắc khi schema thay đổi, còn LLM có thể tạo ra output không có bằng chứng hỗ trợ. 
+
+### 6.3. Hạn chế
+
+Nghiên cứu vẫn có những hạn chế quan trọng:
+
+* Chỉ đánh giá trên **500 bệnh nhân giả lập từ một cơ sở** → hạn chế statistical power và khả năng generalization.
+* HFrEF/HFpEF được so sánh với **phenotype-unknown**, không phải nhóm **non-HF** → đây là bài toán **phenotyping**, không phải disease detection.
+* Chưa có **external clinical validation**.
+* Một số feature sử dụng thông tin liên quan đến phenotype → có khả năng **feature-label overlap**.
+* Chưa đánh giá **clinical impact** và patient outcomes trong thực tế.
+* Một số feature comorbidity và behavioral dựa trên **regular-expression matching**, có thể bỏ sót cách diễn đạt khác nhau giữa các cơ sở.
+* Clinician review chỉ bao phủ rubric và một số output đại diện, chưa kiểm tra toàn bộ cohort. 
+
+### 6.4. Hướng phát triển
+
+Nghiên cứu đề xuất đánh giá tiếp trên:
+
+```text
+Larger cohorts
+→ Multi-institutional data
+→ Temporal validation
+→ HF + Non-HF populations
+→ Clinician-adjudicated phenotypes
+→ Additional prediction tasks
+→ Prospective clinical impact
+```
+
+Cho đến khi có các validation này, nMAS nên được xem là **feature-engineering layer phục vụ nghiên cứu và clinical review**, chưa phải hệ thống tự động đưa ra quyết định lâm sàng. 
+
+> **nMAS chứng minh tính khả thi của feature engineering tự động, có guideline, evidence và audit trong EHR. Giá trị lớn nhất không chỉ nằm ở việc tăng prediction performance, mà ở khả năng tạo feature có thể truy xuất và tái tạo. Tuy nhiên, bằng chứng hiện tại mới ở mức pilot và cần external validation trước khi áp dụng rộng rãi.**
