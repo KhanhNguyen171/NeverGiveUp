@@ -1,43 +1,23 @@
-# 1.1 Bối cảnh nghiên cứu
+# 1.1. Bối cảnh nghiên cứu
 
-## From Paper
+Sự phát triển của Internet of Things (IoT), hệ thống cảm biến, các nền tảng giám sát và các hệ thống thu thập dữ liệu tự động đã làm gia tăng đáng kể khối lượng **dữ liệu chuỗi thời gian (time-series data)** được tạo ra trong nhiều lĩnh vực như năng lượng, giao thông, công nghiệp, tài chính, y tế và môi trường. Khác với dữ liệu bảng thông thường, dữ liệu chuỗi thời gian có đặc trưng quan trọng là các quan sát được gắn với thứ tự thời gian và thường tồn tại sự phụ thuộc giữa các thời điểm liên tiếp. Do đó, chất lượng và cấu trúc của dữ liệu đầu vào có ảnh hưởng trực tiếp đến khả năng học các quan hệ theo thời gian của các mô hình phân tích và trí tuệ nhân tạo.
 
-Paper *Time-series data preprocessing: A survey and an empirical analysis* xem preprocessing là một bài toán rộng hơn việc xóa lỗi dữ liệu. Time series xuất hiện trong IoT, công nghiệp, năng lượng, y tế và tài chính; dữ liệu được tạo theo thời gian nên các quan sát không độc lập hoàn toàn. Một giá trị ở thời điểm $t$ có thể phụ thuộc vào lịch sử, mùa vụ, trạng thái hệ thống và các sensor khác.
+Trong thực tế, dữ liệu được thu thập thường không ở trạng thái phù hợp để đưa trực tiếp vào thuật toán học máy hoặc học sâu. Quá trình thu thập có thể tạo ra **giá trị thiếu, nhiễu, điểm bất thường, sai lệch thang đo, phân phối không phù hợp, mất tính liên tục theo thời gian hoặc các biến có thông tin dư thừa**. Đối với chuỗi thời gian, những vấn đề này còn có thể làm thay đổi cấu trúc temporal dependence của dữ liệu. Chẳng hạn, một khoảng thời gian bị thiếu quan sát không chỉ làm mất một giá trị riêng lẻ mà còn có thể phá vỡ tính liên tục của toàn bộ đoạn chuỗi. Tương tự, một outlier có thể là lỗi cảm biến nhưng cũng có thể đại diện cho một sự kiện thực tế bất thường; việc loại bỏ nó mà không xét đến ngữ cảnh thời gian có thể làm mất thông tin có giá trị.
 
-Dữ liệu thực tế có thể chứa missing instances, outliers, noise, scale khác nhau, high dimensionality và các luồng sensor không đồng bộ. Nếu các vấn đề này truyền thẳng vào mô hình, lỗi preprocessing có thể lan sang dự đoán và làm giảm độ tin cậy của kết luận.
+Vì vậy, **data preprocessing** không đơn thuần là bước chuẩn bị dữ liệu trước khi huấn luyện mô hình mà là một thành phần của toàn bộ quy trình xây dựng hệ thống phân tích chuỗi thời gian. Tawakuli et al. chỉ ra rằng dữ liệu thường được thu thập ở trạng thái thô và cần trải qua nhiều bước preprocessing trước khi trở thành đầu vào phù hợp cho AI; preprocessing vừa nhằm đáp ứng yêu cầu đầu vào của mô hình, vừa có khả năng cải thiện hiệu quả huấn luyện và độ chính xác của kết quả. Nghiên cứu này đồng thời nhấn mạnh rằng preprocessing là một quá trình phức tạp, tốn thời gian và chưa có một quy trình thống nhất áp dụng cho mọi loại dữ liệu chuỗi thời gian.
 
-## Kiến thức nền
+Một đặc điểm quan trọng của preprocessing chuỗi thời gian là **không tồn tại một phép biến đổi tối ưu cho mọi bài toán**. Việc lựa chọn phương pháp phải phụ thuộc vào đặc tính dữ liệu, mục tiêu phân tích và yêu cầu của mô hình. Với dữ liệu chứa giá trị thiếu, có thể sử dụng các chiến lược như loại bỏ quan sát, nội suy hoặc các phương pháp imputation. Với outlier, cần phân biệt giữa lỗi đo lường và những biến động thực sự của hệ thống trước khi quyết định loại bỏ, thay thế hoặc giữ nguyên. Đối với các biến có thang đo khác nhau, scaling hoặc normalization có thể cần thiết để tránh một số đặc trưng chi phối quá mức quá trình tối ưu. Với dữ liệu không dừng, các phép biến đổi hoặc decomposition có thể được sử dụng để làm rõ xu hướng và các thành phần biến động theo thời gian.
 
-Có thể mô hình hóa quan sát:
+Bên cạnh **data cleaning** và **data transformation**, preprocessing chuỗi thời gian còn liên quan trực tiếp đến quá trình xây dựng biểu diễn dữ liệu cho mô hình. Các đặc trưng thời gian, lag features, rolling statistics và các dạng biểu diễn khác có thể được tạo ra từ chuỗi ban đầu nhằm cung cấp cho mô hình thông tin về lịch sử, xu hướng và tính chu kỳ. Tuy nhiên, việc tạo đặc trưng cũng phải bảo toàn thứ tự thời gian và tránh sử dụng thông tin từ tương lai. Điều này đặc biệt quan trọng trong các bài toán forecasting, trong đó preprocessing không được làm rò rỉ thông tin từ validation hoặc test vào quá trình huấn luyện.
 
-$$
-x_t = s_t + n_t
-$$
+Từ góc nhìn hệ thống, preprocessing còn phải được xem xét theo **toàn bộ pipeline từ dữ liệu thô đến dữ liệu sẵn sàng cho AI**. Một quy trình có thể bao gồm kiểm tra và làm sạch dữ liệu, biến đổi và chuẩn hóa, xây dựng đặc trưng, lựa chọn đặc trưng và cuối cùng tạo ra biểu diễn đầu vào phù hợp với mô hình. Tawakuli et al. xây dựng một khảo sát có cấu trúc về các kỹ thuật preprocessing cho dữ liệu chuỗi thời gian số, đồng thời thực hiện phân tích thực nghiệm để đánh giá ảnh hưởng của các kỹ thuật này đến chất lượng dữ liệu và hiệu năng của thuật toán AI. Nghiên cứu cũng xem xét khả năng phân phối một số thao tác preprocessing xuống **edge**, qua đó giảm tải cho hệ thống trung tâm, giảm tài nguyên sử dụng và hỗ trợ các ứng dụng EdgeAI.
 
-trong đó $s_t$ là tín hiệu hoặc trạng thái cần học, còn $n_t$ là nhiễu. Với dữ liệu nhiều biến, mỗi thời điểm có vector:
+Một vấn đề khác có ý nghĩa phương pháp luận là **data quality không thể được tách rời khỏi preprocessing**. Một tập dữ liệu có kích thước lớn không đồng nghĩa với việc dữ liệu có chất lượng cao. Nếu dữ liệu chứa nhiều lỗi, missing values, outliers hoặc các bất nhất về temporal structure, mô hình phức tạp hơn không nhất thiết tạo ra kết quả tốt hơn. Ngược lại, một preprocessing phù hợp có thể giúp mô hình nhận được tín hiệu có ý nghĩa hơn và giảm những biến động không liên quan đến nhiệm vụ dự đoán. Do đó, đánh giá preprocessing cần xem xét đồng thời hai khía cạnh: mức độ cải thiện chất lượng dữ liệu và tác động cuối cùng đến hiệu năng của mô hình.
 
-$$
-\mathbf{x}_t=[x_t^{(1)},x_t^{(2)},...,x_t^{(F)}]
-$$
+Từ bối cảnh trên, nghiên cứu này tập trung hệ thống hóa các phương pháp **time-series data preprocessing** theo một cấu trúc xuyên suốt từ làm sạch dữ liệu, biến đổi dữ liệu, xây dựng và lựa chọn đặc trưng đến các kỹ thuật bổ trợ như sensor fusion và data compression. Cấu trúc này nhằm giải quyết một vấn đề cốt lõi: thay vì xem preprocessing là tập hợp các thao tác độc lập, cần xem nó như một **quy trình có mục tiêu**, trong đó mỗi phương pháp được lựa chọn dựa trên đặc tính dữ liệu, mục tiêu của bài toán và yêu cầu của mô hình downstream.
 
-$T$ là số thời điểm và $F$ là số feature. Preprocessing phải bảo toàn càng nhiều thông tin hữu ích của $\{\mathbf{x}_t\}_{t=1}^{T}$ càng tốt.
+Theo định hướng đó, **Chương 1** xác lập bối cảnh, vấn đề và động lực nghiên cứu; **Chương 2** xây dựng phạm vi và taxonomy của khảo sát. Các chương tiếp theo lần lượt đi từ data cleaning và data transformation đến feature engineering, feature selection, sensor fusion và data compression. Sau đó, **Chương 9** đánh giá thực nghiệm tác động của các nhóm phương pháp, trong khi **Chương 10** phân tích các trade-off và giới hạn. Cuối cùng, **Chương 11** tổng hợp các phương pháp thành một preprocessing pipeline và **Chương 13** sử dụng bộ dữ liệu UCI Appliances Energy Prediction làm trường hợp kết nối giữa khảo sát lý thuyết và quy trình xử lý dữ liệu thực tế.
 
-## Luận điểm chính
+Như vậy, bối cảnh của nghiên cứu không chỉ xuất phát từ nhu cầu làm sạch dữ liệu trước khi huấn luyện AI, mà từ nhu cầu xây dựng một cách tiếp cận **có cấu trúc, có khả năng so sánh và có thể kiểm chứng thực nghiệm** đối với preprocessing dữ liệu chuỗi thời gian. Đây là cơ sở để các phần tiếp theo xác định phạm vi nghiên cứu, phân loại các nhóm phương pháp và đánh giá vai trò của từng nhóm trong quá trình chuyển đổi dữ liệu thô thành dữ liệu sẵn sàng cho các mô hình AI.
 
-Mục tiêu không phải tạo ra dữ liệu “đẹp” bằng mọi giá. Mục tiêu là biến raw time series thành dữ liệu có chất lượng phù hợp với downstream task, đồng thời hạn chế information loss và data leakage.
-
-```text
-Raw observations
-      ↓
-Quality diagnosis
-      ↓
-Cleaning / transformation / representation
-      ↓
-AI-ready time series
-      ↓
-Forecasting, classification or anomaly detection
-```
-
-## Key takeaway
-
-Time-series preprocessing là một phần của hệ thống suy luận, không chỉ là bước kỹ thuật trước mô hình.
+**Tài liệu nền tảng:** Tawakuli, A., Havers, B., Gulisano, V., Kaiser, D., & Engel, T., *Survey: Time-series data preprocessing: A survey and an empirical analysis*, Journal of Engineering Research, 13(2), 674–711. DOI: 10.1016/j.jer.2024.02.018. Bài báo được công bố trong số tháng 6/2025 của *Journal of Engineering Research*.
