@@ -1,420 +1,500 @@
 # 02. Preprocessing
 
-## 1. Mục tiêu tiền xử lý
+## 1. Mục tiêu preprocessing
 
-Dựa trên đặc điểm của **Appliances Energy Prediction Dataset** được trình bày ở `13_uci_appliances/01_dataset.md`, dữ liệu có cấu trúc chuỗi thời gian đa biến với chu kỳ quan sát 10 phút. Vì vậy, preprocessing không chỉ nhằm xử lý dữ liệu thiếu hoặc sai lệch mà còn phải **bảo toàn thứ tự thời gian, tránh rò rỉ thông tin tương lai và tạo biểu diễn phù hợp cho bài toán dự báo**.
+Trong `13_air_quality/01_dataset.md`, AirQuality được xác định là dữ liệu chuỗi thời gian đa biến gồm các phép đo cảm biến, chất ô nhiễm và điều kiện môi trường. Đặc điểm quan trọng của dataset là sự tồn tại của **missing values được mã hóa bằng `-200`**, outliers và sự khác biệt về scale giữa các biến.
 
-Trong nghiên cứu này, preprocessing được xây dựng dựa trên các nguyên tắc đã trình bày ở các chương trước:
+Trong bài báo, preprocessing được sử dụng như một **biến thực nghiệm** để đánh giá mức độ ảnh hưởng của từng kỹ thuật đến hiệu năng dự đoán CO. Vì vậy, preprocessing không chỉ nhằm làm sạch dữ liệu mà còn phải tạo ra một representation nhất quán cho mô hình LSTM.
 
-* **Data Cleaning:** kiểm tra timestamp, dữ liệu thiếu, dữ liệu trùng lặp và tính liên tục của chuỗi.
-* **Data Transformation:** chuẩn hóa các biến liên tục nhưng không làm biến dạng các đặc trưng chu kỳ hoặc nhị phân.
-* **Feature Engineering:** tạo các đặc trưng thời gian và đặc trưng lịch sử từ dữ liệu đã được kiểm soát.
-* **Feature Selection:** giữ lại các nhóm đặc trưng có ý nghĩa đối với bài toán và kiểm soát các biến không mang thông tin dự báo.
-* **Temporal Integrity:** mọi phép biến đổi có tham số học từ dữ liệu phải được fitting trên tập Train trước khi áp dụng cho Validation và Test.
-
-Pipeline tổng quát được biểu diễn:
+Pipeline thực nghiệm có thể khái quát:
 
 ```text
-Raw Data
-   ↓
-Timestamp Validation
-   ↓
-Data Quality Checks
-   ↓
-Chronological Split
-   ↓
-Train-only Transformation
-   ↓
-Feature Engineering
-   ↓
-Feature Selection / Representation
-   ↓
-Sliding Window Construction
-   ↓
-AI-ready Data
+Raw AirQuality
+      ↓
+Missing-value Identification
+      ↓
+Outlier Detection
+      ↓
+Outlier Imputation
+      ↓
+Missing-value Imputation
+      ↓
+Feature Selection
+      ↓
+Normalization
+      ↓
+LSTM
 ```
 
-Điểm quan trọng là **chronological split phải được xác định trước các bước transformation có học tham số từ dữ liệu**, nhằm tránh data leakage.
+Pipeline này liên kết trực tiếp với các chương `03_data_cleaning`, `04_data_transformation` và `06_feature_selection` của survey.
 
 ---
 
-## 2. Kiểm tra và chuẩn hóa thời gian
+## 2. Mã hóa missing values
 
-Trường `date` là thành phần quan trọng nhất của dataset vì nó xác định thứ tự của các quan sát. Timestamp được chuyển sang kiểu dữ liệu thời gian và sắp xếp theo thứ tự tăng dần:
+AirQuality sử dụng giá trị `-200` để biểu diễn các quan sát bị thiếu. Do đó, `-200` không được xem là một giá trị số thực tế của biến cảm biến mà là **missing-value marker**.
 
-```python
-df["date"] = pd.to_datetime(df["date"])
-df = df.sort_values("date").reset_index(drop=True)
-```
-
-Với hai timestamp liên tiếp $t_i$ và $t_{i+1}$, khoảng thời gian được kiểm tra theo:
+Phép chuyển đổi đầu tiên là:
 
 $$
-\Delta t_i=t_{i+1}-t_i
+x_t=-200\Rightarrow x_t=\mathrm{NaN}
 $$
 
-Dữ liệu được xem là liên tục khi:
+Sau bước này, missing values mới được xử lý bằng các phương pháp imputation.
+
+Điểm này minh họa nguyên tắc trong `03_data_cleaning/01_missing_data.md`: trước khi lựa chọn phương pháp xử lý missing, cần xác định **semantic meaning** của dữ liệu.
+
+Nếu không thực hiện bước này, các giá trị `-200` sẽ được xem như observations hợp lệ và có thể làm sai lệch:
 
 $$
-\Delta t_i=10\text{ minutes}
+\mu,\quad \sigma,\quad Q_1,\quad Q_3
 $$
 
-Các trường hợp không thỏa mãn điều kiện trên không được tự động nội suy trong bước preprocessing. Thay vào đó, chúng được đánh dấu để xác định các **continuity segments**. Điều này đặc biệt quan trọng khi xây dựng sliding window, vì một cửa sổ không được phép chứa khoảng thời gian bị gián đoạn.
-
-Ngoài ra, timestamp trùng lặp cũng phải được phát hiện:
-
-$$
-t_i=t_j,\quad i\neq j
-$$
-
-Các bản ghi trùng timestamp cần được kiểm tra trước khi tạo cửa sổ thời gian để tránh tạo ra các mẫu huấn luyện không xác định.
+cũng như các mô hình thống kê được sử dụng ở các bước sau.
 
 ---
 
-## 3. Kiểm tra dữ liệu thiếu
+## 3. Phân loại missing values
 
-Dataset UCI được công bố không chứa giá trị thiếu trong các trường dữ liệu chính. Tuy nhiên, kiểm tra missing values vẫn được giữ trong pipeline nhằm đảm bảo tính tổng quát của preprocessing.
+Sau khi thay thế `-200` bằng `NaN`, các missing observations được phân tích theo cấu trúc temporal.
 
-Với mỗi đặc trưng $X_j$, tỷ lệ missing được xác định bởi:
+Có thể phân biệt hai trường hợp chính:
 
-$$
-r_j=\frac{N_{\mathrm{missing},j}}{N}\times100%
-$$
+### Missing value cô lập
 
-Trong đó $N$ là tổng số quan sát.
-
-Nếu missing values xuất hiện do quá trình tái xử lý hoặc chuyển đổi dữ liệu, phương pháp xử lý phải phụ thuộc vào bản chất của biến. Đối với chuỗi thời gian, không nên mặc định sử dụng mean imputation cho mọi biến vì cách này có thể phá vỡ cấu trúc temporal dependency.
-
-Đặc biệt, đối với target:
+Một hoặc một số observation bị thiếu giữa các observation hợp lệ:
 
 $$
-y_t=\mathrm{Appliances}_t
+x_{t-1}\neq\mathrm{NaN},\quad x_t=\mathrm{NaN},\quad x_{t+1}\neq\mathrm{NaN}
 $$
 
-một quan sát bị thiếu target không được phép được sử dụng trực tiếp làm nhãn huấn luyện.
+Các khoảng thiếu ngắn có thể được nội suy dựa trên các observation lân cận.
 
-Do đó, missing-value handling trong nghiên cứu được xem là bước **kiểm soát chất lượng dữ liệu**, thay vì áp dụng một phép imputation cố định cho toàn bộ dataset.
+### Missing sequence
+
+Một chuỗi liên tiếp gồm nhiều observation bị thiếu:
+
+$$
+x_t,x_{t+1},\ldots,x_{t+k}=\mathrm{NaN}
+$$
+
+Trường hợp này khó xử lý hơn vì thông tin cục bộ xung quanh khoảng thiếu không còn đầy đủ.
+
+Trong experimental setup của bài báo, **Cubic Spline Interpolation** được sử dụng cho missing values cô lập, trong khi **Expectation Maximization (EM)** được sử dụng cho các chuỗi missing values. Điều này cho phép phân biệt giữa missing ngắn và missing có cấu trúc dài hơn.
 
 ---
 
-## 4. Kiểm tra outlier và noise
+## 4. Outlier Detection
 
-Các biến cảm biến như nhiệt độ, độ ẩm, áp suất và tốc độ gió có thể xuất hiện những giá trị bất thường do lỗi cảm biến hoặc quá trình thu thập dữ liệu.
+Sau khi xác định missing values, bước tiếp theo là phát hiện các observation bất thường.
 
-Việc phát hiện outlier được thực hiện dựa trên các phương pháp đã trình bày ở `03_data_cleaning/02_outlier_detection.md`. Một phương pháp phổ biến là IQR:
+Bài báo sử dụng hai phương pháp chính:
+
+* **Grubbs Test**;
+* **Interquartile Range (IQR)**.
+
+Việc lựa chọn phương pháp phụ thuộc vào đặc điểm phân phối của feature.
+
+### 4.1. Grubbs Test
+
+Grubbs Test được sử dụng để phát hiện outlier trong dữ liệu có phân phối gần normal.
+
+Thống kê kiểm định có dạng:
+
+$$
+G=\frac{\max_i|x_i-\bar{x}|}{s}
+$$
+
+trong đó:
+
+* $\bar{x}$ là sample mean;
+* $s$ là sample standard deviation.
+
+Nếu thống kê kiểm định vượt quá critical value tương ứng với mức ý nghĩa được lựa chọn, observation có thể được xác định là outlier.
+
+Grubbs Test phù hợp khi giả định về phân phối được đáp ứng; do đó không nên áp dụng máy móc cho mọi feature.
+
+---
+
+## 5. Interquartile Range
+
+Đối với các feature không phù hợp với giả định normality, IQR cung cấp một phương pháp robust hơn.
+
+IQR được định nghĩa:
 
 $$
 IQR=Q_3-Q_1
 $$
 
-và một quan sát được xem là outlier theo quy tắc:
+Ngưỡng outlier được xác định:
 
 $$
-x<Q_1-1.5IQR\quad\text{hoặc}\quad x>Q_3+1.5IQR
+L=Q_1-1.5IQR
 $$
 
-Tuy nhiên, trong dữ liệu năng lượng, một giá trị lớn không nhất thiết là lỗi. Mức tiêu thụ cao có thể phản ánh một sự kiện thực tế. Vì vậy, **outlier detection không đồng nghĩa với outlier removal**.
+và:
 
-Trong nghiên cứu này, việc loại bỏ hoặc clipping các giá trị bất thường không được thực hiện một cách tùy tiện. Nếu một quan sát vẫn hợp lệ về mặt vật lý và thời gian, nó được giữ lại để tránh làm thay đổi phân phối thực của dữ liệu.
+$$
+U=Q_3+1.5IQR
+$$
 
-Điều này cũng phù hợp với nguyên tắc đã xác định trong pipeline: **không clipping prediction trước khi tính metrics**.
+Một observation được xem là outlier nếu:
+
+$$
+x_t \lt L\quad\text{or}\quad x_t \gt U
+$$
+
+Trong dữ liệu cảm biến, outlier không nhất thiết là lỗi đo lường. Một observation cực trị có thể phản ánh một sự kiện ô nhiễm thực tế. Vì vậy, detection và treatment phải được phân biệt:
+
+$$
+\mathrm{Detection}\neq\mathrm{Removal}
+$$
+
+Đây là điểm quan trọng khi liên hệ với `03_data_cleaning/02_outlier_detection.md`.
 
 ---
 
-## 5. Chia dữ liệu theo thời gian
+## 6. Outlier Imputation
 
-Do đây là bài toán forecasting, dữ liệu được chia theo thứ tự thời gian thay vì random split.
+Sau khi outlier được xác định, bài báo không đơn giản xóa toàn bộ observation chứa outlier. Thay vào đó, các outlier được xem như những giá trị cần được thay thế để giảm ảnh hưởng của measurement anomalies.
 
-Tập dữ liệu được chia thành ba phần:
+Trong experimental pipeline, **Cubic Spline Interpolation** được sử dụng cho outlier imputation.
 
-$$
-D=D_{\mathrm{train}}\cup D_{\mathrm{val}}\cup D_{\mathrm{test}}
-$$
-
-với tỷ lệ:
+Về nguyên lý, spline xây dựng một hàm liên tục:
 
 $$
-D_{\mathrm{train}}=70%,\quad D_{\mathrm{val}}=15%,\quad D_{\mathrm{test}}=15%
+\hat{x}(t)=S(t)
 $$
 
-Thứ tự thời gian được bảo toàn:
+sao cho giá trị tại các observation hợp lệ được sử dụng để ước lượng giá trị tại vị trí bất thường.
+
+Với một observation bị đánh dấu:
 
 $$
-t_{\mathrm{train}} \lt t_{\mathrm{val}} \lt t_{\mathrm{test}}
+x_t=\mathrm{outlier}
 $$
 
-Không sử dụng shuffle trong quá trình phân chia dữ liệu.
+giá trị sau preprocessing trở thành:
 
-Điều này đảm bảo rằng mô hình chỉ sử dụng thông tin trong quá khứ để dự báo tương lai. Đặc biệt, **Test set được khóa trong quá trình phát triển preprocessing và model**, chỉ được sử dụng cho đánh giá cuối cùng.
+$$
+x_t\leftarrow\hat{x}_t
+$$
 
-Cách chia này liên kết trực tiếp với nguyên tắc experimental design trong `09_empirical_analysis/01_experimental_setup.md` và tránh leakage giữa các giai đoạn của pipeline.
+trong đó (\hat{x}_t) là giá trị được nội suy.
+
+Việc sử dụng interpolation thay vì xóa observation giúp duy trì cấu trúc temporal của dataset.
 
 ---
 
-## 6. Scaling và normalization
+## 7. Missing-value Imputation
 
-Sau khi chronological split được xác định, các biến liên tục được scaling dựa **chỉ trên Train set**.
+Sau khi outlier đã được xử lý, missing values còn lại được impute.
 
-Với Standardization:
+Đối với missing values cô lập, bài báo sử dụng **Cubic Spline Interpolation**:
 
 $$
-x'=\frac{x-\mu_{\mathrm{train}}}{\sigma_{\mathrm{train}}}
+x_t=\mathrm{NaN}\Rightarrow x_t\leftarrow\hat{x}_t
+$$
+
+Trong trường hợp xuất hiện một chuỗi missing dài, **Expectation Maximization (EM)** được sử dụng.
+
+EM thực hiện lặp giữa hai bước:
+
+### Expectation step
+
+Ước lượng các missing observations dựa trên mô hình hiện tại:
+
+$$
+\hat{X}*{\mathrm{miss}}^{(k)}=E[X*{\mathrm{miss}}\mid X_{\mathrm{obs}},\theta^{(k)}]
+$$
+
+### Maximization step
+
+Cập nhật tham số mô hình:
+
+$$
+\theta^{(k+1)}=\arg\max_{\theta}E[\log p(X\mid\theta)\mid X_{\mathrm{obs}},\theta^{(k)}]
+$$
+
+Quá trình lặp cho đến khi hội tụ.
+
+Do đó, bài báo sử dụng hai chiến lược khác nhau tùy theo cấu trúc missing:
+
+$$
+\boxed{\mathrm{Short\ Missing}\rightarrow\mathrm{Spline}}
+$$
+
+$$
+\boxed{\mathrm{Long\ Missing}\rightarrow\mathrm{EM}}
+$$
+
+---
+
+## 8. Feature Selection
+
+Sau data cleaning, bước tiếp theo là lựa chọn các feature phù hợp với mô hình.
+
+Bài báo sử dụng hai phương pháp feature selection:
+
+* **Neighborhood Component Analysis (NCA)**;
+* **Laplacian Scores**.
+
+Hai phương pháp đại diện cho hai góc nhìn khác nhau về feature relevance.
+
+### 8.1. Neighborhood Component Analysis
+
+NCA đánh giá feature dựa trên khả năng hỗ trợ phân biệt các observation lân cận trong feature space.
+
+Mục tiêu có thể khái quát:
+
+$$
+\theta^*=\arg\max_{\theta}\mathcal{L}(\theta)
+$$
+
+trong đó (\theta) biểu diễn trọng số của các feature.
+
+Các feature có trọng số thấp có thể được xem xét loại bỏ.
+
+Điều này liên kết với `06_feature_selection/04_embedded_methods.md` vì feature weighting được thực hiện trong quá trình tối ưu của phương pháp.
+
+### 8.2. Laplacian Scores
+
+Laplacian Score đánh giá mức độ phù hợp của một feature với cấu trúc cục bộ của dữ liệu.
+
+Một feature có Laplacian Score thấp thường được xem là có khả năng bảo toàn tốt cấu trúc lân cận của dữ liệu.
+
+Do đó, các feature được xếp hạng theo score và một số feature có relevance thấp được loại bỏ.
+
+Hai phương pháp được sử dụng để tạo ra các feature subsets khác nhau, từ đó cho phép nghiên cứu đánh giá tác động của feature selection.
+
+---
+
+## 9. Normalization
+
+Sau data cleaning và feature selection, các feature được normalization trước khi đưa vào LSTM.
+
+Đối với Min-Max normalization:
+
+$$
+x'=\frac{x-x_{\min}}{x_{\max}-x_{\min}}
+$$
+
+Giá trị được đưa về khoảng:
+
+$$
+x'\in[0,1]
+$$
+
+Normalization giúp giảm sự khác biệt về scale giữa các feature.
+
+Điều này đặc biệt quan trọng đối với AirQuality vì dataset chứa các biến có miền giá trị khác nhau, chẳng hạn:
+
+* nồng độ CO;
+* nồng độ NOx;
+* nồng độ NO2;
+* nhiệt độ;
+* độ ẩm;
+* sensor responses.
+
+Nếu không normalization, các feature có magnitude lớn có thể ảnh hưởng không cân đối đến quá trình tối ưu của mô hình.
+
+---
+
+## 10. Thứ tự của preprocessing
+
+Thứ tự các bước preprocessing trong experimental pipeline có ý nghĩa quan trọng.
+
+Quy trình được sử dụng có thể biểu diễn:
+
+```text
+AirQuality
+   ↓
+-200 → NaN
+   ↓
+Outlier Detection
+   ↓
+Outlier Imputation
+   ↓
+Missing-value Imputation
+   ↓
+Feature Selection
+   ↓
+Normalization
+   ↓
+LSTM
+```
+
+Thứ tự này phản ánh dependency giữa các bước.
+
+Ví dụ, nếu normalization được thực hiện trước khi xử lý `-200`, giá trị missing marker có thể được xem như một observation thực và ảnh hưởng đến các tham số normalization.
+
+Tương tự, nếu feature selection được thực hiện trước khi xử lý dữ liệu bất thường, các statistical relationships có thể bị outlier làm sai lệch.
+
+Do đó:
+
+$$
+\boxed{\mathrm{Cleaning}\rightarrow\mathrm{Selection}\rightarrow\mathrm{Transformation}}
+$$
+
+là logic chính của pipeline thực nghiệm.
+
+---
+
+## 11. Train-Test Protocol
+
+Bài báo chia dataset thành:
+
+$$
+D=D_{\mathrm{train}}\cup D_{\mathrm{test}}
+$$
+
+với:
+
+$$
+|D_{\mathrm{train}}|=0.9|D|
+$$
+
+và:
+
+$$
+|D_{\mathrm{test}}|=0.1|D|
+$$
+
+Tập Test được giữ lại để đánh giá cuối cùng.
+
+Với các transformation có tham số học từ dữ liệu, nguyên tắc tổng quát của survey yêu cầu:
+
+$$
+\theta=f(D_{\mathrm{train}})
+$$
+
+sau đó:
+
+$$
+D_{\mathrm{test}}'=f(D_{\mathrm{test}};\theta)
+$$
+
+Như vậy, Test không được tham gia vào quá trình fitting preprocessing.
+
+Đây là điểm cần phân biệt giữa **experimental protocol của bài báo** và **nguyên tắc methodological của survey**: tỷ lệ 90/10 được kế thừa từ bài báo, trong khi Train-only fitting là nguyên tắc kiểm soát leakage được áp dụng khi triển khai pipeline.
+
+---
+
+## 12. Preprocessing Configurations
+
+Một đóng góp quan trọng của bài báo là không chỉ xây dựng một preprocessing pipeline duy nhất. Các kỹ thuật được thay đổi trong các experiment để đánh giá tác động của từng nhóm preprocessing.
+
+Có thể biểu diễn một preprocessing configuration:
+
+$$
+C=(M,O,I,F,N)
 $$
 
 trong đó:
 
-$$
-\mu_{\mathrm{train}}=\frac{1}{N_{\mathrm{train}}}\sum_{i=1}^{N_{\mathrm{train}}}x_i
-$$
+* $M$: missing-value handling;
+* $O$: outlier detection;
+* $I$: outlier/missing imputation;
+* $F$: feature selection;
+* $N$: normalization.
 
-và:
-
-$$
-\sigma_{\mathrm{train}}=\sqrt{\frac{1}{N_{\mathrm{train}}}\sum_{i=1}^{N_{\mathrm{train}}}(x_i-\mu_{\mathrm{train}})^2}
-$$
-
-Các tham số $\mu_{\mathrm{train}}$ và $\sigma_{\mathrm{train}}$ chỉ được ước lượng từ Train:
+Một configuration cụ thể có thể là:
 
 $$
-\theta_{\mathrm{scale}}=f(D_{\mathrm{train}})
+C_1=(\mathrm{Spline},\mathrm{IQR},\mathrm{Spline},\mathrm{NCA},\mathrm{MinMax})
 $$
 
-Sau đó:
+Trong khi configuration khác có thể thay đổi phương pháp outlier detection hoặc feature selection.
+
+Cách thiết kế này cho phép đánh giá:
 
 $$
-D_{\mathrm{val}}'=f(D_{\mathrm{val}};\theta_{\mathrm{scale}})
+\Delta\mathrm{Performance}=
+
+\mathrm{Performance}(C_i)-\mathrm{Performance}(C_{\mathrm{baseline}})
 $$
 
-và:
-
-$$
-D_{\mathrm{test}}'=f(D_{\mathrm{test}};\theta_{\mathrm{scale}})
-$$
-
-Validation và Test không được phép tham gia vào quá trình fitting scaler.
-
-Đối với các đặc trưng chu kỳ như:
-
-$$
-\mathrm{hour}_{\sin}=\sin\left(2\pi\frac{\mathrm{hour}}{24}\right)
-$$
-
-và:
-
-$$
-\mathrm{hour}_{\cos}=\cos\left(2\pi\frac{\mathrm{hour}}{24}\right)
-$$
-
-các biến này được giữ nguyên thay vì áp dụng StandardScaler lần thứ hai. Tương tự, các biến binary được giữ ở miền giá trị tự nhiên.
+và xác định preprocessing nào tạo ra ảnh hưởng đáng kể đến mô hình.
 
 ---
 
-## 7. Target transformation
+## 13. Kết nối với các chương preprocessing
 
-Target được định nghĩa:
+Case study AirQuality trực tiếp hiện thực hóa các nhóm phương pháp trong survey:
 
-$$
-y_t=\mathrm{Appliances}_t
-$$
+| Survey                                               | AirQuality implementation                              |
+| ---------------------------------------------------- | ------------------------------------------------------ |
+| `03_data_cleaning/01_missing_data.md`                | `-200 → NaN`, Spline, EM                               |
+| `03_data_cleaning/02_outlier_detection.md`           | Grubbs, IQR                                            |
+| `03_data_cleaning/03_noise_reduction.md`             | Xử lý các biến động bất thường thông qua preprocessing |
+| `04_data_transformation/01_scaling_normalization.md` | Min-Max normalization                                  |
+| `06_feature_selection/01_feature_selection.md`       | Feature subset construction                            |
+| `06_feature_selection/04_embedded_methods.md`        | NCA-based feature weighting                            |
+| `09_empirical_analysis/03_preprocessing_methods.md`  | Experimental comparison                                |
+| `09_empirical_analysis/04_evaluation_metrics.md`     | RMSE, MAE, MAPE                                        |
 
-và được đo bằng Wh.
-
-Nghiên cứu xem xét hai cấu hình target:
-
-* **YS0:** giữ nguyên target ở đơn vị Wh;
-* **YS1:** StandardScaler target bằng tham số học từ Train.
-
-Nếu sử dụng YS1:
-
-$$
-y_t'=\frac{y_t-\mu_y^{\mathrm{train}}}{\sigma_y^{\mathrm{train}}}
-$$
-
-Sau khi mô hình dự báo, kết quả phải được inverse transform về đơn vị Wh trước khi tính các metrics cuối cùng:
-
-$$
-\hat{y}_t=\hat{y}_t'\sigma_y^{\mathrm{train}}+\mu_y^{\mathrm{train}}
-$$
-
-Điều này đảm bảo rằng MAE và RMSE có thể được diễn giải trực tiếp theo đơn vị năng lượng.
+Do đó, Chương 13 không giới thiệu một taxonomy mới mà sử dụng AirQuality để **instantiate taxonomy đã xây dựng ở các chương trước**.
 
 ---
 
-## 8. Feature engineering sau preprocessing
+## 14. AI-ready Representation
 
-Sau khi dữ liệu đã được kiểm soát về chất lượng và transformation, các đặc trưng mới được xây dựng theo nội dung của `05_feature_engineering/`.
-
-Các đặc trưng thời gian được tạo từ timestamp, chẳng hạn:
+Sau preprocessing, mỗi observation được biểu diễn bằng một vector feature đã được làm sạch, lựa chọn và normalization:
 
 $$
-\mathrm{hour}*{\sin}=\sin\left(2\pi\frac{h}{24}\right),\quad\mathrm{hour}*{\cos}=\cos\left(2\pi\frac{h}{24}\right)
-$$
-
-và:
-
-$$
-\mathrm{dow}*{\sin}=\sin\left(2\pi\frac{d}{7}\right),\quad\mathrm{dow}*{\cos}=\cos\left(2\pi\frac{d}{7}\right)
-$$
-
-Trong đó $h$ là giờ trong ngày và $d$ là ngày trong tuần.
-
-Đối với các đặc trưng lịch sử, lag và rolling chỉ sử dụng thông tin quá khứ. Ví dụ:
-
-$$
-\mathrm{lag}*k(t)=y*{t-k}
-$$
-
-và rolling mean:
-
-$$
-\mathrm{rollmean}*w(t)=\frac{1}{w}\sum*{i=1}^{w}y_{t-i}
-$$
-
-Không sử dụng $y_t$ hoặc bất kỳ thông tin nào thuộc tương lai để tạo feature cho thời điểm dự báo.
-
----
-
-## 9. Feature groups trong nghiên cứu
-
-Để đảm bảo khả năng kiểm soát thực nghiệm, các đặc trưng được tổ chức thành các nhóm:
-
-| Group | Nội dung                               |
-| ----- | -------------------------------------- |
-| G0    | Metadata và thông tin thời gian cơ bản |
-| G1    | Target `Appliances`                    |
-| G2    | Raw exogenous features                 |
-| G3    | Random control features `rv1`, `rv2`   |
-| G4    | Engineered temporal features           |
-
-Cách tổ chức này liên kết trực tiếp với chương `06_feature_selection/`, trong đó feature selection không chỉ được xem là loại bỏ các cột dư thừa mà còn là quá trình xác định **nhóm thông tin nào thực sự được phép đưa vào mô hình**.
-
-Hai biến `rv1` và `rv2` đặc biệt hữu ích như các **control features**. Chúng được giữ trong một số cấu hình nhằm kiểm tra liệu pipeline hoặc mô hình có vô tình khai thác các thuộc tính không mang thông tin dự báo hay không.
-
----
-
-## 10. Xây dựng sliding windows
-
-Sau khi preprocessing và feature engineering hoàn tất, dữ liệu được chuyển sang dạng sequence-to-one.
-
-Với lookback $L$, input window được định nghĩa:
-
-$$
-\mathbf{X}*{t-L+1:t}=\left[\mathbf{x}*{t-L+1},\mathbf{x}*{t-L+2},\ldots,\mathbf{x}*{t}\right]
+\mathbf{x}_t\in\mathbb{R}^{F}
 $$
 
 Target tương ứng là:
 
 $$
-y_{t+1}=\mathrm{Appliances}_{t+1}
+y_t=\mathrm{CO}_t
 $$
 
-Do dữ liệu có chu kỳ 10 phút và $H=1$, mỗi mẫu thực hiện dự báo mức tiêu thụ tại thời điểm tiếp theo.
-
-Ba lookback được sử dụng:
+Do đó, dữ liệu đầu vào cho bài toán regression có dạng:
 
 $$
-L\in{36,72,144}
+\mathcal{D}=\left{\left(\mathbf{x}*t,y_t\right)\right}*{t=1}^{N}
 $$
 
-tương ứng với 6 giờ, 12 giờ và 24 giờ dữ liệu lịch sử.
+Trong trường hợp representation được đưa vào LSTM theo chuỗi thời gian, một sequence có thể được biểu diễn:
 
-Một window chỉ hợp lệ khi:
+$$
+\mathbf{X}*{t-L+1:t}=\left[\mathbf{x}*{t-L+1},\mathbf{x}_{t-L+2},\ldots,\mathbf{x}_t\right]
+$$
 
-1. Có đủ $L$ quan sát lịch sử.
-2. Timestamp liên tục với khoảng cách 10 phút.
-3. Input và target thuộc cùng một continuity segment.
-4. Không tồn tại timestamp trùng lặp.
-5. Target tồn tại và hợp lệ.
+và target tương ứng:
 
-Do đó, một window không hợp lệ sẽ bị loại khỏi tập mẫu thay vì tự động điền dữ liệu thiếu thời gian.
+$$
+y_t=\mathrm{CO}_t
+$$
+
+Khác với pipeline forecasting của **UCI Appliances** mà chúng ta đã viết trước đó, **không nên mặc định dùng $y_{t+1}$ hoặc sequence-to-one horizon $H=1$ ở đây nếu không có trong experimental protocol của bài báo**. AirQuality trong bài báo được sử dụng để đánh giá preprocessing cho bài toán dự đoán CO với LSTM, vì vậy ký hiệu phải bám theo formulation thực tế của bài báo.
 
 ---
 
-## 11. Data leakage control
+## 15. Tóm tắt
 
-Data leakage là một trong những rủi ro quan trọng nhất của preprocessing cho forecasting.
-
-Pipeline áp dụng nguyên tắc:
+Preprocessing của AirQuality tập trung vào năm thành phần chính:
 
 $$
-\boxed{\mathrm{Fit\ preprocessing\ parameters\ on\ Train\ only}}
+\boxed{\mathrm{Missing}\rightarrow\mathrm{Outlier}\rightarrow\mathrm{Imputation}\rightarrow\mathrm{Feature\ Selection}\rightarrow\mathrm{Normalization}}
 $$
 
-Điều này áp dụng cho:
+Trong đó:
 
-* scaling;
-* normalization có tham số;
-* target transformation;
-* các thống kê được sử dụng để tạo feature;
-* các bước feature selection có học từ dữ liệu.
+* `-200` được chuyển thành missing values;
+* Grubbs Test và IQR được sử dụng cho outlier detection;
+* Cubic Spline và EM được sử dụng cho imputation;
+* NCA và Laplacian Scores được sử dụng cho feature selection;
+* normalization được thực hiện trước khi đưa dữ liệu vào LSTM.
 
-Đặc biệt, không được tính mean, standard deviation, correlation hoặc feature importance trên toàn bộ dataset trước khi chia Train/Validation/Test.
+Pipeline này thể hiện rõ vai trò của preprocessing trong nghiên cứu: **không chỉ sửa dữ liệu mà còn thay đổi representation của dữ liệu trước khi mô hình học máy được huấn luyện**.
 
-Quy trình đúng là:
-
-```text
-Raw Data
-   ↓
-Temporal Validation
-   ↓
-Chronological Split
-   ↓
-Fit preprocessing on Train
-   ↓
-Transform Validation/Test
-   ↓
-Feature Engineering
-   ↓
-Window Construction
-   ↓
-Model
-```
-
-Cách tiếp cận này đảm bảo rằng thông tin từ Validation và Test không ảnh hưởng đến quá trình học preprocessing.
-
----
-
-## 12. Kết nối với pipeline nghiên cứu
-
-Preprocessing của UCI Appliances được xây dựng như một trường hợp cụ thể của pipeline tổng quát được trình bày trong `11_pipeline/`.
-
-Có thể ánh xạ như sau:
-
-| Pipeline tổng quát  | UCI Appliances                            |
-| ------------------- | ----------------------------------------- |
-| Data Cleaning       | Timestamp, duplicate, missing, continuity |
-| Transformation      | StandardScaler cho continuous features    |
-| Feature Engineering | Temporal, lag, rolling features           |
-| Feature Selection   | Feature groups và control variables       |
-| Representation      | Sliding windows                           |
-| AI-ready Data       | Tensor dạng `[N, L, F]`                   |
-
-Sau bước preprocessing, mỗi mẫu dữ liệu có dạng:
+Với AirQuality, mối quan hệ giữa preprocessing và modeling có thể tóm tắt:
 
 $$
-\mathbf{X}\in\mathbb{R}^{L\times F}
+\boxed{\mathrm{Raw\ AirQuality}\rightarrow\mathrm{Cleaned\ Data}\rightarrow\mathrm{Selected\ Features}\rightarrow\mathrm{Normalized\ Data}\rightarrow\mathrm{LSTM}}
 $$
 
-trong đó $L$ là lookback và $F$ là số lượng đặc trưng.
-
-Tập dữ liệu cuối cùng được sử dụng cho mô hình có dạng:
-
-$$
-\mathcal{D}=\left\{\left(\mathbf{X}_{t-L+1:t},y_{t+1}\right)\right\}_{t=1}^{N}
-$$
-
-Đây là biểu diễn cuối cùng được chuyển sang bước modeling và evaluation trong `09_empirical_analysis/`.
-
----
-
-## 13. Tóm tắt
-
-Preprocessing đối với UCI Appliances không được thực hiện như một chuỗi các phép biến đổi độc lập mà được xây dựng thành một pipeline có thứ tự và kiểm soát leakage. Trọng tâm của pipeline là **bảo toàn temporal structure**, **fit transformation trên Train בלבד**, **phân biệt các loại feature**, và **chuyển dữ liệu bảng thành sequence phù hợp với forecasting**.
-
-Kết quả của bước này là dữ liệu đã được kiểm soát chất lượng, transformation nhất quán và biểu diễn dưới dạng:
-
-$$
-\mathbf{X}*{t-L+1:t}\rightarrow y*{t+1}
-$$
-
-với $L\in{36,72,144}$. Đây là đầu vào trực tiếp cho bước **feature engineering và modeling thực nghiệm**, đồng thời tạo cầu nối giữa survey lý thuyết ở các chương trước và case study UCI Appliances ở chương này.
+Đây là cơ sở để mục `13_air_quality/03_feature_engineering.md` phân tích cách các đặc trưng thời gian và đặc trưng cảm biến được biểu diễn, đồng thời kết nối trực tiếp với taxonomy về feature engineering ở Chương 5.

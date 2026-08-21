@@ -1,416 +1,556 @@
 # 04. Connection to Survey
 
-## 1. Vai trò của case study trong survey
+## 1. Vai trò của AirQuality trong survey
 
-Các mục `13_uci_appliances/01_dataset.md`, `02_preprocessing.md` và `03_feature_engineering.md` đã chuyển bộ dữ liệu **UCI Appliances Energy Prediction** từ dạng dữ liệu chuỗi thời gian thô sang biểu diễn phù hợp cho bài toán dự báo. Mục này tổng hợp mối liên hệ giữa case study và taxonomy preprocessing được xây dựng trong toàn bộ survey.
+Các mục trước đã mô tả AirQuality dataset, quy trình preprocessing và cách xây dựng feature representation. Mục này đặt case study vào **toàn bộ taxonomy preprocessing** được xây dựng trong survey.
 
-Mục tiêu của phần này không giới thiệu thêm một phương pháp preprocessing mới, mà là **kiểm chứng cách các nguyên tắc lý thuyết trong survey được áp dụng trên một dataset thực tế**.
+AirQuality không được sử dụng để giới thiệu một preprocessing method mới. Thay vào đó, dataset đóng vai trò **empirical case study** để kiểm chứng cách các nhóm phương pháp trong survey được áp dụng trên một dữ liệu cảm biến chuỗi thời gian thực tế.
 
-Có thể khái quát mối quan hệ:
+Mối quan hệ tổng quát được biểu diễn:
 
 $$
-\mathrm{Survey\ Methods}\rightarrow\mathrm{UCI\ Case\ Study}\rightarrow\mathrm{AI\text{-}ready\ Data}
+\mathrm{Preprocessing\ Taxonomy}\rightarrow\mathrm{AirQuality\ Case\ Study}\rightarrow\mathrm{Empirical\ Evaluation}
 $$
 
-Trong đó, survey cung cấp cơ sở phương pháp luận, còn UCI Appliances đóng vai trò trường hợp thực nghiệm để đánh giá tính phù hợp của các phương pháp đó.
+Do đó, Chương 13 tạo cầu nối giữa phần phương pháp luận ở các Chương 3–8 và phần đánh giá thực nghiệm ở Chương 9.
 
 ---
 
-## 2. Mapping giữa survey và UCI Appliances
+## 2. Mapping giữa Survey và AirQuality
 
-Pipeline preprocessing được xây dựng trong các chương trước có thể ánh xạ trực tiếp sang case study:
+Các thành phần của AirQuality case study có thể ánh xạ với taxonomy của survey như sau:
 
-| Survey                   | UCI Appliances                            | Vai trò                                |
-| ------------------------ | ----------------------------------------- | -------------------------------------- |
-| `03_data_cleaning`       | Timestamp, missing, duplicate, continuity | Kiểm soát chất lượng dữ liệu           |
-| `04_data_transformation` | Scaling, transformation, stationarity     | Đưa feature về representation phù hợp  |
-| `05_feature_engineering` | Temporal, lag, rolling                    | Khai thác temporal dependency          |
-| `06_feature_selection`   | Feature groups, control features          | Kiểm soát dimensionality và redundancy |
-| `07_sensor_fusion`       | Indoor + outdoor measurements             | Kết hợp nhiều nguồn cảm biến           |
-| `08_data_compression`    | Không phải preprocessing chính            | Phân tích khả năng giảm dữ liệu        |
-| `09_empirical_analysis`  | Experimental evaluation                   | Đánh giá ảnh hưởng của preprocessing   |
-| `10_discussion`          | Comparison và trade-offs                  | Phân tích lựa chọn phương pháp         |
-| `11_pipeline`            | UCI preprocessing pipeline                | Chuyển dữ liệu thành AI-ready data     |
+| Survey                   | AirQuality                          | Vai trò                                     |
+| ------------------------ | ----------------------------------- | ------------------------------------------- |
+| `03_data_cleaning`       | Missing values, outliers            | Kiểm soát chất lượng dữ liệu                |
+| `04_data_transformation` | Normalization                       | Chuẩn hóa feature space                     |
+| `05_feature_engineering` | Temporal và sequence representation | Khai thác cấu trúc thời gian                |
+| `06_feature_selection`   | NCA, Laplacian Scores               | Giảm feature redundancy                     |
+| `07_sensor_fusion`       | Sensor + pollutant + environment    | Kết hợp nhiều nguồn measurement             |
+| `08_data_compression`    | Không phải thành phần chính         | Phân biệt compression với feature reduction |
+| `09_empirical_analysis`  | Preprocessing experiments           | Định lượng tác động của preprocessing       |
+| `10_discussion`          | Comparison và trade-offs            | Phân tích ưu nhược điểm                     |
+| `11_pipeline`            | End-to-end preprocessing            | Chuyển raw data thành model-ready data      |
 
-Mapping này cho thấy case study không phải một pipeline tách biệt mà là **một instantiation cụ thể của framework preprocessing được trình bày trong survey**.
+Mapping này cho thấy AirQuality có khả năng bao phủ nhiều nhóm preprocessing khác nhau trong cùng một dataset.
 
 ---
 
-## 3. Data Cleaning
+## 3. Connection với Data Cleaning
 
-Trong survey, data cleaning được chia thành các vấn đề như missing data, outlier và noise.
+Trong `03_data_cleaning`, survey xem **missing data** và **outlier** là hai vấn đề trung tâm của data quality.
 
-Đối với UCI Appliances, dữ liệu gốc được công bố không chứa missing values trong các thuộc tính chính. Tuy nhiên, bước kiểm tra missing vẫn được giữ trong pipeline để đảm bảo tính toàn vẹn của dữ liệu.
+AirQuality thể hiện rõ cả hai vấn đề này.
 
-Đối với timestamp, preprocessing phải kiểm tra:
-
-$$
-\Delta t_i=t_{i+1}-t_i
-$$
-
-và kỳ vọng:
+Giá trị `-200` được sử dụng làm missing-value marker:
 
 $$
-\Delta t_i=10\text{ minutes}
+x_t=-200\Rightarrow x_t=\mathrm{NaN}
 $$
 
-Điều này mở rộng khái niệm data cleaning từ việc kiểm tra giá trị của từng cell sang kiểm tra **tính toàn vẹn của cấu trúc temporal**.
+Sau đó, outliers được phát hiện bằng các phương pháp như Grubbs Test hoặc IQR.
 
-Đối với outlier, nguyên tắc trong survey rằng outlier không đồng nghĩa với lỗi được giữ nguyên. Một giá trị tiêu thụ cao có thể là một sự kiện thực tế và không nên bị loại bỏ chỉ dựa trên ngưỡng thống kê.
+Do đó, case study minh họa pipeline:
+
+$$
+\mathrm{Raw\ Value}\rightarrow\mathrm{Missing/Outlier\ Detection}\rightarrow\mathrm{Treatment}
+$$
+
+Một nguyên tắc quan trọng được thể hiện ở đây là:
+
+$$
+\boxed{\mathrm{Detection}\neq\mathrm{Treatment}}
+$$
+
+Việc phát hiện một observation là outlier không đồng nghĩa với việc phải xóa observation đó. Trong AirQuality, interpolation được sử dụng để thay thế các giá trị bất thường và duy trì temporal structure.
+
+---
+
+## 4. Connection với Missing Data
+
+AirQuality đặc biệt phù hợp để minh họa nội dung `03_data_cleaning/01_missing_data.md`.
+
+Có thể phân biệt:
+
+$$
+\mathrm{Missing\ Value}
+$$
+
+và:
+
+$$
+\mathrm{Missing\ Sequence}
+$$
+
+Các trường hợp missing khác nhau yêu cầu các chiến lược khác nhau.
+
+Đối với missing values cô lập:
+
+$$
+x_t=\mathrm{NaN}\Rightarrow x_t\leftarrow\hat{x}_t
+$$
+
+với $\hat{x}_t$ được ước lượng bằng interpolation.
+
+Đối với missing sequences dài, bài báo sử dụng Expectation Maximization.
+
+Điều này minh họa nguyên tắc:
+
+$$
+\boxed{\mathrm{Method\ Selection}\propto\mathrm{Missing\ Pattern}}
+$$
+
+Nói cách khác, không nên lựa chọn imputation method chỉ dựa trên tên thuật toán mà phải xem xét **cấu trúc của missingness**.
+
+---
+
+## 5. Connection với Outlier Detection
+
+Trong `03_data_cleaning/02_outlier_detection.md`, survey phân biệt các nhóm phương pháp statistical, distance-based và density-based.
+
+AirQuality sử dụng các phương pháp thống kê:
+
+$$
+\mathrm{Grubbs\ Test}
+$$
+
+và:
+
+$$
+\mathrm{IQR}
+$$
+
+Điều này tạo ra một trường hợp thực tế để minh họa rằng lựa chọn outlier detector phụ thuộc vào đặc điểm dữ liệu.
+
+Grubbs Test phù hợp hơn với các trường hợp có giả định phân phối phù hợp, trong khi IQR ít phụ thuộc hơn vào assumption về normality.
 
 Do đó:
 
 $$
-\mathrm{Outlier}\neq\mathrm{Error}
+\boxed{\mathrm{Outlier\ Method}\neq\mathrm{Universal}}
 $$
 
-là nguyên tắc quan trọng được kiểm chứng trong case study.
+Một phương pháp tốt trên feature này không nhất thiết là phương pháp tốt nhất trên feature khác.
 
 ---
 
-## 4. Data Transformation
+## 6. Connection với Data Transformation
 
-Chương `04_data_transformation` trình bày scaling, normalization, transformation, stationarity và decomposition.
+Chương `04_data_transformation` trình bày scaling và normalization như các phương pháp thay đổi representation nhưng không nhất thiết thay đổi thứ tự tương đối của observations.
 
-Trong UCI Appliances, sự khác biệt về đơn vị giữa nhiệt độ, độ ẩm, áp suất, tốc độ gió và năng lượng khiến scaling trở thành bước cần thiết đối với các mô hình nhạy với scale.
+Trong AirQuality, normalization được sử dụng để giảm ảnh hưởng của sự khác biệt về magnitude giữa các feature.
 
-Standardization được thực hiện theo:
-
-$$
-x'=\frac{x-\mu_{\mathrm{train}}}{\sigma_{\mathrm{train}}}
-$$
-
-với:
+Ví dụ Min-Max transformation:
 
 $$
-\mu_{\mathrm{train}},\sigma_{\mathrm{train}}=f(D_{\mathrm{train}})
+x'=\frac{x-x_{\min}}{x_{\max}-x_{\min}}
 $$
 
-Điểm quan trọng không chỉ là sử dụng StandardScaler mà là **chỉ fitting scaler trên Train**.
-
-Do đó, case study minh họa nguyên tắc:
+Khi đó:
 
 $$
-\boxed{\mathrm{Transformation}\rightarrow\mathrm{Fit\ on\ Train}\rightarrow\mathrm{Apply\ to\ Val/Test}}
+x'\in[0,1]
 $$
 
-Đối với các temporal features đã được mã hóa bằng sine/cosine, việc scaling tiếp tục không mang lại ý nghĩa cần thiết vì các feature này đã nằm trong miền:
+Điều này đặc biệt quan trọng khi các feature có đơn vị và scale khác nhau.
+
+AirQuality vì vậy minh họa mối quan hệ:
 
 $$
-[-1,1]
+\mathrm{Heterogeneous\ Scale}\rightarrow\mathrm{Normalization}\rightarrow\mathrm{Stable\ Model\ Input}
 $$
 
-Do đó, transformation phải phụ thuộc vào **loại representation**, thay vì áp dụng cùng một phép biến đổi cho toàn bộ feature space.
+Tuy nhiên, normalization không tự động làm dữ liệu "tốt hơn". Nó chỉ phù hợp khi scale của feature tạo ra vấn đề đối với downstream model.
 
 ---
 
-## 5. Stationarity và temporal structure
+## 7. Connection với Feature Engineering
 
-Trong survey, stationarity được trình bày như một vấn đề quan trọng đối với time-series preprocessing.
+Chương `05_feature_engineering` phân biệt:
 
-UCI Appliances có các đặc điểm temporal như:
+* temporal features;
+* lag features;
+* rolling features;
+* feature representation.
 
-* chu kỳ trong ngày;
-* chu kỳ theo tuần;
-* biến động của điều kiện môi trường;
-* thay đổi mức tiêu thụ theo thời gian.
-
-Do đó, thay vì giả định dữ liệu hoàn toàn stationary, case study tập trung vào việc **biểu diễn temporal dependency một cách trực tiếp** thông qua temporal, lag và rolling features.
-
-Có thể biểu diễn quá trình:
+AirQuality cho thấy temporal structure có thể được khai thác trực tiếp thông qua sequence representation:
 
 $$
-\mathrm{Timestamp}\rightarrow\mathrm{Temporal\ Representation}
+\mathbf{X}*{t-L+1:t}=\left[\mathbf{x}*{t-L+1},\mathbf{x}_{t-L+2},\ldots,\mathbf{x}_t\right]
+$$
+
+Trong đó:
+
+$$
+\mathbf{x}_t\in\mathbb{R}^{F}
 $$
 
 và:
-
-$$
-\mathrm{Historical\ Observations}\rightarrow\mathrm{Lag/Rolling\ Representation}
-$$
-
-Cách tiếp cận này không loại bỏ temporal structure mà biến nó thành thông tin có thể khai thác bởi mô hình.
-
----
-
-## 6. Feature Engineering
-
-Chương `05_feature_engineering` cung cấp cơ sở trực tiếp cho case study.
-
-Temporal features chuyển timestamp thành các biến chu kỳ:
-
-$$
-\mathrm{hour}\rightarrow(\mathrm{hour}*{\sin},\mathrm{hour}*{\cos})
-$$
-
-và:
-
-$$
-\mathrm{dow}\rightarrow(\mathrm{dow}*{\sin},\mathrm{dow}*{\cos})
-$$
-
-Lag features biểu diễn dependency lịch sử:
-
-$$
-\mathrm{lag}*k(t)=y*{t-k}
-$$
-
-Rolling features tổng hợp trạng thái quá khứ:
-
-$$
-\mathrm{rollmean}*w(t)=\frac{1}{w}\sum*{i=1}^{w}y_{t-i}
-$$
-
-Ba nhóm này minh họa ba cách khác nhau để đưa temporal information vào feature space:
-
-```text
-Timestamp
-   │
-   ├── Temporal Features
-   │
-Historical Values
-   │
-   ├── Lag Features
-   │
-   └── Rolling Features
-```
-
-Do đó, UCI Appliances là một trường hợp phù hợp để minh họa rằng feature engineering cho time series không đơn giản là tạo thêm cột, mà là **thiết kế representation dựa trên cấu trúc thời gian của bài toán**.
-
----
-
-## 7. Feature Selection
-
-Feature engineering có thể làm tăng số lượng đặc trưng:
-
-$$
-F_{\mathrm{engineered}} \gt F_{\mathrm{raw}}
-$$
-
-Khi đó, feature selection trở thành bước kiểm soát dimensionality và redundancy.
-
-Trong case study, các feature được tổ chức theo nhóm:
-
-$$
-G={G_0,G_1,G_2,G_3,G_4}
-$$
-
-trong đó các nhóm đại diện cho metadata, target, raw exogenous features, random controls và engineered temporal features.
-
-Cách tổ chức này cho phép thực hiện các thí nghiệm so sánh giữa các feature configurations thay vì chỉ sử dụng một feature set duy nhất.
-
-Đặc biệt, `rv1` và `rv2` đóng vai trò control variables. Nếu mô hình khai thác mạnh các biến này, đó có thể là dấu hiệu rằng mô hình đang tận dụng các pattern ngẫu nhiên hoặc noise.
-
-Do đó, feature selection trong case study không chỉ nhằm giảm số chiều mà còn phục vụ **diagnostic analysis**.
-
----
-
-## 8. Sensor Fusion
-
-UCI Appliances chứa nhiều nguồn dữ liệu:
-
-$$
-\mathrm{Indoor}+\mathrm{Outdoor}+\mathrm{Energy}
-$$
-
-Các phép đo nhiệt độ và độ ẩm trong nhiều khu vực được kết hợp với thông tin thời tiết bên ngoài và mức tiêu thụ năng lượng.
-
-Điều này liên kết trực tiếp với `07_sensor_fusion`.
-
-Trong trường hợp này, fusion chủ yếu xảy ra ở **feature level**. Các nguồn cảm biến được căn chỉnh theo timestamp và sau đó được biểu diễn trong cùng feature vector:
-
-$$
-\mathbf{x}_t=\left[\mathbf{x}_t^{\mathrm{indoor}},\mathbf{x}_t^{\mathrm{outdoor}},\mathbf{x}_t^{\mathrm{energy}}\right]
-$$
-
-Do đó, case study minh họa rằng sensor fusion không chỉ là kết hợp nhiều sensor mà còn yêu cầu **temporal alignment** trước khi các nguồn dữ liệu được đưa vào cùng representation.
-
----
-
-## 9. Data Compression
-
-Chương `08_data_compression` tập trung vào giảm kích thước dữ liệu thông qua lossless và lossy compression.
-
-Trong UCI Appliances, compression không phải là thành phần preprocessing bắt buộc của pipeline forecasting. Tuy nhiên, case study cho thấy một vấn đề liên quan: feature engineering có thể làm tăng kích thước representation.
-
-Nếu số lượng feature ban đầu là $F_0$, sau feature engineering có thể:
-
-$$
-F_1 \gt F_0
-$$
-
-và sau feature selection:
-
-$$
-F_2\leq F_1
-$$
-
-Do đó, dimensionality reduction trong `06_feature_selection/05_dimensionality_reduction.md` có thể được xem như một hướng giảm representation ở cấp feature, trong khi compression tập trung vào giảm chi phí lưu trữ hoặc truyền tải dữ liệu.
-
-Hai mục tiêu này cần được phân biệt:
-
-$$
-\mathrm{Dimensionality\ Reduction}\neq\mathrm{Data\ Compression}
-$$
-
----
-
-## 10. AI-ready Representation
-
-Chương `11_pipeline` định nghĩa AI-ready data là dữ liệu đã trải qua các bước cần thiết để có thể đưa trực tiếp vào mô hình.
-
-Đối với UCI Appliances, representation cuối cùng có dạng:
-
-$$
-\mathbf{X}_{t-L+1:t}=\left[\mathbf{x}_{t-L+1},\mathbf{x}_{t-L+2},\ldots,\mathbf{x}_t\right]
-$$
-
-với:
 
 $$
 \mathbf{X}_{t-L+1:t}\in\mathbb{R}^{L\times F}
 $$
 
-và target:
+LSTM sử dụng representation này để học dependency giữa các observations.
+
+Do đó, case study cho thấy feature engineering trong time series không nhất thiết phải tạo thêm hàng loạt feature. Nó có thể là quá trình **chuyển đổi dữ liệu từ observation-level sang sequence-level representation**.
+
+---
+
+## 8. Connection với Feature Selection
+
+Feature selection là một thành phần quan trọng trong experimental pipeline của bài báo.
+
+Hai phương pháp được sử dụng:
 
 $$
-y_{t+1}=\mathrm{Appliances}_{t+1}
+\mathrm{NCA}
 $$
 
-Toàn bộ dataset được biểu diễn:
+và:
 
 $$
-\mathcal{D}=\left\{\left(\mathbf{X}_{t-L+1:t},y_{t+1}\right)\right\}_{t=L}^{N-1}
+\mathrm{Laplacian\ Score}
+$$
+
+Điều này liên kết trực tiếp với `06_feature_selection`.
+
+Nếu feature space ban đầu có (F) features:
+
+$$
+\mathbf{x}_t\in\mathbb{R}^{F}
+$$
+
+sau selection:
+
+$$
+\mathbf{x}_t^{*}\in\mathbb{R}^{F^{*}}
 $$
 
 với:
 
 $$
-L\in{36,72,144}
+F^{*}\leq F
 $$
 
-Do đó, preprocessing đã chuyển dữ liệu từ:
+Feature selection do đó thực hiện hai chức năng:
+
+1. loại bỏ feature ít hữu ích;
+2. giảm complexity của representation.
+
+Tuy nhiên:
 
 $$
-\mathrm{Raw\ Tabular\ Time\ Series}
+F^{*} \lt F
 $$
 
-sang:
+không đồng nghĩa với:
 
 $$
-\mathrm{AI\text{-}ready\ Sequential\ Representation}
+\mathrm{Performance}(F^{*}) \gt \mathrm{Performance}(F)
 $$
 
-Đây chính là mục tiêu cuối cùng của pipeline được xây dựng trong survey.
+Đây chính là lý do feature selection cần được đánh giá empirically thay vì giả định rằng giảm dimensionality luôn có lợi.
 
 ---
 
-## 11. Empirical Analysis
+## 9. Connection với Sensor Fusion
 
-Case study UCI Appliances cũng tạo nền tảng cho `09_empirical_analysis`.
-
-Các phương pháp preprocessing không được đánh giá chỉ dựa trên lý thuyết mà cần được kiểm chứng thông qua thực nghiệm.
-
-Một cấu hình preprocessing có thể được biểu diễn:
+AirQuality chứa nhiều nguồn information:
 
 $$
-C=(S,F,T,W)
+\mathrm{Sensor}+\mathrm{Pollutant}+\mathrm{Environment}
+$$
+
+Có thể biểu diễn feature vector:
+
+$$
+\mathbf{x}_t=\left[\mathbf{s}_t,\mathbf{p}_t,\mathbf{e}_t\right]
 $$
 
 trong đó:
 
-* $S$: scaling configuration;
-* $F$: feature configuration;
-* $T$: temporal feature configuration;
-* $W$: window configuration.
+* $\mathbf{s}_t$: sensor responses;
+* $\mathbf{p}_t$: pollutant measurements;
+* $\mathbf{e}_t$: environmental measurements.
 
-Với mỗi cấu hình $C$, mô hình được huấn luyện trên cùng chronological split và đánh giá bằng cùng metric protocol.
+Đây là một ví dụ của **feature-level fusion**.
 
-Điều này cho phép nghiên cứu trả lời câu hỏi:
+Các measurements cần được căn chỉnh theo cùng temporal index:
 
 $$
-\mathrm{Does\ preprocessing\ configuration\ affect\ forecasting\ performance?}
+t_{\mathrm{sensor}}=t_{\mathrm{pollutant}}=t_{\mathrm{environment}}
 $$
 
-Thay vì chỉ kết luận rằng một phương pháp preprocessing "tốt", nghiên cứu có thể đánh giá **khi nào và trong điều kiện nào phương pháp đó có lợi**.
+Nếu không, feature vector có thể chứa information của các thời điểm khác nhau.
+
+Do đó, AirQuality liên kết `07_sensor_fusion` với `07_sensor_fusion/03_temporal_alignment.md`.
 
 ---
 
-## 12. Trade-offs
+## 10. Connection với Data Compression
 
-Case study cũng minh họa các trade-off được trình bày trong `10_discussion/02_tradeoffs.md`.
+`08_data_compression` tập trung vào việc giảm chi phí lưu trữ hoặc truyền tải dữ liệu.
 
-### Information vs dimensionality
+Trong AirQuality case study, compression không phải là thành phần chính của experimental preprocessing pipeline.
 
-Tăng số lượng lag và rolling features có thể cung cấp nhiều temporal information hơn:
-
-$$
-F\uparrow\Rightarrow\mathrm{Information}\uparrow
-$$
-
-nhưng đồng thời:
+Điểm quan trọng là phân biệt:
 
 $$
-F\uparrow\Rightarrow\mathrm{Complexity}\uparrow
+\mathrm{Compression}\neq\mathrm{Feature\ Selection}
 $$
 
-### Representation vs interpretability
-
-Temporal encoding bằng sine/cosine biểu diễn chu kỳ tốt hơn số nguyên nhưng làm representation khó diễn giải trực tiếp hơn.
-
-### History vs computational cost
-
-Tăng lookback:
+Feature selection làm giảm số lượng semantic variables:
 
 $$
-L:36\rightarrow72\rightarrow144
+F\rightarrow F^{*}
 $$
 
-cho phép mô hình quan sát lịch sử dài hơn nhưng đồng thời làm tăng kích thước input:
+trong khi compression tìm cách biểu diễn dữ liệu bằng ít storage hoặc transmission cost hơn mà vẫn giữ information cần thiết.
 
-$$
-\mathrm{Input\ Size}=L\times F
-$$
-
-Do đó, preprocessing luôn là bài toán cân bằng giữa **information, complexity, computational cost và interpretability**.
+Do đó, AirQuality giúp xác định ranh giới giữa **representation reduction** và **data compression**.
 
 ---
 
-## 13. Lessons Learned
+## 11. Connection với Empirical Analysis
 
-Từ việc áp dụng taxonomy vào UCI Appliances, có thể rút ra một số nguyên tắc.
+Vai trò quan trọng nhất của AirQuality là cung cấp nền tảng cho `09_empirical_analysis`.
 
-### 13.1. Preprocessing phụ thuộc vào loại dữ liệu
+Thay vì chỉ hỏi:
 
-Không tồn tại một preprocessing pipeline tối ưu cho mọi dataset. Với time series, temporal order và causality phải được ưu tiên.
+> Phương pháp preprocessing nào tồn tại?
 
-### 13.2. Data leakage quan trọng hơn việc chọn thuật toán
+nghiên cứu chuyển sang câu hỏi:
 
-Một pipeline sử dụng scaler hoặc feature statistics từ toàn bộ dataset có thể tạo ra kết quả đánh giá quá lạc quan, ngay cả khi model hoàn toàn chính xác về mặt implementation.
+> Phương pháp preprocessing nào thực sự cải thiện kết quả trên dữ liệu thực tế?
 
-### 13.3. Feature engineering phải dựa trên domain structure
-
-Temporal, lag và rolling features có ý nghĩa vì chúng phản ánh cấu trúc của bài toán energy forecasting, không phải vì chúng đơn giản là các phép biến đổi phổ biến.
-
-### 13.4. Không phải feature càng nhiều càng tốt
-
-Feature engineering tạo thêm information nhưng đồng thời làm tăng dimensionality và redundancy. Vì vậy, feature engineering cần kết hợp với feature selection.
-
-### 13.5. AI-ready data là kết quả của toàn bộ pipeline
-
-Không thể xem scaling, cleaning hoặc feature engineering là những bước độc lập. Representation cuối cùng phải đồng thời thỏa mãn:
+Một preprocessing configuration có thể biểu diễn:
 
 $$
-\boxed{\mathrm{Quality}+\mathrm{Consistency}+\mathrm{Causality}+\mathrm{Model\ Compatibility}}
+C=(M,O,I,F,N)
+$$
+
+trong đó:
+
+* $M$: missing-data method;
+* $O$: outlier detection;
+* $I$: imputation;
+* $F$: feature selection;
+* $N$: normalization.
+
+Với mỗi configuration $C_i$, mô hình LSTM được đánh giá bằng cùng experimental protocol.
+
+Khi đó:
+
+$$
+P_i=\mathrm{Performance}(C_i)
+$$
+
+và các configuration có thể được so sánh thông qua:
+
+$$
+\Delta P_i=P_i-P_{\mathrm{baseline}}
+$$
+
+Cách tiếp cận này biến preprocessing từ một **data preparation step** thành một **experimental factor**.
+
+---
+
+## 12. Connection với Evaluation Metrics
+
+Bài báo sử dụng:
+
+$$
+\mathrm{RMSE}
+$$
+
+$$
+\mathrm{MAE}
+$$
+
+và:
+
+$$
+\mathrm{MAPE}
+$$
+
+để đánh giá prediction performance.
+
+RMSE:
+
+$$
+\mathrm{RMSE}=\sqrt{\frac{1}{N}\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}
+$$
+
+MAE:
+
+$$
+\mathrm{MAE}=\frac{1}{N}\sum_{i=1}^{N}|y_i-\hat{y}_i|
+$$
+
+MAPE:
+
+$$
+\mathrm{MAPE}=\frac{100}{N}\sum_{i=1}^{N}\left|\frac{y_i-\hat{y}_i}{y_i}\right|
+$$
+
+Các metrics này cho phép chuyển câu hỏi về preprocessing thành một đại lượng có thể đo lường:
+
+$$
+\mathrm{Preprocessing}\rightarrow\mathrm{Prediction\ Performance}
+$$
+
+Từ đó, effectiveness của preprocessing được đánh giá thông qua downstream task thay vì chỉ thông qua statistics của dataset.
+
+---
+
+## 13. Connection với Trade-offs
+
+AirQuality cũng minh họa các trade-offs được trình bày trong `10_discussion/02_tradeoffs.md`.
+
+### Cleaning vs information preservation
+
+Aggressive outlier removal có thể giảm noise nhưng đồng thời loại bỏ những observation thực tế.
+
+$$
+\mathrm{Cleaning}\uparrow\Rightarrow\mathrm{Noise}\downarrow
+$$
+
+nhưng:
+
+$$
+\mathrm{Cleaning}\uparrow\Rightarrow\mathrm{Information\ Loss}\uparrow
+$$
+
+### Feature selection vs information
+
+Giảm feature dimension:
+
+$$
+F^{*} \lt F
+$$
+
+có thể giảm redundancy và computational cost, nhưng có nguy cơ loại bỏ predictive information.
+
+### Transformation vs interpretability
+
+Normalization đưa các feature về cùng scale nhưng làm mất phần nào ý nghĩa trực tiếp của magnitude ban đầu.
+
+### Preprocessing complexity vs performance
+
+Một pipeline phức tạp hơn:
+
+$$
+C_{\mathrm{complex}}>C_{\mathrm{simple}}
+$$
+
+không đảm bảo:
+
+$$
+P_{\mathrm{complex}}>P_{\mathrm{simple}}
+$$
+
+Do đó, preprocessing cần được lựa chọn dựa trên **empirical evidence**, không chỉ dựa trên số lượng kỹ thuật được sử dụng.
+
+---
+
+## 14. Connection với AI-ready Data Pipeline
+
+Chương `11_pipeline` định nghĩa preprocessing như một chuỗi biến đổi từ raw data thành model-ready representation.
+
+AirQuality có thể được ánh xạ:
+
+```text
+Raw AirQuality
+      ↓
+Missing-value Encoding
+      ↓
+Outlier Detection
+      ↓
+Imputation
+      ↓
+Feature Selection
+      ↓
+Normalization
+      ↓
+Temporal Sequence
+      ↓
+LSTM
+      ↓
+Prediction
+```
+
+Ở mỗi bước, representation được biến đổi:
+
+$$
+D_0\rightarrow D_1\rightarrow D_2\rightarrow\cdots\rightarrow D_k
+$$
+
+Mục tiêu cuối cùng là:
+
+$$
+D_k\in\mathrm{Model\text{-}Ready\ Data}
+$$
+
+Do đó, case study minh họa rằng AI-ready data không phải là một trạng thái cố định. Nó phụ thuộc vào **downstream model và task**.
+
+---
+
+## 15. Connection với Lessons Learned
+
+AirQuality cung cấp một số bài học tổng quát cho toàn bộ survey.
+
+### 15.1. Dataset semantics phải được hiểu trước preprocessing
+
+Giá trị `-200` nếu được xem là observation bình thường sẽ làm sai lệch toàn bộ pipeline.
+
+Do đó:
+
+$$
+\boxed{\mathrm{Understand\ Data}\rightarrow\mathrm{Preprocess\ Data}}
+$$
+
+### 15.2. Không có preprocessing method tốt tuyệt đối
+
+Grubbs, IQR, Spline, EM, NCA và Laplacian Scores giải quyết các vấn đề khác nhau.
+
+Do đó:
+
+$$
+\mathrm{Best\ Method}=\mathrm{Context\ Dependent}
+$$
+
+### 15.3. Preprocessing phải phục vụ downstream task
+
+Một preprocessing configuration chỉ thực sự có giá trị nếu nó cải thiện hoặc ít nhất không làm suy giảm mục tiêu của hệ thống.
+
+$$
+\mathrm{Preprocessing\ Quality}\not\equiv\mathrm{Data\ Appearance}
+$$
+
+Mà:
+
+$$
+\mathrm{Preprocessing\ Quality}\rightarrow\mathrm{Downstream\ Utility}
+$$
+
+### 15.4. Temporal structure phải được bảo toàn
+
+AirQuality là time series nên việc randomize hoặc phá vỡ temporal ordering có thể làm thay đổi bản chất bài toán.
+
+Do đó:
+
+$$
+\boxed{\mathrm{Temporal\ Order}\rightarrow\mathrm{Preserve}}
 $$
 
 ---
 
-## 14. Vị trí của UCI Appliances trong toàn bộ nghiên cứu
+## 16. Vị trí của AirQuality trong toàn bộ nghiên cứu
 
-UCI Appliances đóng vai trò **case study tích hợp** cho survey.
+AirQuality đóng vai trò là **case study tích hợp** cho taxonomy preprocessing.
 
-Luồng liên kết của toàn bộ nghiên cứu có thể biểu diễn:
+Luồng nghiên cứu có thể biểu diễn:
 
 ```text
 03 Data Cleaning
@@ -431,39 +571,39 @@ Luồng liên kết của toàn bộ nghiên cứu có thể biểu diễn:
        ↓
 11 AI-ready Pipeline
        ↓
-13 UCI Appliances Case Study
+13 AirQuality Case Study
 ```
 
-Trong đó, Chương 13 không lặp lại toàn bộ lý thuyết của các chương trước mà **instantiate** các khái niệm đó trên một dataset cụ thể.
-
-Kết quả cuối cùng là:
+Trong đó, Chương 13 không thay thế các chương lý thuyết trước đó mà thực hiện quá trình:
 
 $$
-\mathrm{Raw\ UCI\ Data}
-\rightarrow
-\mathrm{Cleaned\ Data}
-\rightarrow
-\mathrm{Transformed\ Data}
-\rightarrow
-\mathrm{Engineered\ Features}
-\rightarrow
-\mathrm{Selected\ Representation}
-\rightarrow
-\mathrm{AI\text{-}ready\ Windows}
+\mathrm{Theory}\rightarrow\mathrm{Method}\rightarrow\mathrm{Dataset}\rightarrow\mathrm{Experiment}
 $$
 
-Chuỗi biến đổi này thể hiện chính xác vai trò của preprocessing trong toàn bộ nghiên cứu: **chuyển dữ liệu thô thành một representation có chất lượng, không rò rỉ thông tin và phù hợp với mục tiêu học máy**.
+AirQuality vì vậy là điểm kiểm chứng để xác định liệu các nguyên tắc preprocessing được trình bày trong survey có thực sự hữu ích trên dữ liệu cảm biến thực tế hay không.
 
 ---
 
-## 15. Kết luận
+## 17. Tổng kết
 
-UCI Appliances Energy Prediction cung cấp một trường hợp thực nghiệm phù hợp để kiểm chứng taxonomy preprocessing được xây dựng trong survey. Dataset đồng thời chứa các đặc trưng của dữ liệu thực tế như **temporal dependency, heterogeneous measurements, multiple sensor sources và biến động theo chu kỳ**, qua đó cho phép đánh giá nhiều nhóm preprocessing trong cùng một pipeline.
-
-Mối liên hệ cốt lõi có thể tóm tắt:
+Mối liên hệ giữa AirQuality và toàn bộ survey có thể cô đọng thành:
 
 $$
-\boxed{\mathrm{Preprocessing\ Theory}\rightarrow\mathrm{Method\ Selection}\rightarrow\mathrm{UCI\ Implementation}\rightarrow\mathrm{Empirical\ Evaluation}}
+\boxed{\mathrm{Raw\ Data}\rightarrow\mathrm{Cleaning}\rightarrow\mathrm{Transformation}\rightarrow\mathrm{Feature\ Engineering}\rightarrow\mathrm{Feature\ Selection}\rightarrow\mathrm{Model\ Input}}
 $$
 
-Do đó, case study không chỉ minh họa cách preprocessing được thực hiện, mà còn chứng minh rằng **việc lựa chọn preprocessing phải xuất phát từ cấu trúc dữ liệu, mục tiêu dự báo và ràng buộc thực nghiệm**. Đây là cầu nối từ phần survey lý thuyết sang phần empirical analysis và là cơ sở để đánh giá các trade-off của preprocessing trong một bài toán forecasting thực tế.
+và:
+
+$$
+\boxed{\mathrm{Preprocessing}\rightarrow\mathrm{LSTM}\rightarrow\mathrm{Evaluation}}
+$$
+
+AirQuality cho thấy preprocessing không phải là một tập hợp các thao tác độc lập. Các quyết định về missing values, outliers, imputation, normalization, feature selection và temporal representation có quan hệ với nhau và cùng quyết định chất lượng của representation cuối cùng.
+
+Vì vậy, giá trị của case study nằm ở việc chứng minh một nguyên tắc trung tâm của survey:
+
+$$
+\boxed{\mathrm{Effective\ Preprocessing}=\mathrm{Data\ Quality}+\mathrm{Appropriate\ Representation}+\mathrm{Task\ Compatibility}}
+$$
+
+Đây là cầu nối trực tiếp từ phần **survey methodology** sang phần **empirical analysis**, đồng thời tạo cơ sở để các kết quả thực nghiệm trong Chương 9 được diễn giải dưới góc nhìn của toàn bộ taxonomy preprocessing.
