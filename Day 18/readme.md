@@ -1,6 +1,6 @@
 # Transfer Learning & Fine-Tuning
 
-### Mục tiêu học tập
+## Mục tiêu học tập
 
 * **Phân biệt Feature Extraction và Fine-Tuning**
 

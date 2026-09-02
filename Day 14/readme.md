@@ -178,7 +178,7 @@ x → LayerNorm → Sublayer → + Residual
 
 ---
 
-# Transformer 2017 vs Modern Transformer
+## Transformer 2017 vs Modern Transformer
 
 | Thành phần     | Vaswani 2017 | Transformer hiện đại |
 | -------------- | ------------ | -------------------- |

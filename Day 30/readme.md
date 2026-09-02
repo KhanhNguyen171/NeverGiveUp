@@ -42,9 +42,9 @@ Transformer / LLM
 
 ---
 
-# 2. GloVe — Global Vectors
+## 2. GloVe — Global Vectors
 
-## 2.1. Ý tưởng
+### 2.1. Ý tưởng
 
 GloVe (**Global Vectors for Word Representation**) xuất phát từ một ý tưởng đơn giản:
 
@@ -81,7 +81,7 @@ Ma trận này chứa thông tin thống kê toàn cục của corpus.
 
 ---
 
-## 2.2. Xây dựng ma trận đồng xuất hiện
+### 2.2. Xây dựng ma trận đồng xuất hiện
 
 Một cách đơn giản để xây dựng $X$ là sử dụng cửa sổ ngữ cảnh.
 
@@ -151,7 +151,7 @@ def build_cooccurrence(docs, window=5):
 
 ---
 
-# 3. Mục tiêu học của GloVe
+## 3. Mục tiêu học của GloVe
 
 GloVe muốn tìm hai ma trận embedding:
 
@@ -205,7 +205,7 @@ $$
 
 ---
 
-## 3.1. Vì sao dùng $\log(X_{ij})$?
+### 3.1. Vì sao dùng $\log(X_{ij})$?
 
 Tần suất đồng xuất hiện có thể chênh lệch rất lớn.
 
@@ -239,7 +239,7 @@ Do đó, các khác biệt quá lớn về frequency được giảm bớt.
 
 ---
 
-# 4. Weighting function của GloVe
+## 4. Weighting function của GloVe
 
 GloVe tiếp tục sử dụng một weighting function:
 
@@ -293,7 +293,7 @@ chi phối toàn bộ quá trình học.
 
 ---
 
-# 5. Huấn luyện GloVe
+## 5. Huấn luyện GloVe
 
 Một implementation tối giản:
 
@@ -356,7 +356,7 @@ Việc cộng hai embedding table thường cho biểu diễn tốt hơn so vớ
 
 ---
 
-# 6. GloVe và Word2Vec khác nhau như thế nào?
+## 6. GloVe và Word2Vec khác nhau như thế nào?
 
 | Đặc điểm      | Word2Vec              | GloVe                              |
 | ------------- | --------------------- | ---------------------------------- |
@@ -395,9 +395,9 @@ Embedding
 
 ---
 
-# 7. FastText — Subword-aware Embeddings
+## 7. FastText — Subword-aware Embeddings
 
-## 7.1. Vấn đề của Word2Vec và GloVe
+### 7.1. Vấn đề của Word2Vec và GloVe
 
 Word2Vec và GloVe đều có một giả định:
 
@@ -429,7 +429,7 @@ Thay vào đó:
 
 ---
 
-# 8. Character n-gram
+## 8. Character n-gram
 
 Ví dụ với từ:
 
@@ -489,7 +489,7 @@ Trong đó:
 
 ---
 
-## 8.1. Cài đặt character n-gram
+### 8.1. Cài đặt character n-gram
 
 ```python
 def char_ngrams(word, n_min=3, n_max=6):
@@ -530,7 +530,7 @@ có thể tạo ra:
 
 ---
 
-# 9. Tạo vector FastText
+## 9. Tạo vector FastText
 
 Giả sử bảng embedding của các n-gram là:
 
@@ -568,7 +568,7 @@ def fasttext_vector(word, ngram_table):
 
 ---
 
-# 10. FastText giải quyết OOV như thế nào?
+## 10. FastText giải quyết OOV như thế nào?
 
 Giả sử training corpus đã xuất hiện:
 
@@ -633,7 +633,7 @@ compose vector
 
 ---
 
-# 11. Vì sao FastText hữu ích với morphology?
+## 11. Vì sao FastText hữu ích với morphology?
 
 FastText đặc biệt hữu ích khi các từ có cấu trúc hình thái liên quan.
 
@@ -661,9 +661,9 @@ Do đó, mô hình có thể truyền tải thông tin giữa chúng.
 
 ---
 
-# 12. BPE — Byte-Pair Encoding
+## 12. BPE — Byte-Pair Encoding
 
-## 12.1. Từ word embedding sang tokenizer
+### 12.1. Từ word embedding sang tokenizer
 
 Khi Transformer và Language Model phát triển, vấn đề thay đổi.
 
@@ -702,7 +702,7 @@ Do đó cần một đơn vị nhỏ hơn từ:
 
 ---
 
-# 13. Ý tưởng của BPE
+## 13. Ý tưởng của BPE
 
 BPE bắt đầu từ các đơn vị nhỏ:
 
@@ -756,7 +756,7 @@ lo + w      → low
 
 ---
 
-# 14. Thuật toán BPE
+## 14. Thuật toán BPE
 
 Giả sử corpus:
 
@@ -794,7 +794,7 @@ Nếu `low` xuất hiện thường xuyên, nó trở thành một token có gi�
 
 ---
 
-# 15. Cài đặt BPE từ đầu
+## 15. Cài đặt BPE từ đầu
 
 ```python
 from collections import Counter
@@ -906,7 +906,7 @@ low + est
 
 ---
 
-# 16. BPE giải quyết OOV
+## 16. BPE giải quyết OOV
 
 Đây là một trong những lý do subword tokenizer trở nên quan trọng.
 
@@ -955,7 +955,7 @@ Embedding
 
 ---
 
-# 17. Byte-level BPE
+## 17. Byte-level BPE
 
 Một biến thể quan trọng là **byte-level BPE**.
 
@@ -977,7 +977,7 @@ Do đó, về nguyên tắc không cần một token `UNK` chỉ vì gặp một
 
 ---
 
-# 18. BPE và Transformer
+## 18. BPE và Transformer
 
 Trong thời đại Transformer, BPE không còn chủ yếu là phương pháp học **word embedding**.
 
@@ -1042,7 +1042,7 @@ token ID → vector
 
 ---
 
-# 19. BPE, WordPiece và SentencePiece
+## 19. BPE, WordPiece và SentencePiece
 
 BPE không phải tokenizer duy nhất.
 
@@ -1076,7 +1076,7 @@ Mục tiêu chung là tìm sự cân bằng giữa:
 
 ---
 
-# 20. So sánh GloVe, FastText và BPE
+## 20. So sánh GloVe, FastText và BPE
 
 | Đặc điểm             | GloVe                     | FastText             | BPE              |
 | -------------------- | ------------------------- | -------------------- | ---------------- |
@@ -1098,9 +1098,9 @@ Không nên xem BPE đơn giản là "một phiên bản FastText".
 
 ---
 
-# 21. Khi nào sử dụng phương pháp nào?
+## 21. Khi nào sử dụng phương pháp nào?
 
-## 21.1. GloVe
+### 21.1. GloVe
 
 Chọn GloVe khi:
 
@@ -1123,7 +1123,7 @@ Classifier
 
 ---
 
-## 21.2. FastText
+### 21.2. FastText
 
 Chọn FastText khi:
 
@@ -1149,7 +1149,7 @@ Word vector
 
 ---
 
-## 21.3. BPE / tokenizer của model
+### 21.3. BPE / tokenizer của model
 
 Nếu input đi vào một Transformer pretrained:
 
@@ -1187,7 +1187,7 @@ nên sử dụng chính tokenizer mà checkpoint cung cấp.
 
 ---
 
-# 22. Nếu train Language Model từ đầu
+## 22. Nếu train Language Model từ đầu
 
 Khi xây dựng một language model từ đầu, quy trình thường là:
 
@@ -1224,7 +1224,7 @@ Vì vậy cần tìm trade-off phù hợp.
 
 ---
 
-# 23. Bản chất của ba phương pháp
+## 23. Bản chất của ba phương pháp
 
 Có thể cô đọng toàn bộ bài học thành ba câu:
 
@@ -1270,7 +1270,7 @@ $$
 
 ---
 
-# 24. Tổng kết
+## 24. Tổng kết
 
 Sự phát triển có thể được nhìn theo vấn đề mà mỗi phương pháp giải quyết:
 
@@ -1313,7 +1313,7 @@ Ba khái niệm cần phân biệt rõ:
 
 ---
 
-# 25. Bài tập thực hành
+## 25. Bài tập thực hành
 
 ## Bài 1 — Character n-gram
 
@@ -1397,7 +1397,7 @@ So sánh trước và sau khi học BPE.
 
 ---
 
-# 26. Key Terms
+## 26. Key Terms
 
 | Thuật ngữ                | Ý nghĩa thực tế                                                                       |
 | ------------------------ | ------------------------------------------------------------------------------------- |
@@ -1414,7 +1414,7 @@ So sánh trước và sau khi học BPE.
 
 ---
 
-# 27. Điều cần nhớ
+## 27. Điều cần nhớ
 
 > **Word2Vec:** một từ → một vector.
 

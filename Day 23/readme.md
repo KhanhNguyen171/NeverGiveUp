@@ -15,7 +15,7 @@ Có thể sử dụng các bước sau để định hướng cuộc thảo lu�
 
 ---
 
-# Step 1 — Xác định use cases, constraints và assumptions
+## Step 1 — Xác định use cases, constraints và assumptions
 
 ### Xác định các trường hợp sử dụng, ràng buộc và giả định
 
@@ -69,7 +69,7 @@ Trước tiên, hãy thu thập yêu cầu và xác định phạm vi của bài
 
 ---
 
-# Step 2 — Tạo high-level design
+## Step 2 — Tạo high-level design
 
 ### Thiết kế kiến trúc cấp cao
 
@@ -118,7 +118,7 @@ Trước tiên phải xác định requirements và scale.
 
 ---
 
-# Step 3 — Design core components
+## Step 3 — Design core components
 
 ### Thiết kế các thành phần cốt lõi
 
@@ -188,7 +188,7 @@ Và cần suy nghĩ về:
 
 ---
 
-# Step 4 — Scale the design
+## Step 4 — Scale the design
 
 ### Mở rộng hệ thống
 
@@ -239,7 +239,7 @@ và:
 
 ---
 
-# 2. Ý tưởng quan trọng nhất: System Design là một quá trình
+## 2. Ý tưởng quan trọng nhất: System Design là một quá trình
 
 Nếu chỉ nhớ một framework, hãy nhớ:
 
@@ -279,7 +279,7 @@ Kafka + Redis + Kubernetes + MongoDB
 
 ---
 
-# 3. Step 1 thực chất quan trọng như thế nào?
+## 3. Step 1 thực chất quan trọng như thế nào?
 
 Đây có lẽ là phần **quan trọng nhất đối với người mới học System Design**.
 
@@ -328,11 +328,11 @@ Sau đó giới hạn scope:
 
 ---
 
-# 4. Functional vs Non-functional requirements
+## 4. Functional vs Non-functional requirements
 
 Đây là một khái niệm bạn nên bổ sung vào framework trên.
 
-## Functional requirements
+### Functional requirements
 
 Hệ thống **làm được gì?**
 
@@ -346,7 +346,7 @@ Like video
 Comment
 ```
 
-## Non-functional requirements
+### Non-functional requirements
 
 Hệ thống **phải hoạt động như thế nào?**
 
@@ -374,7 +374,7 @@ hoặc:
 
 ---
 
-# 5. Back-of-the-envelope calculation
+## 5. Back-of-the-envelope calculation
 
 Đây là phần rất quan trọng nhưng người mới thường bỏ qua.
 
@@ -437,7 +437,7 @@ Horizontal Scaling
 
 ---
 
-# 6. Read/Write Ratio rất quan trọng
+## 6. Read/Write Ratio rất quan trọng
 
 Ví dụ:
 
@@ -496,7 +496,7 @@ Cache
 
 ---
 
-# 7. Step 2 — High-Level Design
+## 7. Step 2 — High-Level Design
 
 Ở bước này, mục tiêu chưa phải là biết từng field trong database.
 
@@ -546,7 +546,7 @@ Ví dụ:
 
 ---
 
-# 8. Step 3 — Core Components
+## 8. Step 3 — Core Components
 
 Đây là lúc interviewer bắt đầu đào sâu.
 
@@ -649,7 +649,7 @@ Và cuối cùng:
 
 ---
 
-# 9. Step 4 — Scaling
+## 9. Step 4 — Scaling
 
 Một cách học rất tốt là luôn hỏi 4 câu:
 
@@ -695,7 +695,7 @@ Precomputation
 
 ---
 
-# 10. "Everything is a trade-off"
+## 10. "Everything is a trade-off"
 
 Đây là câu cực kỳ quan trọng trong System Design.
 
@@ -729,7 +729,7 @@ hơn là:
 
 ---
 
-# 11. Framework hoàn chỉnh nên ghi nhớ
+## 11. Framework hoàn chỉnh nên ghi nhớ
 
 Từ nội dung của Primer, bạn có thể nâng thành framework học System Design như sau:
 
@@ -803,7 +803,7 @@ Từ nội dung của Primer, bạn có thể nâng thành framework học Syste
 
 ---
 
-# 12. Cách áp dụng khi đi phỏng vấn
+## 12. Cách áp dụng khi đi phỏng vấn
 
 Giả sử interviewer nói:
 
@@ -891,7 +891,7 @@ Cuối cùng:
 
 ---
 
-# 13. Điều cần học tiếp từ System Design Primer
+## 13. Điều cần học tiếp từ System Design Primer
 
 Phần bạn gửi mới là **framework để giải bài**, chưa phải toàn bộ kiến thức System Design.
 

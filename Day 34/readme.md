@@ -106,9 +106,9 @@ $$
 
 ---
 
-# Message queues
+### Message queues
 
-GitHub định nghĩa message queue là thành phần **nhận, lưu giữ và phân phối message**. Khi một operation quá chậm để thực hiện inline, application đưa job vào queue và worker xử lý job ở background. ([GitHub][1])
+Tác giả định nghĩa message queue là thành phần **nhận, lưu giữ và phân phối message**. Khi một operation quá chậm để thực hiện inline, application đưa job vào queue và worker xử lý job ở background. ([GitHub][1])
 
 ## 2. Kiến trúc cơ bản
 
@@ -250,7 +250,7 @@ POST /video
 
 ---
 
-# 4. Tại sao Message Queue giúp hệ thống scale?
+## 4. Tại sao Message Queue giúp hệ thống scale?
 
 Giả sử application nhận request với tốc độ:
 
@@ -314,7 +314,7 @@ Tuy nhiên, đây chỉ là mô hình lý tưởng; thực tế còn phụ thu�
 
 ---
 
-# 5. Queue như một lớp decoupling
+## 5. Queue như một lớp decoupling
 
 Một lợi ích quan trọng hơn của queue là **decoupling**.
 
@@ -359,7 +359,7 @@ Queue hấp thụ sự khác biệt này trong một khoảng thời gian.
 
 ---
 
-# 6. Ví dụ: Twitter-like system
+## 6. Ví dụ: Twitter-like system
 
 GitHub sử dụng ví dụ đăng tweet: tweet có thể xuất hiện ngay trên timeline của người dùng, trong khi việc phân phối tweet tới toàn bộ followers có thể xảy ra sau đó. ([GitHub][1])
 
@@ -409,7 +409,7 @@ $$
 
 ---
 
-# 7. Message delivery semantics
+## 7. Message delivery semantics
 
 Khi thiết kế queue thực tế, không chỉ hỏi:
 
@@ -432,7 +432,7 @@ $$
 nhưng:
 
 $$
-P(loss) > 0
+P(loss) \gt 0
 $$
 
 ### At-least-once
@@ -446,7 +446,7 @@ $$
 nhưng:
 
 $$
-P(duplicate) > 0
+P(duplicate) \gt 0
 $$
 
 Vì vậy consumer nên **idempotent**.
@@ -486,9 +486,9 @@ trên toàn bộ distributed system.
 
 ---
 
-# 8. Redis, RabbitMQ và Amazon SQS
+## 8. Redis, RabbitMQ và Amazon SQS
 
-GitHub đưa ra ba ví dụ tiêu biểu. ([GitHub][1])
+Tác giả đưa ra ba ví dụ tiêu biểu. ([GitHub][1])
 
 | Công nghệ  | Đặc điểm chính                     | Trade-off                                                                        |
 | ---------- | ---------------------------------- | -------------------------------------------------------------------------------- |
@@ -564,9 +564,9 @@ Tuy nhiên, như GitHub lưu ý, message có khả năng được deliver nhiề
 
 ---
 
-# Task queues
+## Task queues
 
-GitHub phân biệt **task queue** ở mức abstraction cao hơn: task queue nhận task cùng dữ liệu liên quan, thực thi task và trả kết quả; nó cũng hỗ trợ scheduling và computationally-intensive jobs chạy background. Celery được GitHub đưa ra như một ví dụ hỗ trợ scheduling và chủ yếu dùng trong Python. ([GitHub][1])
+Tác giả phân biệt **task queue** ở mức abstraction cao hơn: task queue nhận task cùng dữ liệu liên quan, thực thi task và trả kết quả; nó cũng hỗ trợ scheduling và computationally-intensive jobs chạy background. Celery được GitHub đưa ra như một ví dụ hỗ trợ scheduling và chủ yếu dùng trong Python. ([GitHub][1])
 
 [Celery Documentation](https://docs.celeryproject.org/en/stable/?utm_source=chatgpt.com)
 
@@ -637,7 +637,7 @@ Task Queue
 
 ---
 
-# 10. Task queue cho background computation
+## 10. Task queue cho background computation
 
 Ví dụ hệ thống ML:
 
@@ -705,11 +705,11 @@ GET /jobs/123
 
 ---
 
-# Back pressure
+## Back pressure
 
 Đây là phần quan trọng nhất về mặt **stability**.
 
-GitHub lưu ý rằng nếu queue tăng quá lớn, queue có thể vượt quá memory, gây cache miss, disk read và khiến performance tiếp tục giảm. Back pressure giới hạn kích thước queue để duy trì throughput và response time; khi queue đầy, client có thể nhận `HTTP 503` và retry với exponential backoff. ([GitHub][1])
+Tác giả lưu ý rằng nếu queue tăng quá lớn, queue có thể vượt quá memory, gây cache miss, disk read và khiến performance tiếp tục giảm. Back pressure giới hạn kích thước queue để duy trì throughput và response time; khi queue đầy, client có thể nhận `HTTP 503` và retry với exponential backoff. ([GitHub][1])
 
 ## 11. Vấn đề: Producer nhanh hơn Consumer
 
@@ -728,7 +728,7 @@ $$
 Khi đó:
 
 $$
-\lambda > \mu
+\lambda \gt \mu
 $$
 
 Queue sẽ tăng liên tục.
@@ -750,13 +750,13 @@ $$
 Nếu:
 
 $$
-\lambda > \mu
+\lambda \gt \mu
 $$
 
 thì:
 
 $$
-\frac{dQ}{dt}>0
+\frac{dQ}{dt} \gt 0
 $$
 
 và queue tiếp tục tăng.
@@ -782,7 +782,7 @@ Queue:
 
 ---
 
-# 12. Back pressure là gì?
+## 12. Back pressure là gì?
 
 **Back pressure** là cơ chế để consumer/downstream system truyền tín hiệu ngược trở lại producer rằng hệ thống đang gần hoặc đã đạt giới hạn xử lý.
 
@@ -837,7 +837,7 @@ Drop low-priority work
 
 ---
 
-# 13. HTTP 503 và Retry
+## 13. HTTP 503 và Retry
 
 GitHub đề cập đến `HTTP 503` khi queue đầy. ([GitHub][1])
 
@@ -875,7 +875,7 @@ Retry later
 
 ---
 
-# 14. Exponential Backoff
+## 14. Exponential Backoff
 
 Retry không nên thực hiện liên tục:
 
@@ -920,7 +920,7 @@ $$
 
 ---
 
-# 15. Little's Law
+## 15. Little's Law
 
 Một nền tảng lý thuyết quan trọng khi phân tích queue là **Little's Law**.
 
@@ -981,7 +981,7 @@ Do đó queue không chỉ là vấn đề memory; nó còn là **latency indica
 
 ---
 
-# 16. Queue Stability
+## 16. Queue Stability
 
 Điều kiện cơ bản để queue ổn định trong dài hạn là:
 
@@ -1028,7 +1028,7 @@ Nhưng autoscaling cũng có giới hạn: nếu downstream database chỉ chị
 
 ---
 
-# 17. Back Pressure và Bulkhead
+## 17. Back Pressure và Bulkhead
 
 Một hệ thống lớn có thể có nhiều loại task:
 
@@ -1072,9 +1072,9 @@ Như vậy một workload không dễ dàng làm sập toàn bộ hệ thống.
 
 ---
 
-# Disadvantage(s): asynchronism
+## Disadvantage(s): asynchronism
 
-GitHub nhấn mạnh rằng các operation đơn giản hoặc realtime workflow có thể phù hợp hơn với synchronous processing, bởi queue tạo thêm delay và complexity. ([GitHub][1])
+Tác giả nhấn mạnh rằng các operation đơn giản hoặc realtime workflow có thể phù hợp hơn với synchronous processing, bởi queue tạo thêm delay và complexity. ([GitHub][1])
 
 ## 18. Latency không biến mất
 
@@ -1147,7 +1147,7 @@ trong một khoảng thời gian.
 
 ---
 
-# 20. Failure handling phức tạp hơn
+## 20. Failure handling phức tạp hơn
 
 Trong synchronous system:
 
@@ -1208,7 +1208,7 @@ Vì vậy production system thường cần:
 
 ---
 
-# 21. Message Queue vs Task Queue vs Back Pressure
+## 21. Message Queue vs Task Queue vs Back Pressure
 
 Có thể tổng hợp ba khái niệm chính của GitHub:
 
@@ -1240,7 +1240,7 @@ Quan hệ:
 
 ---
 
-# 22. Synchronous vs Asynchronous
+## 22. Synchronous vs Asynchronous
 
 | Đặc điểm                | Synchronous      | Asynchronous                    |
 | ----------------------- | ---------------- | ------------------------------- |
@@ -1257,7 +1257,7 @@ Quan hệ:
 
 ---
 
-# 23. Khi nào nên sử dụng Asynchronism?
+## 23. Khi nào nên sử dụng Asynchronism?
 
 Một operation thường phù hợp với asynchronous processing khi:
 
@@ -1296,7 +1296,7 @@ Analytics
 
 ---
 
-# 24. Khi nào KHÔNG nên sử dụng?
+## 24. Khi nào KHÔNG nên sử dụng?
 
 Không nên đưa queue vào mọi request.
 
@@ -1348,7 +1348,7 @@ thì mới nên asynchronous.
 
 ---
 
-# 25. Kiến trúc hoàn chỉnh
+## 25. Kiến trúc hoàn chỉnh
 
 Một asynchronous system production-grade có thể được mô hình hóa:
 
@@ -1393,7 +1393,7 @@ Một asynchronous system production-grade có thể được mô hình hóa:
 
 ---
 
-# 26. Cốt lõi cần ghi nhớ
+## 26. Cốt lõi cần ghi nhớ
 
 Có thể cô đọng toàn bộ phần **Asynchronism** thành chuỗi:
 
@@ -1485,7 +1485,7 @@ Nó đánh đổi **request latency thấp hơn** lấy **architectural complexi
 
 ---
 
-# Source(s) and further reading
+## Source(s) and further reading
 
 Các nguồn dưới đây tương ứng với phần **Source(s) and further reading** của GitHub; repository hiện vẫn giữ ba mục chính **Message queues, Task queues, Back pressure** trong mục Asynchronism. ([GitHub][2])
 

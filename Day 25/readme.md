@@ -26,9 +26,9 @@ Một hệ thống thực tế phải lựa chọn các consistency guarantee v�
 
 ---
 
-# 2. Consistency Patterns
+## 2. Consistency Patterns
 
-## 2.1. Khái niệm Consistency
+### 2.1. Khái niệm Consistency
 
 Khi một hệ thống có nhiều bản sao của cùng một dữ liệu, các replica có thể không được cập nhật đồng thời.
 
@@ -69,7 +69,7 @@ Do đó, hệ thống cần xác định:
 
 ---
 
-## 2.2. Weak Consistency
+### 2.2. Weak Consistency
 
 **Weak consistency** cho phép một read sau write không nhất thiết nhìn thấy dữ liệu mới.
 
@@ -100,7 +100,7 @@ Ví dụ, nếu một packet thoại bị mất trong quá trình mất kết n�
 
 ---
 
-## 2.3. Eventual Consistency
+### 2.3. Eventual Consistency
 
 **Eventual consistency** cung cấp guarantee mạnh hơn weak consistency.
 
@@ -163,7 +163,7 @@ Các ví dụ điển hình gồm:
 
 ---
 
-## 2.4. Strong Consistency
+### 2.4. Strong Consistency
 
 **Strong consistency** yêu cầu rằng sau khi một write được hệ thống xác nhận, các read hợp lệ tiếp theo phải nhìn thấy trạng thái mới nhất theo consistency guarantee của hệ thống.
 
@@ -221,7 +221,7 @@ Strong consistency thường phù hợp với:
 
 ---
 
-## 2.5. So sánh Consistency Models
+### 2.5. So sánh Consistency Models
 
 | Đặc điểm       | Weak                     | Eventual               | Strong                              |
 | -------------- | ------------------------ | ---------------------- | ----------------------------------- |
@@ -236,9 +236,9 @@ Cần lưu ý rằng đây không phải là thứ hạng từ "xấu" đến "t
 
 ---
 
-# 3. Availability Patterns
+## 3. Availability Patterns
 
-## 3.1. Khái niệm Availability
+### 3.1. Khái niệm Availability
 
 **Availability** biểu thị khả năng hệ thống tiếp tục cung cấp dịch vụ khi client gửi request.
 
@@ -261,7 +261,7 @@ $$\boxed{
 
 ---
 
-# 4. Fail-over
+## 4. Fail-over
 
 Fail-over là cơ chế chuyển traffic từ một thành phần đang gặp lỗi sang một thành phần dự phòng.
 
@@ -283,7 +283,7 @@ Fail-over có hai mô hình chính:
 
 ---
 
-## 4.1. Active-passive
+### 4.1. Active-passive
 
 Trong mô hình active-passive:
 
@@ -347,7 +347,7 @@ T_{rerouting}$$
 
 ---
 
-# 5. Active-active
+## 5. Active-active
 
 Trong active-active, nhiều server đồng thời xử lý traffic:
 
@@ -402,7 +402,7 @@ Nếu hai server cùng ghi vào cùng một dữ liệu, hệ thống cần cơ 
 
 ---
 
-# 6. Fail-over và Replication không giống nhau
+## 6. Fail-over và Replication không giống nhau
 
 Hai khái niệm này thường bị nhầm lẫn.
 
@@ -452,7 +452,7 @@ Replication cung cấp **redundancy**, trong khi fail-over cung cấp **mechanis
 
 ---
 
-# 7. Hạn chế của Fail-over
+## 7. Hạn chế của Fail-over
 
 Fail-over không miễn phí.
 
@@ -507,7 +507,7 @@ Trong thực tế, replication lag càng lớn thì lượng dữ liệu có ngu
 
 ---
 
-# 8. Availability trong các con số
+## 8. Availability trong các con số
 
 Availability thường được biểu diễn dưới dạng phần trăm uptime:
 
@@ -528,7 +528,7 @@ Một cách biểu diễn phổ biến là **number of nines**.
 
 ---
 
-## 8.1. Three nines — 99.9%
+### 8.1. Three nines — 99.9%
 
 $$A=99.9%=0.999$$
 
@@ -543,7 +543,7 @@ Downtime xấp xỉ:
 
 ---
 
-## 8.2. Four nines — 99.99%
+### 8.2. Four nines — 99.99%
 
 $$A=99.99%=0.9999$$
 
@@ -572,7 +572,7 @@ Do đó, thêm một "9" có ý nghĩa rất lớn đối với hệ thống pro
 
 ---
 
-# 9. Availability của các component trong hệ thống
+## 9. Availability của các component trong hệ thống
 
 Một service thường không chỉ có một component:
 
@@ -597,7 +597,7 @@ Hai trường hợp cơ bản là:
 
 ---
 
-# 10. Components trong sequence
+## 10. Components trong sequence
 
 Nếu hai component đều bắt buộc phải hoạt động:
 
@@ -639,7 +639,7 @@ Xấp xỉ 99.8%.
 
 ---
 
-# 11. Components trong parallel
+## 11. Components trong parallel
 
 Nếu hai component có thể thay thế lẫn nhau:
 
@@ -687,7 +687,7 @@ $$A_{total}=
 
 ---
 
-# 12. Series vs Parallel
+## 12. Series vs Parallel
 
 Có thể tổng quát hóa:
 
@@ -715,7 +715,7 @@ Giả định quan trọng ở đây là các failure event đủ độc lập �
 
 ---
 
-# 13. Mối quan hệ giữa Consistency và Availability
+## 13. Mối quan hệ giữa Consistency và Availability
 
 Consistency và availability không phải hai khái niệm độc lập.
 
@@ -770,7 +770,7 @@ là một trong những trade-off trung tâm của distributed system design.
 
 ---
 
-# 14. Liên hệ với CAP Theorem
+## 14. Liên hệ với CAP Theorem
 
 Trong điều kiện network partition, CAP theorem cho rằng hệ thống không thể đồng thời đảm bảo đầy đủ:
 
@@ -814,7 +814,7 @@ Vì vậy, CAP không đơn giản nói rằng "một hệ thống chỉ đượ
 
 ---
 
-# 15. Tổng hợp kiến trúc
+## 15. Tổng hợp kiến trúc
 
 Có thể nhìn toàn bộ hai nhóm pattern như sau:
 
@@ -844,7 +844,7 @@ Trong đó:
 
 ---
 
-# 16. Kết luận
+## 16. Kết luận
 
 Consistency và availability là hai thuộc tính nền tảng trong thiết kế hệ thống phân tán. **Consistency patterns** xác định mức độ đảm bảo mà hệ thống cung cấp đối với việc quan sát và đồng bộ các cập nhật giữa các replica. Weak consistency ưu tiên latency và khả năng đáp ứng trong các ứng dụng realtime; eventual consistency cho phép các replica tạm thời không đồng nhất nhưng cuối cùng hội tụ; trong khi strong consistency cung cấp guarantee chặt chẽ hơn, phù hợp với các hệ thống transactional.
 

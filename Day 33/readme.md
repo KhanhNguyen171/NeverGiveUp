@@ -56,7 +56,7 @@ Theo System Design Primer, cache đặc biệt hữu ích khi một số item ph
 
 ---
 
-# 2. Vì sao Cache cải thiện Performance?
+## 2. Vì sao Cache cải thiện Performance?
 
 Giả sử thời gian xử lý một request là:
 
@@ -108,7 +108,7 @@ $$
 
 ---
 
-## 2.1 Cache Hit và Cache Miss
+### 2.1 Cache Hit và Cache Miss
 
 Hai trạng thái cơ bản:
 
@@ -174,7 +174,7 @@ Một cache có hit rate cao sẽ giảm đáng kể số request phải đi t�
 
 ---
 
-# 3. Cache trong kiến trúc hệ thống
+## 3. Cache trong kiến trúc hệ thống
 
 System Design Primer phân chia cache theo **vị trí đặt cache** thành nhiều tầng. ([GitHub][1])
 
@@ -223,7 +223,7 @@ Các tầng chính:
 
 ---
 
-# 4. Client Caching
+## 4. Client Caching
 
 Client cache nằm ở phía client, ví dụ:
 
@@ -257,7 +257,7 @@ $$
 
 ---
 
-# 5. CDN Caching
+## 5. CDN Caching
 
 CDN (**Content Delivery Network**) có thể được xem là một dạng distributed cache.
 
@@ -308,7 +308,7 @@ CDN đặc biệt phù hợp với:
 
 ---
 
-# 6. Web Server Caching
+## 6. Web Server Caching
 
 Reverse proxy hoặc web server có thể cache response trước khi request đi tới application server.
 
@@ -338,7 +338,7 @@ System Design Primer chỉ ra rằng reverse proxy có thể trực tiếp phụ
 
 ---
 
-# 7. Database Caching
+## 7. Database Caching
 
 Database thường đã có một cơ chế cache nội bộ.
 
@@ -368,7 +368,7 @@ Tuy nhiên, database cache là một **implementation detail của database**, t
 
 ---
 
-# 8. Application Caching
+## 8. Application Caching
 
 Đây là tầng cache quan trọng trong system design.
 
@@ -399,7 +399,7 @@ System Design Primer nhấn mạnh rằng RAM có dung lượng giới hạn, v�
 
 ---
 
-# 9. Redis và Memcached
+## 9. Redis và Memcached
 
 | Đặc điểm          | Redis                       | Memcached                 |
 | ----------------- | --------------------------- | ------------------------- |
@@ -428,7 +428,7 @@ Cache = Fast temporary representation
 
 ---
 
-# 10. Cache cái gì?
+## 10. Cache cái gì?
 
 System Design Primer chia caching thành hai nhóm lớn:
 
@@ -449,7 +449,7 @@ Rendered HTML
 
 ---
 
-# 11. Caching ở Database Query Level
+## 11. Caching ở Database Query Level
 
 Ý tưởng:
 
@@ -495,7 +495,7 @@ Cache
      Cache
 ```
 
-## Vấn đề
+### Vấn đề
 
 Query-level caching gặp khó khăn khi dữ liệu thay đổi.
 
@@ -523,7 +523,7 @@ $$
 
 ---
 
-# 12. Caching ở Object Level
+## 12. Caching ở Object Level
 
 Thay vì cache query, application xây dựng một object hoàn chỉnh.
 
@@ -574,7 +574,7 @@ System Design Primer đề xuất các đối tượng có thể cache như:
 
 ---
 
-# 13. File-based Cache
+## 13. File-based Cache
 
 File-based caching thường không được ưu tiên trong hệ thống scale lớn.
 
@@ -606,7 +606,7 @@ Trong khi dữ liệu có thể đã tồn tại trên Server 1.
 
 ---
 
-# 14. Cache Eviction
+## 14. Cache Eviction
 
 Cache có memory hữu hạn:
 
@@ -662,7 +662,7 @@ LRU phù hợp với workload có **temporal locality**: dữ liệu vừa đư�
 
 ---
 
-# 15. Khi nào cập nhật Cache?
+## 15. Khi nào cập nhật Cache?
 
 Đây là phần quan trọng nhất của cache design.
 
@@ -681,7 +681,7 @@ When to update cache
 
 ---
 
-# 16. Cache-aside
+## 16. Cache-aside
 
 Cache-aside còn được gọi là **lazy loading**.
 
@@ -744,9 +744,9 @@ def get_user(user_id):
 
 ---
 
-## 16.1 Ưu điểm
+### 16.1 Ưu điểm
 
-### Chỉ cache dữ liệu được sử dụng
+#### Chỉ cache dữ liệu được sử dụng
 
 Nếu một object chưa bao giờ được request:
 
@@ -766,7 +766,7 @@ Memory_{used}
 \downarrow
 $$
 
-### Dễ triển khai
+#### Dễ triển khai
 
 Application kiểm soát:
 
@@ -776,7 +776,7 @@ cache.set()
 db.query()
 ```
 
-### Phù hợp read-heavy workload
+#### Phù hợp read-heavy workload
 
 ```text
 Read
@@ -788,7 +788,7 @@ Fast
 
 ---
 
-## 16.2 Nhược điểm
+### 16.2 Nhược điểm
 
 Cache miss tạo thêm nhiều bước:
 
@@ -823,7 +823,7 @@ Repository đề cập TTL hoặc write-through như những cách giảm vấn 
 
 ---
 
-# 17. Write-through
+## 17. Write-through
 
 Trong write-through:
 
@@ -880,7 +880,7 @@ Repository nhấn mạnh rằng write-through làm write operation chậm hơn, 
 
 ---
 
-## 17.1 Ưu điểm
+### 17.1 Ưu điểm
 
 Sau khi write hoàn thành:
 
@@ -900,7 +900,7 @@ Read immediately
 
 ---
 
-## 17.2 Nhược điểm
+### 17.2 Nhược điểm
 
 Nếu application ghi rất nhiều dữ liệu nhưng phần lớn không bao giờ được đọc:
 
@@ -921,7 +921,7 @@ TTL có thể giúp loại bỏ những entry không được sử dụng. ([Git
 
 ---
 
-# 18. Write-behind / Write-back
+## 18. Write-behind / Write-back
 
 Write-behind chuyển database write thành **asynchronous operation**.
 
@@ -971,7 +971,7 @@ Do đó write performance có thể được cải thiện đáng kể.
 
 ---
 
-## 18.1 Ưu điểm
+### 18.1 Ưu điểm
 
 Database write được tách khỏi request path:
 
@@ -997,7 +997,7 @@ Database:
 
 ---
 
-## 18.2 Nhược điểm
+### 18.2 Nhược điểm
 
 Đây là trade-off quan trọng:
 
@@ -1025,7 +1025,7 @@ System Design Primer xác định **data loss** và **implementation complexity*
 
 ---
 
-# 19. Refresh-ahead
+## 19. Refresh-ahead
 
 Refresh-ahead cố gắng cập nhật cache **trước khi entry hết hạn**.
 
@@ -1086,7 +1086,7 @@ Repository chỉ ra rằng refresh-ahead đặc biệt hiệu quả khi hệ th�
 
 ---
 
-## 19.1 Nhược điểm
+### 19.1 Nhược điểm
 
 Nếu dự đoán sai:
 
@@ -1110,7 +1110,7 @@ $$
 
 ---
 
-# 20. So sánh các Cache Update Strategy
+## 20. So sánh các Cache Update Strategy
 
 | Strategy      | Read          | Write              | Consistency          | Complexity | Rủi ro           |
 | ------------- | ------------- | ------------------ | -------------------- | ---------- | ---------------- |
@@ -1140,7 +1140,7 @@ Không có strategy nào luôn tốt nhất.
 
 ---
 
-# 21. Cache Invalidation
+## 21. Cache Invalidation
 
 Một trong những vấn đề nổi tiếng nhất của distributed systems là:
 
@@ -1183,14 +1183,14 @@ $$
 
 ---
 
-## 21.1 TTL
+### 21.1 TTL
 
 Một giải pháp là **Time-To-Live**.
 
 Mỗi cache entry có:
 
 $$
-TTL > 0
+TTL \gt 0
 $$
 
 Sau khi:
@@ -1210,11 +1210,11 @@ TTL = 300s
 
 Sau 5 phút cache entry hết hạn.
 
-### Ưu điểm
+#### Ưu điểm
 
 Đơn giản.
 
-### Nhược điểm
+#### Nhược điểm
 
 TTL không đảm bảo consistency ngay lập tức.
 
@@ -1232,7 +1232,7 @@ thì stale data vẫn tồn tại cho tới khi TTL hết hạn.
 
 ---
 
-# 22. Cache Consistency
+## 22. Cache Consistency
 
 Có thể mô hình hóa freshness:
 
@@ -1284,7 +1284,7 @@ Eventually refresh
 
 ---
 
-# 23. Cache Stampede
+## 23. Cache Stampede
 
 Một vấn đề quan trọng cần bổ sung khi học cache là **cache stampede**.
 
@@ -1341,7 +1341,7 @@ Một hệ thống production thường cần các cơ chế như:
 
 ---
 
-# 24. Distributed Cache
+## 24. Distributed Cache
 
 Khi hệ thống lớn, một cache node có thể không đủ.
 
@@ -1391,7 +1391,7 @@ System Design Primer sử dụng chính ý tưởng **sharding + consistent hash
 
 ---
 
-# 25. Consistent Hashing
+## 25. Consistent Hashing
 
 Với distributed cache:
 
@@ -1441,7 +1441,7 @@ Trong solution thiết kế query cache của repository, tác giả cũng đề
 
 ---
 
-# 26. Tổng hợp kiến trúc Cache
+## 26. Tổng hợp kiến trúc Cache
 
 Một kiến trúc hoàn chỉnh có thể hình dung:
 
@@ -1480,7 +1480,7 @@ Mỗi tầng giải quyết một loại latency/load khác nhau.
 
 ---
 
-# 27. Cache Design theo 3 câu hỏi
+## 27. Cache Design theo 3 câu hỏi
 
 Có thể cô đọng toàn bộ phần Cache của System Design Primer thành framework:
 
@@ -1516,7 +1516,7 @@ Có thể cô đọng toàn bộ phần Cache của System Design Primer thành 
 
 ---
 
-# 28. Trade-off tổng quát
+## 28. Trade-off tổng quát
 
 Caching không phải là "thêm Redis là hệ thống nhanh hơn".
 
@@ -1553,7 +1553,7 @@ Cụ thể:
 
 ---
 
-# 29. Nhược điểm của Cache
+## 29. Nhược điểm của Cache
 
 System Design Primer tổng kết ba vấn đề chính: ([GitHub][1])
 
@@ -1592,7 +1592,7 @@ Do đó cache phải được thêm khi nó thực sự giải quyết bottlenec
 
 ---
 
-# 30. Góc nhìn System Design
+## 30. Góc nhìn System Design
 
 Khi gặp một bài toán system design, không nên bắt đầu bằng:
 
@@ -1688,7 +1688,7 @@ Consistent Hashing
 
 ---
 
-# 31. Cheat Sheet
+## 31. Cheat Sheet
 
 ```text
 CACHE

@@ -59,9 +59,9 @@ $$
 
 ---
 
-# 1. Relational Database Management System
+## 1. Relational Database Management System
 
-## 1.1. Khái niệm
+### 1.1. Khái niệm
 
 Relational Database Management System (**RDBMS**) tổ chức dữ liệu thành các **table**, trong đó:
 
@@ -98,7 +98,7 @@ $$
 
 cho phép database thực hiện các phép `JOIN` để kết hợp dữ liệu.
 
-### Đặc điểm cốt lõi
+#### Đặc điểm cốt lõi
 
 RDBMS phù hợp khi hệ thống có:
 
@@ -111,11 +111,11 @@ RDBMS phù hợp khi hệ thống có:
 
 ---
 
-# 2. ACID
+## 2. ACID
 
 Một trong những đặc điểm quan trọng nhất của relational transactions là **ACID**. `system-design-primer` mô tả ACID gồm Atomicity, Consistency, Isolation và Durability. ([GitHub][2])
 
-## 2.1. Atomicity
+### 2.1. Atomicity
 
 Một transaction phải được thực hiện theo nguyên tắc:
 
@@ -143,7 +143,7 @@ Nếu một bước thất bại, toàn bộ transaction phải rollback.
 
 ---
 
-## 2.2. Consistency
+### 2.2. Consistency
 
 Transaction phải đưa database từ một **valid state** sang một **valid state**:
 
@@ -167,7 +167,7 @@ giúp duy trì tính hợp lệ của dữ liệu.
 
 ---
 
-## 2.3. Isolation
+### 2.3. Isolation
 
 Khi nhiều transaction chạy đồng thời:
 
@@ -186,7 +186,7 @@ Mục tiêu là hạn chế các hiện tượng như:
 
 ---
 
-## 2.4. Durability
+### 2.4. Durability
 
 Sau khi:
 
@@ -204,7 +204,7 @@ $$
 
 ---
 
-# 3. Scaling RDBMS
+## 3. Scaling RDBMS
 
 Khi database trở thành bottleneck, không nên lập tức chuyển sang NoSQL.
 
@@ -252,9 +252,9 @@ Sharding
 
 ---
 
-# 4. Master-Slave Replication
+## 4. Master-Slave Replication
 
-## 4.1. Architecture
+### 4.1. Architecture
 
 Master nhận:
 
@@ -309,7 +309,7 @@ tức workload read lớn hơn write.
 
 ---
 
-## 4.2. Read scalability
+### 4.2. Read scalability
 
 Giả sử một database có:
 
@@ -338,7 +338,7 @@ Write vẫn tập trung ở master nhưng read được scale horizontally.
 
 ---
 
-## 4.3. Replication lag
+### 4.3. Replication lag
 
 Một vấn đề quan trọng là:
 
@@ -377,7 +377,7 @@ X = old value
 
 ---
 
-## 4.4. Failure
+### 4.4. Failure
 
 Nếu master failure:
 
@@ -402,7 +402,7 @@ cần một cơ chế **failover/promotion**.
 
 ---
 
-## 4.5. Trade-offs
+### 4.5. Trade-offs
 
 ### Advantages
 
@@ -424,7 +424,7 @@ Các trade-off này tương ứng với phần replication trong `system-design-
 
 ---
 
-# 5. Master-Master Replication
+## 5. Master-Master Replication
 
 Trong master-master:
 
@@ -465,7 +465,7 @@ vẫn có thể phục vụ cả read và write.
 
 ---
 
-## 5.1. Ưu điểm
+### 5.1. Ưu điểm
 
 So với master-slave:
 
@@ -477,7 +477,7 @@ vì không tồn tại một node duy nhất chịu trách nhiệm write.
 
 ---
 
-## 5.2. Conflict
+### 5.2. Conflict
 
 Tuy nhiên, khi hai node cùng write:
 
@@ -505,9 +505,9 @@ Khi số lượng write nodes tăng, bài toán conflict càng phức tạp. `sy
 
 ---
 
-# 6. Federation
+## 6. Federation
 
-## 6.1. Ý tưởng
+### 6.1. Ý tưởng
 
 Federation, hay **functional partitioning**, không chia dữ liệu theo từng user mà chia database theo **business function**.
 
@@ -541,7 +541,7 @@ Database
 
 ---
 
-## 6.2. Vì sao federation scale được?
+### 6.2. Vì sao federation scale được?
 
 Giả sử tổng workload:
 
@@ -581,7 +581,7 @@ Ngoài ra, database nhỏ hơn có thể:
 
 ---
 
-## 6.3. Nhược điểm
+### 6.3. Nhược điểm
 
 Federation làm application phức tạp hơn:
 
@@ -616,15 +616,15 @@ Nếu `users` và `orders` nằm ở hai database khác nhau, việc join không
 
 ---
 
-# 7. Sharding
+## 7. Sharding
 
 ![](img/wU8x5Id.png)
 
-## 7.1. Federation vs Sharding
+### 7.1. Federation vs Sharding
 
 Đây là một điểm **rất dễ nhầm**.
 
-### Federation
+#### Federation
 
 Chia theo **function**:
 
@@ -634,7 +634,7 @@ Forums
 Products
 ```
 
-### Sharding
+#### Sharding
 
 Chia cùng một loại dữ liệu thành nhiều partition:
 
@@ -659,7 +659,7 @@ $$
 
 ---
 
-# 8. Sharding Architecture
+## 8. Sharding Architecture
 
 Ví dụ database `Users`:
 
@@ -687,7 +687,7 @@ $$
 
 ---
 
-## 8.1. Sharding key
+### 8.1. Sharding key
 
 Cần một **sharding key**:
 
@@ -717,7 +717,7 @@ $$
 
 ---
 
-# 9. Lợi ích của Sharding
+## 9. Lợi ích của Sharding
 
 Nếu database có:
 
@@ -759,7 +759,7 @@ nếu workload được phân phối tốt.
 
 ---
 
-# 10. Hotspot và Data Skew
+## 10. Hotspot và Data Skew
 
 Đây là một trong những vấn đề quan trọng nhất của sharding.
 
@@ -790,7 +790,7 @@ $$
 
 ---
 
-# 11. Rebalancing
+## 11. Rebalancing
 
 Khi thêm shard:
 
@@ -824,9 +824,9 @@ Do đó có thể sử dụng **consistent hashing** để giảm lượng dữ 
 
 ---
 
-# 12. Denormalization
+## 12. Denormalization
 
-## 12.1. Normalization
+### 12.1. Normalization
 
 Trong normalized schema:
 
@@ -848,7 +848,7 @@ Khi workload read rất lớn, join có thể trở thành bottleneck.
 
 ---
 
-## 12.2. Denormalization
+### 12.2. Denormalization
 
 Denormalization chủ động **duplicate data** để giảm số lượng joins.
 
@@ -889,7 +889,7 @@ $$
 
 ---
 
-## 12.3. Trade-off
+### 12.3. Trade-off
 
 Có thể biểu diễn:
 
@@ -935,7 +935,7 @@ $$
 
 ---
 
-# 13. SQL Tuning
+## 13. SQL Tuning
 
 Không phải mọi bottleneck đều cần:
 
@@ -967,7 +967,7 @@ Benchmark again
 
 ---
 
-# 14. Index
+## 14. Index
 
 Index cho phép database tìm dữ liệu mà không cần scan toàn bộ table.
 
@@ -1034,7 +1034,7 @@ $$
 
 ---
 
-# 15. Tighten the Schema
+## 15. Tighten the Schema
 
 SQL tuning còn bao gồm lựa chọn datatype phù hợp.
 
@@ -1068,7 +1068,7 @@ Một nguyên tắc quan trọng:
 
 ---
 
-# 16. Avoid Expensive Joins
+## 16. Avoid Expensive Joins
 
 Một query:
 
@@ -1105,7 +1105,7 @@ Không nên mặc định denormalize ngay từ đầu.
 
 ---
 
-# 17. Partition Tables
+## 17. Partition Tables
 
 Partitioning chia một table thành các phần nhỏ hơn.
 
@@ -1141,7 +1141,7 @@ $$
 
 ---
 
-# 18. NoSQL
+## 18. NoSQL
 
 Nếu RDBMS tập trung vào:
 
@@ -1177,7 +1177,7 @@ Distributed data
 
 ---
 
-# 19. BASE
+## 19. BASE
 
 NoSQL thường được mô tả bằng mô hình **BASE**:
 
@@ -1205,9 +1205,9 @@ Nói cách khác, các replica có thể **tạm thời khác nhau**, nhưng cu�
 
 ---
 
-# 20. Key-Value Store
+## 20. Key-Value Store
 
-## Abstraction
+### Abstraction
 
 $$
 Key \rightarrow Value
@@ -1250,7 +1250,7 @@ Ví dụ phổ biến:
 
 ---
 
-# 21. Document Store
+## 21. Document Store
 
 Document store mở rộng ý tưởng key-value:
 
@@ -1304,7 +1304,7 @@ Ví dụ:
 
 ---
 
-# 22. Wide Column Store
+## 22. Wide Column Store
 
 ![](img/n16iOGk.png)
 
@@ -1345,7 +1345,7 @@ Wide-column stores thường phù hợp với:
 
 ---
 
-# 23. Graph Database
+## 23. Graph Database
 
 ![](img/fNcl65g.png)
 
@@ -1394,7 +1394,7 @@ Ví dụ:
 
 ---
 
-# 24. SQL vs NoSQL
+## 24. SQL vs NoSQL
 
 ![](img/wXGqG5f.png)
 
@@ -1410,7 +1410,7 @@ Mà nên đặt:
 
 ---
 
-## SQL phù hợp khi
+### SQL phù hợp khi
 
 ```text
 Structured data
@@ -1436,7 +1436,7 @@ Accounting
 
 ---
 
-## NoSQL phù hợp khi
+### NoSQL phù hợp khi
 
 ```text
 Semi-structured data
@@ -1466,7 +1466,7 @@ Các tiêu chí SQL/NoSQL trên phù hợp với bảng lựa chọn của `syst
 
 ---
 
-# 25. Cách tư duy chọn Database
+## 25. Cách tư duy chọn Database
 
 Một flow tốt khi system design là:
 
@@ -1510,7 +1510,7 @@ Một flow tốt khi system design là:
 
 ---
 
-# 26. Database Scaling: Bức tranh tổng thể
+## 26. Database Scaling: Bức tranh tổng thể
 
 Có thể cô đọng toàn bộ chapter thành:
 
@@ -1589,7 +1589,7 @@ $$
 
 ---
 
-# 27. Những khái niệm không nên nhầm lẫn
+## 27. Những khái niệm không nên nhầm lẫn
 
 | Khái niệm           | Ý tưởng chính                               |
 | ------------------- | ------------------------------------------- |
@@ -1609,7 +1609,7 @@ $$
 
 ---
 
-# 28. Các trade-off quan trọng
+## 28. Các trade-off quan trọng
 
 System design không phải là tối ưu một metric duy nhất.
 
@@ -1675,7 +1675,7 @@ $$
 
 ---
 
-# 29. Mental Model cần nhớ
+## 29. Mental Model cần nhớ
 
 Nếu học phần này để **system design**, không nên học thuộc từng database.
 

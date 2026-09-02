@@ -4,7 +4,7 @@
 
 ---
 
-# Mục lục
+## Mục lục
 
 - [Chương 1. Tổng quan về PyTorch](#chương-1-tổng-quan-về-pytorch)
 - [Chương 2. Tensor trong PyTorch](#chương-2-tensor-trong-pytorch)
@@ -17,14 +17,14 @@
 
 ---
 
-# Chương 1. Tổng quan về PyTorch
+## Chương 1. Tổng quan về PyTorch
 
 PyTorch là **framework mã nguồn mở dành cho Machine Learning và Deep Learning**, được phát triển bởi **Meta AI (Facebook AI Research - FAIR)**. Framework này cung cấp các thành phần cốt lõi để xây dựng, huấn luyện và triển khai mô hình học máy như **Tensor**, **Automatic Differentiation (Autograd)**, **Neural Network API (`torch.nn`)**, **Optimizer** và khả năng tăng tốc trên **GPU thông qua CUDA**.
 
 Với thiết kế theo **Dynamic Computational Graph**, PyTorch cho phép xây dựng và thay đổi đồ thị tính toán ngay trong quá trình thực thi chương trình, giúp việc phát triển và thử nghiệm mô hình trở nên linh hoạt hơn. Hiện nay, PyTorch là nền tảng của nhiều mô hình Deep Learning hiện đại như **ResNet, Vision Transformer (ViT), BERT, GPT, LLaMA và Stable Diffusion**.
 
 
-## 1.1 Giới thiệu PyTorch
+### 1.1 Giới thiệu PyTorch
 
 | Thành phần | Nội dung |
 |------------|----------|
@@ -35,7 +35,7 @@ Với thiết kế theo **Dynamic Computational Graph**, PyTorch cho phép xây 
 | **Who (Ai sử dụng PyTorch?)** | PyTorch được sử dụng bởi các nhà nghiên cứu AI, kỹ sư Machine Learning, kỹ sư Deep Learning, nhà khoa học dữ liệu và nhiều tổ chức như Meta, OpenAI, Microsoft, NVIDIA, Hugging Face cùng các trường đại học và phòng thí nghiệm nghiên cứu trên thế giới. |
 | **How (PyTorch hoạt động như thế nào?)** | PyTorch xây dựng mô hình bằng các Tensor và `nn.Module`, sử dụng Autograd để tự động tính gradient trong quá trình lan truyền ngược (Backpropagation), sau đó Optimizer cập nhật trọng số nhằm tối ưu hàm mất mát. Toàn bộ quá trình có thể được tăng tốc bằng GPU thông qua CUDA. |
 
-### chọn PyTorch hay TensorFlow?
+#### chọn PyTorch hay TensorFlow?
 
 Mặc dù PyTorch và TensorFlow đều là những framework Deep Learning phổ biến, PyTorch hiện được sử dụng rộng rãi trong nghiên cứu và phát triển các mô hình AI hiện đại nhờ các ưu điểm sau:
 
@@ -55,7 +55,7 @@ So với **TensorFlow 1.x**, PyTorch có ưu thế rõ rệt về khả năng l�
 | Hệ sinh thái nghiên cứu | Rất mạnh | Mạnh |
 | Triển khai Production | Tốt | Rất mạnh (TensorFlow Serving, TFLite) |
 
-### Vai trò và sự tiện lợi của PyTorch trong AI và Machine Learning
+#### Vai trò và sự tiện lợi của PyTorch trong AI và Machine Learning
 
 PyTorch cung cấp một quy trình thống nhất cho toàn bộ vòng đời của mô hình học máy, từ xử lý dữ liệu đến triển khai. Người phát triển không cần tự xây dựng các thành phần như tính gradient, cập nhật trọng số hay quản lý GPU, mà có thể tập trung vào thiết kế mô hình và giải quyết bài toán.
 
@@ -68,7 +68,7 @@ Nhờ đó, PyTorch được sử dụng trong nhiều lĩnh vực của AI và 
 - **Generative AI:** GAN, Diffusion Models, Text-to-Image.
 - **Graph Learning:** Graph Neural Networks (GCN, GAT).
 
-## 1.2 Kiến trúc PyTorch
+### 1.2 Kiến trúc PyTorch
 
 PyTorch được xây dựng theo kiến trúc nhiều tầng (Layered Architecture), trong đó mỗi tầng đảm nhiệm một nhóm chức năng riêng biệt. Kiến trúc này giúp tách biệt giữa giao diện lập trình Python, các thành phần tính toán của Deep Learning và tầng thực thi trên phần cứng.
 
@@ -137,7 +137,7 @@ K --> N
 | **Core Engine** | Tensor Library, Autograd Engine, ATen | Thực hiện các phép toán Tensor, xây dựng đồ thị tính toán và tự động tính gradient. |
 | **Backend Layer** | CPU Backend, CUDA Backend, cuDNN, cuBLAS | Thực thi các phép toán trên CPU hoặc GPU và tận dụng các thư viện tối ưu của NVIDIA. |
 
-### 1.2.1. Application Layer
+#### 1.2.1. Application Layer
 
 Đây là tầng cao nhất, nơi lập trình viên viết mã Python.
 
@@ -152,7 +152,7 @@ for x, y in loader:
 
 Người dùng chỉ tương tác với API của PyTorch mà không cần quan tâm đến cách Tensor được tính toán ở tầng thấp.
 
-### 1.2.2. Pytorch API Layer
+#### 1.2.2. Pytorch API Layer
 
 Đây là lớp giao tiếp giữa người dùng và hệ thống tính toán.
 
@@ -166,11 +166,11 @@ Người dùng chỉ tương tác với API của PyTorch mà không cần quan 
 
 Đây là các thư viện được sử dụng thường xuyên nhất khi phát triển mô hình Deep Learning.
 
-### 1.2.3. Core Engine
+#### 1.2.3. Core Engine
 
 Đây là "trái tim" của PyTorch.
 
-#### Tensor Library
+##### Tensor Library
 
 Quản lý dữ liệu nhiều chiều (Tensor) và thực hiện các phép toán tuyến tính như:
 
@@ -179,7 +179,7 @@ Quản lý dữ liệu nhiều chiều (Tensor) và thực hiện các phép to�
 - Broadcasting
 - Linear Algebra
 
-#### Autograd Engine
+##### Autograd Engine
 
 Trong quá trình **Forward Propagation**, Autograd xây dựng **Computational Graph**.
 
@@ -189,7 +189,7 @@ Khi gọi `loss.backward()` Autograd tự động:
 - áp dụng Chain Rule,
 - tính gradient của mọi tham số cần tối ưu.
 
-#### ATen Backend
+##### ATen Backend
 
 ATen là thư viện C++ của PyTorch chịu trách nhiệm triển khai các phép toán Tensor hiệu năng cao.
 
@@ -200,7 +200,7 @@ torch.relu()
 ```
 đều được ánh xạ xuống các hàm của ATen để thực thi trên CPU hoặc GPU.
 
-### 1.2.4. Backend Layer
+#### 1.2.4. Backend Layer
 
 Backend quyết định nơi các phép toán sẽ được thực hiện.
 
@@ -217,7 +217,7 @@ Nhờ các thư viện này, tốc độ huấn luyện trên GPU thường nhan
 
 ---
 
-## 1.3 Hệ sinh thái PyTorch
+### 1.3 Hệ sinh thái PyTorch
 
 PyTorch không chỉ là một thư viện duy nhất mà là **một hệ sinh thái (Ecosystem)** gồm nhiều thư viện được xây dựng xung quanh thư viện lõi `torch`. Mỗi thư viện được thiết kế để giải quyết một nhóm bài toán cụ thể trong lĩnh vực Trí tuệ nhân tạo (Artificial Intelligence - AI) và Học máy (Machine Learning - ML), giúp người phát triển có thể xây dựng toàn bộ quy trình từ xử lý dữ liệu, huấn luyện mô hình đến triển khai ứng dụng.
 
@@ -267,14 +267,14 @@ flowchart TD
 
 ---
 
-# Chương 2. Tensor trong PyTorch
+## Chương 2. Tensor trong PyTorch
 
 > Tensor là cấu trúc dữ liệu trung tâm của PyTorch. Mọi dữ liệu, tham số của mô hình và kết quả tính toán trong quá trình huấn luyện đều được biểu diễn dưới dạng Tensor. So với mảng NumPy, Tensor hỗ trợ **Automatic Differentiation (Autograd)** và có thể thực thi trên **CPU** hoặc **GPU (CUDA)**, giúp tăng tốc các phép toán trong Deep Learning.
 
 
-## 2.1 Tensor
+### 2.1 Tensor
 
-### 2.1.1. Tensor là gì?
+#### 2.1.1. Tensor là gì?
 
 Tensor là một mảng nhiều chiều (N-dimensional Array) dùng để lưu trữ và xử lý dữ liệu số.
 
@@ -287,7 +287,7 @@ Tensor có thể được xem là sự tổng quát của:
 | Matrix | 2-D | `[[1,2],[3,4]]` |
 | Tensor | ≥3-D | Ảnh RGB `(3,224,224)` |
 
-### 2.1.2. Shape
+#### 2.1.2. Shape
 
 **Shape** là kích thước của Tensor trên từng chiều (Dimension). Và quyết định cách Tensor được lưu trữ và tính toán trong mô hình.
 
@@ -306,7 +306,7 @@ torch.Size([32, 3, 224, 224])
 | 224 | Height |
 | 224 | Width |
 
-### 2.1.3. Dimension
+#### 2.1.3. Dimension
 
 **Dimension (Dim)** là số lượng trục của Tensor.
 
@@ -328,7 +328,7 @@ Trong Deep Learning:
 - 5-D: Video hoặc dữ liệu 3D
 
 
-### 2.1.4. Data Type
+#### 2.1.4. Data Type
 
 Mỗi Tensor có một kiểu dữ liệu (**dtype**) xác định cách lưu trữ và tính toán.
 
@@ -343,7 +343,7 @@ Mỗi Tensor có một kiểu dữ liệu (**dtype**) xác định cách lưu tr
 
 > **Khuyến nghị:** `torch.float32` là kiểu dữ liệu mặc định và được sử dụng phổ biến nhất khi huấn luyện mô hình Deep Learning vì cân bằng giữa tốc độ và độ chính xác.
 
-## 2.2 Các phép toán Tensor
+### 2.2 Các phép toán Tensor
 
 PyTorch cung cấp nhiều phép toán trên Tensor để xử lý dữ liệu và xây dựng mô hình Deep Learning. Một số phép toán cơ bản được sử dụng thường xuyên gồm:
 
@@ -356,7 +356,7 @@ PyTorch cung cấp nhiều phép toán trên Tensor để xử lý dữ liệu v
 | **Reshape** | Thay đổi Shape của Tensor mà không làm thay đổi dữ liệu. | `x.reshape(2, 6)` |
 | **Transpose** | Hoán đổi các chiều (Dimension) của Tensor. | `x.transpose(0, 1)` hoặc `x.T` |
 
-## 2.3 Tensor và NumPy
+### 2.3 Tensor và NumPy
 
 Tensor trong PyTorch có nhiều điểm tương đồng với `ndarray` của NumPy, nhưng được mở rộng để phục vụ Deep Learning.
 
@@ -371,11 +371,11 @@ Tensor trong PyTorch có nhiều điểm tương đồng với `ndarray` của N
 > **Kết luận:** NumPy phù hợp cho tính toán số học tổng quát, trong khi Tensor được thiết kế để xây dựng và huấn luyện các mô hình Deep Learning.
 
 
-## 2.4 CPU và CUDA
+### 2.4 CPU và CUDA
 
 PyTorch cho phép Tensor và mô hình thực thi trên **CPU** hoặc **GPU** thông qua **CUDA**.
 
-### CPU
+#### CPU
 
 CPU thực hiện các phép toán tuần tự và phù hợp với:
 
@@ -385,7 +385,7 @@ CPU thực hiện các phép toán tuần tự và phù hợp với:
 
 ---
 
-### GPU
+#### GPU
 
 GPU có hàng nghìn lõi xử lý song song, giúp tăng tốc các phép toán ma trận và Tensor trong Deep Learning.
 
@@ -398,7 +398,7 @@ Phù hợp với:
 
 ---
 
-### CUDA Runtime
+#### CUDA Runtime
 
 CUDA là nền tảng của NVIDIA cho phép PyTorch thực thi các phép toán Tensor trên GPU.
 
@@ -414,7 +414,7 @@ device = torch.device("cpu")
 
 ---
 
-### Device Management
+#### Device Management
 
 Để thực hiện tính toán, **Tensor và Model phải nằm trên cùng một thiết bị (Device)**.
 
@@ -429,11 +429,11 @@ x = x.to(device)
 
 ---
 
-# Chương 3. Automatic Differentiation (Autograd)
+## Chương 3. Automatic Differentiation (Autograd)
 
 Autograd là cơ chế **Automatic Differentiation** của PyTorch, cho phép tự động tính đạo hàm của hàm mất mát (Loss Function) đối với các tham số của mô hình. Đây là thành phần cốt lõi giúp thực hiện **Backpropagation** và tối ưu hóa mô hình mà không cần tự cài đặt công thức đạo hàm.
 
-## 3.1 Computational Graph
+### 3.1 Computational Graph
 
 **Computational Graph** là đồ thị có hướng mô tả toàn bộ các phép toán được thực hiện trên Tensor.
 
@@ -443,7 +443,7 @@ Trong quá trình **Forward Propagation**, PyTorch tự động xây dựng đ�
 
 ---
 
-## 3.2 Gradient
+### 3.2 Gradient
 
 **Gradient** là đạo hàm của hàm mất mát theo từng tham số của mô hình.
 
@@ -460,7 +460,7 @@ Sau khi tính Gradient, Optimizer sẽ cập nhật trọng số để giảm Lo
 
 ---
 
-## 3.3 Chain Rule
+### 3.3 Chain Rule
 
 **Chain Rule** là quy tắc đạo hàm của hàm hợp và là nền tảng của thuật toán **Backpropagation**.
 
@@ -470,7 +470,7 @@ Autograd tự động áp dụng Chain Rule trên toàn bộ Computational Graph
 
 ---
 
-## 3.4 Backpropagation
+### 3.4 Backpropagation
 
 **Backpropagation** là thuật toán lan truyền ngược dùng để tính Gradient của các tham số trong mô hình.
 
@@ -490,7 +490,7 @@ optimizer.step()
 
 ---
 
-## 3.5 requires_grad
+### 3.5 requires_grad
 
 `requires_grad` xác định Tensor có cần tính Gradient hay không.
 
@@ -505,7 +505,7 @@ x = torch.tensor([1.0], requires_grad=True)
 
 ---
 
-## 3.6 backward()
+### 3.6 backward()
 
 `backward()` thực hiện lan truyền ngược trên Computational Graph để tính Gradient.
 
@@ -525,7 +525,7 @@ sẽ chứa Gradient của từng tham số.
 
 ---
 
-## 3.7 detach()
+### 3.7 detach()
 
 `detach()` tạo một Tensor mới tách khỏi Computational Graph.
 
@@ -543,7 +543,7 @@ Tensor mới:
 
 ---
 
-## 3.8 torch.no_grad()
+### 3.8 torch.no_grad()
 
 `torch.no_grad()` tạm thời vô hiệu hóa Autograd trong một khối lệnh.
 
@@ -562,11 +562,11 @@ with torch.no_grad():
 
 ---
 
-# Chương 4. Neural Network API
+## Chương 4. Neural Network API
 
 `torch.nn` là module của PyTorch cung cấp các thành phần để xây dựng mạng nơ-ron. Thay vì tự cài đặt từng phép toán, người dùng có thể sử dụng các lớp (Layer), hàm mất mát (Loss Function) và các module có sẵn để xây dựng mô hình Deep Learning.
 
-## 4.1 nn.Module
+### 4.1 nn.Module
 
 `nn.Module` là lớp cơ sở (Base Class) của mọi mô hình trong PyTorch.
 
@@ -588,7 +588,7 @@ class MLP(nn.Module):
 
 ---
 
-## 4.2 Parameter
+### 4.2 Parameter
 
 **Parameter** là các tham số có thể học (Learnable Parameters) của mô hình, bao gồm **Weight** và **Bias**.
 
@@ -607,7 +607,7 @@ for name, param in model.named_parameters():
 
 ---
 
-## 4.3 Forward Pass
+### 4.3 Forward Pass
 
 **Forward Pass** là quá trình dữ liệu đi từ đầu vào qua các Layer để tạo ra dự đoán (Prediction).
 
@@ -625,7 +625,7 @@ def forward(self, x):
 
 ---
 
-## 4.4 Loss Function
+### 4.4 Loss Function
 
 **Loss Function** là hàm đo mức sai lệch giữa giá trị dự đoán (**Prediction**) và giá trị thực (**Target**). Mục tiêu của quá trình huấn luyện là tối thiểu hóa giá trị Loss.
 
@@ -646,7 +646,7 @@ loss = criterion(output, target)
 
 ---
 
-## 4.5 Activation Function
+### 4.5 Activation Function
 
 **Activation Function** tạo tính **phi tuyến (Non-linearity)** cho mạng nơ-ron, giúp mô hình học được các mối quan hệ phức tạp trong dữ liệu.
 
@@ -669,7 +669,7 @@ x = relu(x)
 
 ---
 
-## 4.6 Weight Initialization
+### 4.6 Weight Initialization
 
 **Weight Initialization** là quá trình khởi tạo giá trị ban đầu cho các trọng số (**Weight**) trước khi huấn luyện.
 
@@ -694,11 +694,11 @@ nn.init.kaiming_normal_(layer.weight)
 
 ---
 
-# Chương 5. Dataset và DataLoader
+## Chương 5. Dataset và DataLoader
 
 > Trong PyTorch, dữ liệu được quản lý thông qua **Dataset** và **DataLoader**. `Dataset` chịu trách nhiệm lưu trữ và truy xuất dữ liệu, còn `DataLoader` giúp chia dữ liệu thành các mini-batch, trộn dữ liệu và nạp dữ liệu hiệu quả trong quá trình huấn luyện.
 
-## 5.1 Dataset
+### 5.1 Dataset
 
 `Dataset` là lớp cơ sở (Base Class) dùng để quản lý tập dữ liệu trong PyTorch.
 
@@ -715,7 +715,7 @@ from torch.utils.data import Dataset
 
 ---
 
-## 5.2 TensorDataset
+### 5.2 TensorDataset
 
 `TensorDataset` là Dataset có sẵn của PyTorch dùng để kết hợp nhiều Tensor có cùng số lượng mẫu thành một tập dữ liệu.
 
@@ -734,7 +734,7 @@ Trong đó:
 
 ---
 
-## 5.3 Custom Dataset
+### 5.3 Custom Dataset
 
 `Custom Dataset` là Dataset do người dùng tự xây dựng bằng cách kế thừa `Dataset`, phù hợp khi dữ liệu nằm trong ảnh, văn bản, CSV hoặc cơ sở dữ liệu.
 
@@ -750,7 +750,7 @@ class MyDataset(Dataset):
 
 ---
 
-## 5.4 DataLoader
+### 5.4 DataLoader
 
 `DataLoader` là lớp dùng để đọc dữ liệu từ `Dataset` và cung cấp dữ liệu theo từng **mini-batch** trong quá trình huấn luyện.
 
@@ -773,7 +773,7 @@ Chức năng chính:
 
 ---
 
-## 5.5 Batch
+### 5.5 Batch
 
 **Batch** là một nhóm mẫu dữ liệu được đưa vào mô hình trong một lần Forward và Backward.
 
@@ -790,7 +790,7 @@ Nếu Dataset có 3.200 mẫu:
 
 ---
 
-## 5.6 Shuffle
+### 5.6 Shuffle
 
 `shuffle=True` sẽ xáo trộn thứ tự dữ liệu trước mỗi Epoch.
 
@@ -804,7 +804,7 @@ loader = DataLoader(dataset,
 
 ---
 
-## 5.7 Data Augmentation
+### 5.7 Data Augmentation
 
 **Data Augmentation** là kỹ thuật tạo thêm dữ liệu bằng cách biến đổi dữ liệu gốc nhưng vẫn giữ nguyên nhãn.
 
@@ -830,7 +830,7 @@ transform = transforms.Compose([
 
 ---
 
-# Chương 6. Training Pipeline
+## Chương 6. Training Pipeline
 
 > Training Pipeline là quy trình huấn luyện mô hình Deep Learning trong PyTorch. Mỗi vòng lặp huấn luyện (Training Loop) gồm ba bước chính: **Forward Propagation**, **Loss Computation** và **Backward Propagation**. Sau đó Optimizer sử dụng Gradient để cập nhật các tham số của mô hình.
 
@@ -855,7 +855,7 @@ F --> G
 G --> H
 ```
 
-## 6.1 Forward Propagation
+### 6.1 Forward Propagation
 
 **Forward Propagation** là quá trình dữ liệu đi từ đầu vào qua các Layer để tạo ra giá trị dự đoán (**Prediction**).
 
@@ -867,7 +867,7 @@ output = model(x)
 
 ---
 
-## 6.2 Loss Computation
+### 6.2 Loss Computation
 
 Sau khi có Prediction, mô hình sử dụng **Loss Function** để đo mức sai lệch giữa dự đoán và nhãn thực (**Target**).
 
@@ -885,7 +885,7 @@ Một số Loss Function phổ biến:
 
 ---
 
-## 6.3 Backward Propagation
+### 6.3 Backward Propagation
 
 **Backward Propagation** là quá trình lan truyền ngược để tính Gradient của các tham số dựa trên giá trị Loss.
 
@@ -903,7 +903,7 @@ Autograd tự động:
 
 ---
 
-## 6.4 Optimizer
+### 6.4 Optimizer
 
 **Optimizer** là thuật toán sử dụng Gradient để cập nhật các tham số của mô hình nhằm giảm giá trị Loss.
 
@@ -922,7 +922,7 @@ Một số Optimizer phổ biến:
 
 ---
 
-## 6.5 Gradient Update
+### 6.5 Gradient Update
 
 Sau khi tính Gradient bằng `backward()`, Optimizer cập nhật các tham số theo Gradient.
 
@@ -942,7 +942,7 @@ Trong đó:
 
 ---
 
-## 6.6 Training Loop
+### 6.6 Training Loop
 
 **Training Loop** là vòng lặp huấn luyện mô hình trên toàn bộ tập dữ liệu.
 
@@ -965,7 +965,7 @@ for x, y in train_loader:
 
 ---
 
-## 6.7 Validation Loop
+### 6.7 Validation Loop
 
 **Validation Loop** đánh giá mô hình trên tập Validation mà **không cập nhật tham số**.
 
@@ -981,7 +981,7 @@ with torch.no_grad():
 
 ---
 
-## 6.8 Inference Loop
+### 6.8 Inference Loop
 
 **Inference Loop** sử dụng mô hình đã huấn luyện để dự đoán dữ liệu mới.
 
@@ -1002,9 +1002,9 @@ with torch.no_grad():
 
 ---
 
-# Phụ lục
+## Phụ lục
 
-# A. TensorBoard
+### A. TensorBoard
 
 TensorBoard là công cụ trực quan hóa quá trình huấn luyện mô hình Deep Learning. Trong PyTorch, TensorBoard được tích hợp thông qua `torch.utils.tensorboard`, giúp theo dõi các chỉ số như Loss, Accuracy, Learning Rate, Gradient và cấu trúc mô hình theo thời gian.
 
@@ -1020,7 +1020,7 @@ TensorBoard hỗ trợ:
 
 ---
 
-## A.1 Cài đặt
+#### A.1 Cài đặt
 
 ```bash
 pip install tensorboard
@@ -1054,7 +1054,7 @@ http://localhost:6006
 
 ---
 
-## A.2 Logging Scalar
+#### A.2 Logging Scalar
 
 Scalar là các giá trị số được ghi lại sau mỗi Epoch hoặc Batch.
 
@@ -1076,7 +1076,7 @@ Thường theo dõi:
 
 ---
 
-## A.3 Logging Model Graph
+#### A.3 Logging Model Graph
 
 Hiển thị kiến trúc mô hình.
 
@@ -1092,7 +1092,7 @@ Giúp kiểm tra:
 
 ---
 
-## A.4 Logging Histogram
+#### A.4 Logging Histogram
 
 Theo dõi sự phân bố của Weight và Gradient.
 
@@ -1109,7 +1109,7 @@ for name, param in model.named_parameters():
 
 ---
 
-## A.5 Logging Images
+#### A.5 Logging Images
 
 Hiển thị dữ liệu ảnh hoặc kết quả dự đoán.
 
@@ -1125,7 +1125,7 @@ writer.add_images("Images", images, epoch)
 
 ---
 
-## A.6 Logging Embedding
+#### A.6 Logging Embedding
 
 Hiển thị Embedding trong không gian nhiều chiều.
 
@@ -1140,7 +1140,7 @@ writer.add_embedding(features)
 
 ---
 
-## A.7 TensorBoard Workflow
+#### A.7 TensorBoard Workflow
 
 ```mermaid
 flowchart LR
@@ -1161,7 +1161,7 @@ E --> F
 
 ---
 
-## A.8 Tích hợp vào Training Loop
+#### A.8 Tích hợp vào Training Loop
 
 ```python
 writer = SummaryWriter("runs/exp1")
@@ -1180,7 +1180,7 @@ writer.close()
 
 ---
 
-## A.9 Các API thường dùng
+#### A.9 Các API thường dùng
 
 | API | Chức năng |
 |------|-----------|
@@ -1200,9 +1200,9 @@ TensorBoard là công cụ trực quan hóa quá trình huấn luyện trong PyT
 
 ---
 
-# Tài liệu tham khảo
+## Tài liệu tham khảo
 
-## 1. Official Documentation (Ưu tiên)
+### 1. Official Documentation (Ưu tiên)
 
 1. PyTorch Documentation  
    https://pytorch.org/docs/stable/
@@ -1221,7 +1221,7 @@ TensorBoard là công cụ trực quan hóa quá trình huấn luyện trong PyT
 
 ---
 
-## 2. Sách
+### 2. Sách
 
 1. Goodfellow, I., Bengio, Y., & Courville, A. (2016). *Deep Learning*. MIT Press.
 
@@ -1235,7 +1235,7 @@ TensorBoard là công cụ trực quan hóa quá trình huấn luyện trong PyT
 
 ---
 
-## 3. Các Paper nền tảng
+### 3. Các Paper nền tảng
 
 - LeCun et al. (1998) — LeNet
 - Krizhevsky et al. (2012) — AlexNet

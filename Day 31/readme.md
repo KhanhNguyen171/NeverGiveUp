@@ -62,9 +62,9 @@ Mục tiêu chính của Application Layer là **tách business logic khỏi t�
 
 ---
 
-# 2. Web Layer và Application Layer
+## 2. Web Layer và Application Layer
 
-## 2.1. Separation of Responsibilities
+### 2.1. Separation of Responsibilities
 
 Web Layer chủ yếu chịu trách nhiệm về giao tiếp với client:
 
@@ -97,7 +97,7 @@ Việc phân tách này giúp tránh việc một server phải đồng thời x
 
 ---
 
-## 2.2. Independent Scaling
+### 2.2. Independent Scaling
 
 Một lợi ích quan trọng của Application Layer là cho phép Web Layer và Application Layer được **scale độc lập**.
 
@@ -168,7 +168,7 @@ $$
 
 ---
 
-# 3. Application Servers
+## 3. Application Servers
 
 Application servers thực thi các logic nghiệp vụ phía sau Web Layer.
 
@@ -217,7 +217,7 @@ Cách phân tách này tạo nền tảng cho kiến trúc **microservices**.
 
 ---
 
-# 4. Single Responsibility Principle
+## 4. Single Responsibility Principle
 
 Application Layer thường được thiết kế theo tư tưởng **Single Responsibility Principle (SRP)**.
 
@@ -276,7 +276,7 @@ $$
 
 ---
 
-# 5. Asynchronism
+## 5. Asynchronism
 
 Application Layer cũng là nơi thường triển khai các **workers** để xử lý các tác vụ bất đồng bộ.
 
@@ -359,9 +359,9 @@ $$
 
 ---
 
-# 6. Microservices
+## 6. Microservices
 
-## 6.1. Định nghĩa
+### 6.1. Định nghĩa
 
 **Microservices** là kiến trúc trong đó một application được tổ chức thành tập hợp các service nhỏ, modular và có thể deploy độc lập.
 
@@ -390,9 +390,9 @@ $$
 
 ---
 
-# 7. Monolith và Microservices
+## 7. Monolith và Microservices
 
-## 7.1. Monolithic Architecture
+### 7.1. Monolithic Architecture
 
 ```text
 +----------------------------------+
@@ -423,7 +423,7 @@ Deploy entire application
 
 ---
 
-## 7.2. Microservices Architecture
+### 7.2. Microservices Architecture
 
 ```text
 +-------------+
@@ -467,7 +467,7 @@ $$
 
 ---
 
-# 8. Independent Scaling
+## 8. Independent Scaling
 
 Microservices cũng cho phép scale từng service dựa trên workload.
 
@@ -513,7 +513,7 @@ thay vì scale toàn bộ application.
 
 ---
 
-# 9. Service Discovery
+## 9. Service Discovery
 
 Khi hệ thống chỉ có một application server, địa chỉ của server có thể được biết trước.
 
@@ -535,7 +535,7 @@ Khi đó một service khác cần biết:
 
 ---
 
-# 10. Service Registry
+## 10. Service Registry
 
 Service Discovery thường sử dụng một **Service Registry** để lưu thông tin của các service.
 
@@ -576,7 +576,7 @@ Các hệ thống như **Consul, Etcd và Zookeeper** có thể được sử d�
 
 ---
 
-# 11. Service Registration
+## 11. Service Registration
 
 Khi một service instance khởi động, nó có thể đăng ký với registry:
 
@@ -605,7 +605,7 @@ Khi instance bị shutdown hoặc không còn hoạt động, thông tin của i
 
 ---
 
-# 12. Health Check
+## 12. Health Check
 
 Service Discovery thường kết hợp với **Health Check** để xác định instance nào đang hoạt động bình thường.
 
@@ -663,7 +663,7 @@ $$
 
 ---
 
-# 13. Service Discovery và Load Balancing
+## 13. Service Discovery và Load Balancing
 
 Service Discovery và Load Balancing có vai trò khác nhau nhưng thường phối hợp với nhau.
 
@@ -703,7 +703,7 @@ $$
 
 ---
 
-# 14. Configuration và Key-Value Store
+## 14. Configuration và Key-Value Store
 
 Một số hệ thống service discovery như Consul và Etcd còn cung cấp **key-value store**.
 
@@ -749,11 +749,11 @@ $$
 
 ---
 
-# 15. Disadvantages của Application Layer
+## 15. Disadvantages của Application Layer
 
 Việc bổ sung Application Layer và microservices không chỉ mang lại lợi ích. Nó đồng thời tạo ra nhiều complexity mới.
 
-## 15.1. Architectural Complexity
+### 15.1. Architectural Complexity
 
 Monolith:
 
@@ -794,7 +794,7 @@ Hệ thống phải giải quyết thêm:
 
 ---
 
-# 16. Operational Complexity
+## 16. Operational Complexity
 
 Một monolith có thể được triển khai tương đối đơn giản:
 
@@ -847,7 +847,7 @@ $$
 
 ---
 
-# 17. Network Communication và Partial Failure
+## 17. Network Communication và Partial Failure
 
 Trong monolith, một lời gọi giữa các module thường chỉ là function call:
 
@@ -896,7 +896,7 @@ $$
 
 ---
 
-# 18. Microservices không phải luôn tốt hơn Monolith
+## 18. Microservices không phải luôn tốt hơn Monolith
 
 Không nên xem microservices là kiến trúc luôn tốt hơn monolith.
 
@@ -941,7 +941,7 @@ Một hệ thống nhỏ có thể phù hợp với monolith, trong khi một h�
 
 ---
 
-# 19. Kiến trúc tổng hợp
+## 19. Kiến trúc tổng hợp
 
 Application Layer có thể được đặt trong toàn bộ kiến trúc system design như sau:
 
@@ -1063,7 +1063,7 @@ $$
 
 ---
 
-# 20. Tổng kết
+## 20. Tổng kết
 
 Application Layer giải quyết vấn đề **tách business logic khỏi Web Layer**, từ đó cho phép hệ thống mở rộng và tổ chức các thành phần độc lập hơn.
 
@@ -1141,7 +1141,7 @@ Do đó, mục tiêu của Application Layer không phải là **tối đa hóa 
 
 ---
 
-# 21. Sources and Further Reading
+## 21. Sources and Further Reading
 
 1. **System Design Primer — Application Layer**
    https://github.com/donnemartin/system-design-primer#application-layer

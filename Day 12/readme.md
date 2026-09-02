@@ -60,13 +60,13 @@ Biểu diễn học được từ I-JEPA có thể chuyển sang nhiều tác v�
 
 ---
 
-# 1. Introduction
+## 1. Introduction
 
 ![](img/Fig2_embedding.png)
 
 > So sánh ba kiến trúc Self-Supervised Learning: Joint-Embedding học bằng cách đưa embedding của các mẫu tương ứng lại gần nhau; Generative học bằng cách tái tạo dữ liệu gốc (pixel/token); còn JEPA dự đoán embedding của vùng mục tiêu từ vùng ngữ cảnh. Nhờ dự đoán trong representation space thay vì pixel space, JEPA tập trung học đặc trưng ngữ nghĩa (semantic representation) mà không cần tái tạo toàn bộ ảnh.
 
-## 1.1 Motivation
+### 1.1 Motivation
 
 Trong những năm gần đây, **Self-Supervised Learning (SSL)** đã trở thành hướng nghiên cứu quan trọng trong Computer Vision nhờ khả năng học biểu diễn (representation) từ dữ liệu chưa gán nhãn. Thay vì phụ thuộc vào một lượng lớn dữ liệu được gán nhãn thủ công, SSL tận dụng cấu trúc nội tại của dữ liệu để xây dựng các đặc trưng có thể chuyển giao sang nhiều tác vụ downstream như phân loại ảnh, phát hiện đối tượng và phân đoạn ảnh.
 
@@ -79,11 +79,11 @@ Mỗi hướng đều đạt được nhiều thành công nhưng vẫn tồn t�
 
 ---
 
-# 1.2 Existing Self-Supervised Learning Paradigms
+### 1.2 Existing Self-Supervised Learning Paradigms
 
-## 1.2.1 Invariance-based Learning
+#### 1.2.1 Invariance-based Learning
 
-### What?
+#### What?
 
 Invariance-based Learning học biểu diễn bằng cách tạo nhiều **view** của cùng một ảnh thông qua các phép **data augmentation**, sau đó tối ưu để embedding của các view này gần nhau trong không gian đặc trưng.
 
@@ -122,7 +122,7 @@ Các phương pháp tiêu biểu gồm:
 
 ---
 
-### Advantages
+#### Advantages
 
 - Học semantic representation mạnh.
 - Hiệu quả cao trong nhiều benchmark.
@@ -130,7 +130,7 @@ Các phương pháp tiêu biểu gồm:
 
 ---
 
-### Limitations
+#### Limitations
 
 Theo bài báo, các phương pháp này phụ thuộc mạnh vào **hand-crafted data augmentations**.
 
@@ -147,9 +147,9 @@ Ngoài ra, các augmentation dành cho ảnh rất khó mở rộng sang các mo
 
 ---
 
-## 1.2.2 Generative Learning
+#### 1.2.2 Generative Learning
 
-### What?
+#### What?
 
 Generative Methods học bằng cách **khôi phục (reconstruct)** phần dữ liệu bị che hoặc bị làm hỏng.
 
@@ -198,7 +198,7 @@ Các phương pháp tiêu biểu:
 
 ---
 
-### Advantages
+#### Advantages
 
 - Không cần thiết kế data augmentation.
 - Dễ mở rộng sang nhiều loại dữ liệu khác nhau.
@@ -206,7 +206,7 @@ Các phương pháp tiêu biểu:
 
 ---
 
-### Limitations
+#### Limitations
 
 Theo bài báo, reconstruction trong **pixel space** buộc mô hình học nhiều thông tin mức thấp như:
 
@@ -221,11 +221,11 @@ Do đó semantic representation thường yếu hơn các phương pháp invaria
 
 ---
 
-# 1.3 Problem Statement
+### 1.3 Problem Statement
 
 Bài báo xác định hai vấn đề chính của SSL hiện nay.
 
-## Problem 1
+#### Problem 1
 
 Invariance-based Learning cần:
 
@@ -236,7 +236,7 @@ Invariance-based Learning cần:
 
 ---
 
-## Problem 2
+#### Problem 2
 
 Generative Learning dự đoán
 
@@ -260,7 +260,7 @@ Mục tiêu của bài báo là trả lời câu hỏi:
 
 ---
 
-# 1.4 Proposed Solution: Image-JEPA
+### 1.4 Proposed Solution: Image-JEPA
 
 Để giải quyết các hạn chế trên, bài báo đề xuất:
 
@@ -311,7 +311,7 @@ Target Encoder(Target Block)
 
 ---
 
-# 1.5 Key Design Choices
+### 1.5 Key Design Choices
 
 Bài báo nhấn mạnh hai lựa chọn thiết kế quyết định chất lượng của I-JEPA:
 
@@ -335,7 +335,7 @@ Nhờ đó mô hình có thể dự đoán các đặc trưng ngữ nghĩa thay 
 
 ---
 
-# 1.6 Main Contributions
+### 1.6 Main Contributions
 
 Bài báo đưa ra bốn đóng góp chính:
 
@@ -349,7 +349,7 @@ Bài báo đưa ra bốn đóng góp chính:
 
 ---
 
-# 1.7 Key Takeaways
+### 1.7 Key Takeaways
 
 - SSL hiện nay chủ yếu gồm **Invariance-based Learning** và **Generative Learning**.
 - Invariance-based phụ thuộc vào **data augmentation**, còn Generative tập trung vào **pixel reconstruction**.
@@ -358,11 +358,11 @@ Bài báo đưa ra bốn đóng góp chính:
 
 ---
 
-# 2. Background
+## 2. Background
 
-## 2.1 Self-Supervised Learning
+### 2.1 Self-Supervised Learning
 
-### What is Self-Supervised Learning?
+#### What is Self-Supervised Learning?
 
 **Self-Supervised Learning (SSL)** là phương pháp **Representation Learning** trong đó mô hình học trực tiếp từ **dữ liệu chưa gán nhãn** bằng cách khai thác mối quan hệ nội tại giữa các mẫu dữ liệu. Thay vì sử dụng nhãn (label), mô hình tự tạo ra tín hiệu học (self-supervision) từ chính dữ liệu đầu vào.
 
@@ -377,9 +377,9 @@ Trong bài báo, SSL được diễn giải dưới góc nhìn của **Energy-Ba
 
 ---
 
-## 2.2 Energy-Based Models (EBMs)
+### 2.2 Energy-Based Models (EBMs)
 
-### What?
+#### What?
 
 Bài báo xem Self-Supervised Learning như một bài toán **Energy-Based Learning**.
 
@@ -398,7 +398,7 @@ trả về một giá trị vô hướng biểu diễn mức độ tương thíc
 
 ---
 
-### Learning Objective
+#### Learning Objective
 
 Mục tiêu của EBMs là:
 
@@ -452,9 +452,9 @@ Theo bài báo, nhiều phương pháp SSL hiện nay đều có thể được 
 
 ---
 
-# 2.3 Joint-Embedding Architectures (JEA)
+### 2.3 Joint-Embedding Architectures (JEA)
 
-## What?
+#### What?
 
 **Joint-Embedding Architecture (JEA)** là kiến trúc học biểu diễn bằng cách đưa **embedding** của hai đầu vào tương thích lại gần nhau trong không gian đặc trưng.
 
@@ -462,7 +462,7 @@ Kiến trúc này là nền tảng của các phương pháp **Invariance-based 
 
 ---
 
-## Architecture
+#### Architecture
 
 ```mermaid
 flowchart LR
@@ -490,7 +490,7 @@ Ví dụ:
 
 ---
 
-## Learning Objective
+#### Learning Objective
 
 Giả sử
 
@@ -517,7 +517,7 @@ $$z_x \neq z_y$$
 
 ---
 
-## Representation Collapse
+#### Representation Collapse
 
 ### What?
 
@@ -541,11 +541,11 @@ Mặc dù loss có thể rất nhỏ nhưng mô hình hoàn toàn không học �
 
 ---
 
-## Các phương pháp tránh Collapse
+#### Các phương pháp tránh Collapse
 
 Bài báo chia thành bốn hướng chính.
 
-### 1. Contrastive Learning
+#### 1. Contrastive Learning
 
 Ý tưởng:
 
@@ -560,7 +560,7 @@ Ví dụ:
 
 ---
 
-### 2. Non-Contrastive Learning
+#### 2. Non-Contrastive Learning
 
 Không cần negative samples.
 
@@ -573,7 +573,7 @@ Ví dụ
 
 ---
 
-### 3. Clustering-based Learning
+#### 3. Clustering-based Learning
 
 Tối đa entropy của embedding trung bình.
 
@@ -584,7 +584,7 @@ Ví dụ
 
 ---
 
-### 4. Asymmetric Architecture
+#### 4. Asymmetric Architecture
 
 Sử dụng hai encoder không hoàn toàn đối xứng.
 
@@ -598,7 +598,7 @@ Ví dụ:
 
 ---
 
-## Advantages
+#### Advantages
 
 - Semantic representation mạnh.
 - Hiệu quả cao trên Image Classification.
@@ -606,7 +606,7 @@ Ví dụ:
 
 ---
 
-## Limitations
+#### Limitations
 
 Theo bài báo:
 
@@ -616,9 +616,9 @@ Theo bài báo:
 
 ---
 
-# 2.4 Generative Architectures
+### 2.4 Generative Architectures
 
-## What?
+#### What?
 
 **Generative Architectures** học bằng cách **khôi phục (reconstruct)** tín hiệu mục tiêu từ tín hiệu đầu vào.
 
@@ -626,7 +626,7 @@ Khác với JEA, mô hình không so sánh embedding mà sinh lại dữ liệu 
 
 ---
 
-## Architecture
+#### Architecture
 
 ```mermaid
 flowchart LR
@@ -660,7 +660,7 @@ lưu thông tin về:
 
 ---
 
-## Learning Objective
+#### Learning Objective
 
 Encoder tạo latent representation
 
@@ -678,7 +678,7 @@ hoặc reconstruction loss tương đương.
 
 ---
 
-## Why Representation Collapse is not a concern?
+#### Why Representation Collapse is not a concern?
 
 Khác với JEA, decoder phải tái tạo ảnh.
 
@@ -696,7 +696,7 @@ không chứa quá nhiều thông tin so với tín hiệu gốc.
 
 ---
 
-## Advantages
+#### Advantages
 
 - Không cần data augmentation.
 - Dễ áp dụng cho nhiều modality.
@@ -704,7 +704,7 @@ không chứa quá nhiều thông tin so với tín hiệu gốc.
 
 ---
 
-## Limitations
+#### Limitations
 
 Theo bài báo:
 
@@ -713,9 +713,9 @@ Theo bài báo:
 
 ---
 
-# 2.5 Joint-Embedding Predictive Architectures (JEPA)
+### 2.5 Joint-Embedding Predictive Architectures (JEPA)
 
-## What?
+#### What?
 
 **Joint-Embedding Predictive Architecture (JEPA)** kết hợp ý tưởng của Joint-Embedding và Generative Architectures.
 
@@ -727,7 +727,7 @@ Theo bài báo:
 
 ---
 
-## Architecture
+#### Architecture
 
 ```mermaid
 flowchart LR
@@ -749,7 +749,7 @@ TargetEmbedding --> Loss
 
 ---
 
-## Learning Objective
+#### Learning Objective
 
 Cho
 
@@ -777,7 +777,7 @@ Mô hình học bằng cách đưa **Predicted Embedding** gần với **Target 
 
 ---
 
-## Why JEPA?
+#### Why JEPA?
 
 Theo bài báo, thay vì tái tạo pixel, JEPA dự đoán **biểu diễn ngữ nghĩa (semantic representation)** của vùng bị che.
 
@@ -789,7 +789,7 @@ Theo bài báo, thay vì tái tạo pixel, JEPA dự đoán **biểu diễn ng�
 
 ---
 
-## Representation Collapse
+#### Representation Collapse
 
 JEPA vẫn có nguy cơ gặp **Representation Collapse**, tương tự Joint-Embedding Architectures.
 
@@ -802,7 +802,7 @@ Target Encoder được cập nhật bằng **Exponential Moving Average (EMA)**
 
 ---
 
-# Key Takeaways
+### Key Takeaways
 
 - Self-Supervised Learning được bài báo diễn giải dưới góc nhìn **Energy-Based Models**.
 - **Joint-Embedding Architectures** học bằng cách đưa embedding của các mẫu tương thích lại gần nhau nhưng có nguy cơ **representation collapse**.
@@ -810,13 +810,13 @@ Target Encoder được cập nhật bằng **Exponential Moving Average (EMA)**
 - **JEPA** kết hợp ưu điểm của cả hai hướng: dự đoán **embedding** thay vì **pixel**, đồng thời sử dụng **asymmetric architecture** và **EMA** để giảm nguy cơ representation collapse và học được **semantic representation** mạnh hơn.
 ---
 
-# 3. Method
+## 3. Method
 
 ![](img/Fig3_IJEPA.png)
 
 > Kiến trúc __I-JEPA__ gồm ba thành phần: __Context Encoder, Predictor và Target Encoder__. Context Encoder chỉ xử __lý vùng ảnh quan sát được (context block)__ để tạo embedding; Predictor sử dụng embedding này cùng thông tin vị trí (positional tokens) để dự đoán embedding của target block; Target Encoder tạo target embedding làm nhãn học. Target Encoder được cập nhật bằng __Exponential Moving Average (EMA)__ từ Context Encoder, giúp mô hình học __semantic representation__ thay vì tái tạo pixel.
 
-## 3.1 Overview
+### 3.1 Overview
 
 ### What is I-JEPA?
 
@@ -826,7 +826,7 @@ Khác với **Masked Autoencoders (MAE)**, I-JEPA **không tái tạo ảnh (pix
 
 ---
 
-## 3.2 Overall Architecture
+### 3.2 Overall Architecture
 
 Kiến trúc I-JEPA gồm ba thành phần chính:
 
@@ -862,9 +862,9 @@ Mục tiêu là đưa **Predicted Embedding** gần với **Target Embedding**.
 
 ---
 
-# 3.3 Target Representation
+### 3.3 Target Representation
 
-## What?
+#### What?
 
 Trong I-JEPA, **target không phải là pixel**, mà là **embedding của các vùng ảnh (target blocks)**.
 
@@ -872,7 +872,7 @@ Trong I-JEPA, **target không phải là pixel**, mà là **embedding của các
 
 ---
 
-## Step 1: Image to Patches
+#### Step 1: Image to Patches
 
 Cho ảnh đầu vào
 
@@ -897,7 +897,7 @@ Patch N
 
 ---
 
-## Step 2: Target Encoder
+#### Step 2: Target Encoder
 
 Toàn bộ ảnh được đưa qua **Target Encoder**
 
@@ -921,7 +921,7 @@ $$k$$
 
 ---
 
-## Step 3: Target Blocks
+#### Step 3: Target Blocks
 
 Sau khi có embedding của toàn bộ ảnh, mô hình **không mask ảnh đầu vào**.
 
@@ -951,7 +951,7 @@ $$M=4$$
 
 ---
 
-## Sampling Strategy
+#### Sampling Strategy
 
 Theo bài báo
 
@@ -969,7 +969,7 @@ $$0.15 \sim 0.20$$
 
 ---
 
-## Why Mask after Encoder?
+#### Why Mask after Encoder?
 
 Đây là điểm khác biệt quan trọng.
 
@@ -1003,9 +1003,9 @@ Nếu mask trước encoder, embedding sẽ bị thiếu thông tin và mục ti
 
 ---
 
-# 3.4 Context Representation
+### 3.4 Context Representation
 
-## What?
+#### What?
 
 Context là phần ảnh duy nhất mà mô hình được phép quan sát.
 
@@ -1013,7 +1013,7 @@ Mục tiêu là dùng context để dự đoán embedding của các target bloc
 
 ---
 
-## Sampling Context
+#### Sampling Context
 
 Context Block
 
@@ -1029,7 +1029,7 @@ $$1:1$$
 
 ---
 
-## Remove Overlap
+#### Remove Overlap
 
 Target và Context được lấy độc lập.
 
@@ -1059,7 +1059,7 @@ mô hình chỉ cần "copy" thông tin.
 
 ---
 
-## Context Encoder
+#### Context Encoder
 
 Context được đưa vào
 
@@ -1079,9 +1079,9 @@ là embedding của các patch thuộc Context.
 
 ---
 
-# 3.5 Predictor
+### 3.5 Predictor
 
-## What?
+#### What?
 
 Predictor có nhiệm vụ
 
@@ -1098,7 +1098,7 @@ Nó chỉ biết:
 
 ---
 
-## Input
+#### Input
 
 Predictor nhận
 
@@ -1121,7 +1121,7 @@ Target nằm ở đâu.
 
 ---
 
-## Prediction
+#### Prediction
 
 Với mỗi Target Block
 
@@ -1151,9 +1151,9 @@ Target Blocks.
 
 ---
 
-# 3.6 Loss Function
+### 3.6 Loss Function
 
-## Learning Objective
+#### Learning Objective
 
 Mục tiêu là Predicted Embedding gần Target Embedding.
 
@@ -1167,17 +1167,17 @@ $$D=\sum_{j\in B_i}\|\hat{s}_{y_j}-s_{y_j}\|_2^2$$
 
 ---
 
-## Meaning
+#### Meaning
 
 Loss đo khoảng cách giữa __Embedding dự đoán và Embedding mục tiêu.__ Khác với MAE, Loss **không tính trên pixel**. Toàn bộ quá trình học diễn ra trong **representation space**.
 
 ---
 
-# 3.7 Parameter Update
+### 3.7 Parameter Update
 
 Có ba tập tham số.
 
-## Context Encoder
+#### Context Encoder
 
 $$\theta$$
 
@@ -1185,7 +1185,7 @@ $$\theta$$
 
 ---
 
-## Predictor
+#### Predictor
 
 $$\phi$$
 
@@ -1193,7 +1193,7 @@ $$\phi$$
 
 ---
 
-## Target Encoder
+#### Target Encoder
 
 $$\bar{\theta}$$
 
@@ -1207,7 +1207,7 @@ $$\bar{\theta}\leftarrow\tau\bar{\theta}+(1-\tau)\theta$$
 
 ---
 
-## Why EMA?
+#### Why EMA?
 
 EMA giúp
 
@@ -1219,7 +1219,7 @@ Bài báo cho biết EMA là thành phần thiết yếu khi huấn luyện JEPA
 
 ---
 
-# 3.8 Complete Pipeline
+### 3.8 Complete Pipeline
 
 ```mermaid
 flowchart LR
@@ -1255,7 +1255,7 @@ EMA --> TargetEncoder
 
 ---
 
-# Key Takeaways
+### Key Takeaways
 
 - I-JEPA học bằng **Representation Prediction**, không phải **Pixel Reconstruction**.
 - Target được lấy từ **embedding của Target Encoder**, không phải trực tiếp từ ảnh.
@@ -1266,9 +1266,9 @@ EMA --> TargetEncoder
 
 ---
 
-# 4. Related Work
+## 4. Related Work
 
-## 4.1 Overview
+### 4.1 Overview
 
 Trong phần **Related Work**, bài báo đặt **I-JEPA** trong bối cảnh các phương pháp **Self-Supervised Learning (SSL)** hiện có và so sánh với ba hướng nghiên cứu chính:
 
@@ -1280,9 +1280,9 @@ Mục tiêu là làm rõ những hạn chế của từng phương pháp và lý
 
 ---
 
-# 4.2 Generative Reconstruction Methods
+### 4.2 Generative Reconstruction Methods
 
-## Motivation
+#### Motivation
 
 Một hướng nghiên cứu lâu đời trong Self-Supervised Learning là học biểu diễn bằng cách **dự đoán hoặc tái tạo (reconstruct)** những phần dữ liệu bị mất hoặc bị làm hỏng.
 
@@ -1292,11 +1292,11 @@ Một hướng nghiên cứu lâu đời trong Self-Supervised Learning là họ
 
 ---
 
-## Denoising Autoencoder
+#### Denoising Autoencoder
 
 Denoising Autoencoder (DAE) là một trong những phương pháp SSL đầu tiên.
 
-### Idea
+##### Idea
 
 Đầu vào bị làm nhiễu
 
@@ -1312,13 +1312,13 @@ Loss
 
 $$L=\|x-\hat{x}\|_2^2$$
 
-### Limitation
+##### Limitation
 
 Mô hình chủ yếu học cách loại bỏ nhiễu thay vì học biểu diễn ngữ nghĩa.
 
 ---
 
-## Context Encoder
+#### Context Encoder
 
 Context Encoder mở rộng ý tưởng trên bằng cách:
 
@@ -1339,7 +1339,7 @@ Mô hình học mối quan hệ không gian (spatial context) giữa các vùng 
 
 ---
 
-## Image Colorization
+#### Image Colorization
 
 Một số nghiên cứu khác coi **Image Colorization** là bài toán self-supervised.
 
@@ -1347,7 +1347,7 @@ Input `Ảnh xám` -> Predict `Ảnh màu` Mục tiêu là học được semant
 
 ---
 
-# 4.3 Masked Image Modeling (MIM)
+### 4.3 Masked Image Modeling (MIM)
 
 Sự xuất hiện của **Vision Transformer (ViT)** đã thúc đẩy hướng **Masked Image Modeling (MIM)**.
 
@@ -1370,15 +1370,15 @@ Decoder --> ReconstructedPatches
 
 ---
 
-## MAE (Masked Autoencoder)
+#### MAE (Masked Autoencoder)
 
-### Core Idea
+##### Core Idea
 
 MAE chỉ đưa **visible patches** vào encoder. Các patch bị che chỉ được xử lý ở decoder. Điều này giúp giảm đáng kể chi phí tính toán.
 
 ---
 
-### Learning Objective
+##### Learning Objective
 
 Encoder
 
@@ -1394,7 +1394,7 @@ $$L=\|x-\hat{x}\|_2^2$$
 
 ---
 
-### Advantages
+##### Advantages
 
 - Kiến trúc đơn giản.
 - Tính toán hiệu quả.
@@ -1403,7 +1403,7 @@ $$L=\|x-\hat{x}\|_2^2$$
 
 ---
 
-### Limitation
+##### Limitation
 
 Theo bài báo,
 
@@ -1420,7 +1420,7 @@ những đặc trưng không nhất thiết phản ánh ý nghĩa ngữ nghĩa c
 
 ---
 
-## BEiT
+#### BEiT
 
 BEiT không tái tạo pixel trực tiếp. Thay vào đó, mỗi patch được chuyển thành một **discrete token** thông qua một **frozen discreteVAE**.
 
@@ -1442,28 +1442,28 @@ Predict Missing Tokens
 
 ---
 
-### Advantages
+##### Advantages
 
 - Reconstruction trong token space.
 - Giảm phụ thuộc vào pixel.
 
 ---
 
-### Limitation
+##### Limitation
 
 Theo bài báo, MAE vẫn đạt kết quả fine-tuning tốt hơn BEiT. Ngoài ra, BEiT phụ thuộc vào một **discreteVAE** đã được huấn luyện trước trên khoảng **250 triệu ảnh**, làm tăng độ phức tạp của hệ thống.
 
 ---
 
-## SimMIM
+#### SimMIM
 
 SimMIM nghiên cứu các mục tiêu tái tạo khác ngoài pixel. Thay vì reconstruction trực tiếp trong pixel space, SimMIM sử dụng đặc trưng **Histogram of Oriented Gradients (HOG)** làm mục tiêu học. Điều này giúp cải thiện chất lượng biểu diễn so với reconstruction pixel thuần túy.
 
 ---
 
-# 4.4 Representation Prediction Methods
+### 4.4 Representation Prediction Methods
 
-## Motivation
+#### Motivation
 
 Các phương pháp trên đều có điểm chung:
 
@@ -1477,9 +1477,9 @@ I-JEPA lựa chọn hướng khác:
 
 ---
 
-## data2vec
+#### data2vec
 
-### Core Idea
+##### Core Idea
 
 data2vec dự đoán **embedding** của các patch bị che.
 
@@ -1503,7 +1503,7 @@ TargetEmbedding --> Loss
 
 ---
 
-### Advantages
+##### Advantages
 
 - Không cần handcrafted augmentation.
 - Áp dụng được cho:
@@ -1513,7 +1513,7 @@ TargetEmbedding --> Loss
 
 ---
 
-### Difference from I-JEPA
+##### Difference from I-JEPA
 
 Theo bài báo,
 
@@ -1525,7 +1525,7 @@ I-JEPA:
 
 ---
 
-## Context Autoencoder
+#### Context Autoencoder
 
 Context Autoencoder kết hợp hai mục tiêu:
 
@@ -1538,7 +1538,7 @@ I-JEPA chỉ tối ưu **representation prediction**, không cần reconstructio
 
 ---
 
-## data2vec-v2
+#### data2vec-v2
 
 Bài báo cũng đề cập đến **data2vec-v2**, một nghiên cứu đồng thời (concurrent work), tập trung vào việc xây dựng các kiến trúc hiệu quả hơn cho nhiều modality.
 
@@ -1546,7 +1546,7 @@ Chi tiết kỹ thuật không được phân tích thêm trong bài báo.
 
 ---
 
-# 4.5 Joint-Embedding Methods
+### 4.5 Joint-Embedding Methods
 
 Một hướng nghiên cứu khác là **Joint-Embedding Architectures (JEA)**.
 
@@ -1558,7 +1558,7 @@ Các phương pháp tiêu biểu:
 
 ---
 
-## DINO
+#### DINO
 
 DINO học biểu diễn bằng cách đưa embedding của hai view khác nhau của cùng một ảnh lại gần nhau.
 
@@ -1573,7 +1573,7 @@ Mô hình phụ thuộc vào:
 
 ---
 
-## MSN
+#### MSN
 
 MSN mở rộng DINO bằng cách sử dụng **masking** như một dạng **data augmentation** bổ sung.
 
@@ -1581,7 +1581,7 @@ Masking ở đây không nhằm reconstruction mà nhằm tạo thêm các góc 
 
 ---
 
-## iBOT
+#### iBOT
 
 iBOT kết hợp hai mục tiêu học:
 
@@ -1592,7 +1592,7 @@ Nhờ đó mô hình vừa học biểu diễn toàn cục vừa học đặc tr
 
 ---
 
-# 4.6 Limitations of Previous Joint-Embedding Methods
+### 4.6 Limitations of Previous Joint-Embedding Methods
 
 Theo bài báo,
 
@@ -1606,17 +1606,17 @@ Theo bài báo,
 
 ---
 
-# 4.7 Why I-JEPA?
+### 4.7 Why I-JEPA?
 
 I-JEPA được thiết kế để khắc phục các hạn chế trên.
 
-## Single View Learning
+#### Single View Learning
 
 Khác với các phương pháp Joint-Embedding truyền thống, I-JEPA chỉ cần xử lý **một view duy nhất** của mỗi ảnh. Điều này giúp giảm đáng kể số lần chạy qua encoder.
 
 ---
 
-## Representation Prediction
+#### Representation Prediction
 
 Thay vì:
 
@@ -1630,7 +1630,7 @@ Mục tiêu là dự đoán embedding của các vùng bị che, không phải t
 
 ---
 
-## Better Computational Efficiency
+#### Better Computational Efficiency
 
 Theo bài báo,
 
@@ -1640,7 +1640,7 @@ một mô hình **ViT-Huge/14** được huấn luyện bằng **I-JEPA** yêu c
 
 ---
 
-# 4.8 Summary Comparison
+### 4.8 Summary Comparison
 
 | Method | Learning Target | Need Augmentation | Prediction Space | Main Limitation |
 |----------|----------------|------------------|------------------|-----------------|
@@ -1657,7 +1657,7 @@ một mô hình **ViT-Huge/14** được huấn luyện bằng **I-JEPA** yêu c
 
 ---
 
-# Key Takeaways
+### Key Takeaways
 
 - Các phương pháp **Generative** học bằng **reconstruction** trong pixel hoặc token space.
 - **Masked Image Modeling** (MAE, BEiT, SimMIM) cải thiện hiệu quả SSL nhưng vẫn phụ thuộc vào mục tiêu tái tạo dữ liệu.
@@ -1667,9 +1667,9 @@ một mô hình **ViT-Huge/14** được huấn luyện bằng **I-JEPA** yêu c
 
 ---
 
-# 5. Image Classification
+## 5. Image Classification
 
-## 5.1 Overview
+### 5.1 Overview
 
 Sau khi đề xuất **I-JEPA**, bài báo đánh giá chất lượng của biểu diễn (representation) thông qua các **nhiệm vụ phân loại ảnh (Image Classification)**.
 
@@ -1685,9 +1685,9 @@ Toàn bộ các mô hình I-JEPA được pretrain trên **ImageNet-1K** ở đ�
 
 ---
 
-# 5.2 Linear Evaluation on ImageNet-1K
+### 5.2 Linear Evaluation on ImageNet-1K
 
-## What is Linear Evaluation?
+#### What is Linear Evaluation?
 
 **Linear Evaluation (Linear Probing)** là giao thức phổ biến để đánh giá chất lượng của representation trong Self-Supervised Learning.
 
@@ -1700,7 +1700,7 @@ Nếu representation tốt, chỉ cần một bộ phân loại tuyến tính c�
 
 ---
 
-## Evaluation Pipeline
+#### Evaluation Pipeline
 
 ```mermaid
 flowchart LR
@@ -1716,7 +1716,7 @@ LinearClassifier --> Prediction
 
 ---
 
-## Learning Objective
+#### Learning Objective
 
 Giả sử encoder tạo đặc trưng
 
@@ -1746,7 +1746,7 @@ Chỉ có $W$ và $b$ được tối ưu.
 
 ---
 
-## Why Linear Evaluation?
+#### Why Linear Evaluation?
 
 Linear probing phản ánh trực tiếp chất lượng của representation.
 
@@ -1754,7 +1754,7 @@ Nếu encoder đã học được đặc trưng ngữ nghĩa tốt, các lớp d
 
 ---
 
-## Experimental Results
+#### Experimental Results
 
 Bài báo so sánh I-JEPA với nhiều phương pháp SSL không sử dụng nhiều data augmentation trong giai đoạn pretraining, bao gồm:
 
@@ -1771,7 +1771,7 @@ Ngoài ra, khi tăng kích thước mô hình lên **ViT-H/16** và sử dụng 
 
 ---
 
-## Analysis
+#### Analysis
 
 Điều này cho thấy:
 
@@ -1781,9 +1781,9 @@ Ngoài ra, khi tăng kích thước mô hình lên **ViT-H/16** và sử dụng 
 
 ---
 
-# 5.3 Low-Shot ImageNet-1K
+### 5.3 Low-Shot ImageNet-1K
 
-## Motivation
+#### Motivation
 
 Trong thực tế, dữ liệu có nhãn thường rất hạn chế.
 
@@ -1791,7 +1791,7 @@ Do đó bài báo đánh giá khả năng **few-shot adaptation** của I-JEPA b
 
 ---
 
-## Experimental Setup
+#### Experimental Setup
 
 Chỉ sử dụng:
 
@@ -1805,7 +1805,7 @@ Mục tiêu là kiểm tra liệu representation đã học có thể thích ngh
 
 ---
 
-## Adaptation Strategy
+#### Adaptation Strategy
 
 Tùy theo từng phương pháp, mô hình được thích nghi bằng:
 
@@ -1816,7 +1816,7 @@ Phương pháp nào cho kết quả tốt hơn sẽ được sử dụng.
 
 ---
 
-## Results
+#### Results
 
 Bài báo cho thấy:
 
@@ -1831,7 +1831,7 @@ Các phương pháp trên đều cần **hand-crafted data augmentations** trong
 
 ---
 
-## Analysis
+#### Analysis
 
 Kết quả cho thấy representation học bởi I-JEPA:
 
@@ -1843,15 +1843,15 @@ Kết quả cho thấy representation học bởi I-JEPA:
 
 ---
 
-# 5.4 Transfer Learning
+### 5.4 Transfer Learning
 
-## Motivation
+#### Motivation
 
 Một representation tốt không chỉ hoạt động trên ImageNet mà còn phải có khả năng **chuyển giao (transfer)** sang các tập dữ liệu và nhiệm vụ khác.
 
 ---
 
-## Evaluation Protocol
+#### Evaluation Protocol
 
 Sau khi pretrain trên ImageNet-1K:
 
@@ -1862,7 +1862,7 @@ Sau khi pretrain trên ImageNet-1K:
 
 ---
 
-## Results
+#### Results
 
 Theo bài báo:
 
@@ -1886,7 +1886,7 @@ khi sử dụng **Linear Probe**.
 
 ---
 
-## Analysis
+#### Analysis
 
 Điều này cho thấy representation của I-JEPA:
 
@@ -1896,7 +1896,7 @@ khi sử dụng **Linear Probe**.
 
 ---
 
-# 5.5 Comparison with Previous Methods
+### 5.5 Comparison with Previous Methods
 
 | Method | Data Augmentation | Linear Probe | Low-Shot | Transfer Learning |
 |----------|-------------------|--------------|-----------|-------------------|
@@ -1910,7 +1910,7 @@ khi sử dụng **Linear Probe**.
 
 ---
 
-# 5.6 Key Findings
+### 5.6 Key Findings
 
 Từ các thí nghiệm Image Classification, bài báo rút ra ba kết luận chính:
 
@@ -1932,7 +1932,7 @@ Biểu diễn học được có khả năng chuyển giao tốt sang nhiều do
 
 ---
 
-# Key Takeaways
+### Key Takeaways
 
 - **Linear Evaluation** chứng minh I-JEPA học được semantic representation mạnh mà không cần fine-tuning encoder.
 - Trong **Low-Shot ImageNet**, I-JEPA đạt hiệu năng cao với rất ít dữ liệu gán nhãn và ít chi phí tính toán hơn nhiều phương pháp trước đó.
@@ -1941,9 +1941,9 @@ Biểu diễn học được có khả năng chuyển giao tốt sang nhiều do
 
 ---
 
-# 6. Local Prediction Tasks
+## 6. Local Prediction Tasks
 
-## 6.1 Overview
+### 6.1 Overview
 
 Ngoài các bài toán **Image Classification**, bài báo tiếp tục đánh giá chất lượng của **I-JEPA** trên các **Local Prediction Tasks** nhằm kiểm tra khả năng học **đặc trưng cục bộ (local features)** của mô hình.
 
@@ -1955,7 +1955,7 @@ Kết quả thực nghiệm cho thấy **I-JEPA không chỉ học tốt semanti
 
 ---
 
-# 6.2 Motivation
+### 6.2 Motivation
 
 Trong Section 5, bài báo đã chứng minh rằng I-JEPA học được các **high-level semantic representations** thông qua các bài toán phân loại ảnh.
 
@@ -1971,9 +1971,9 @@ Do đó, bài báo đánh giá xem I-JEPA có giữ được các đặc trưng 
 
 ---
 
-# 6.3 Evaluation Protocol
+### 6.3 Evaluation Protocol
 
-## Dataset
+#### Dataset
 
 Các thí nghiệm được thực hiện trên **CLEVR Dataset**.
 
@@ -1991,7 +1991,7 @@ Bài báo sử dụng hai nhiệm vụ:
 
 ---
 
-## Evaluation Strategy
+#### Evaluation Strategy
 
 Tương tự Image Classification,
 
@@ -2018,9 +2018,9 @@ LinearModel --> Prediction
 
 ---
 
-# 6.4 Object Counting
+### 6.4 Object Counting
 
-## Task
+#### Task
 
 **Object Counting** yêu cầu mô hình dự đoán số lượng đối tượng xuất hiện trong ảnh.
 
@@ -2036,7 +2036,7 @@ mô hình phải nhận biết:
 
 ---
 
-## Results
+#### Results
 
 Theo **Table 4**,
 
@@ -2052,7 +2052,7 @@ trong bài toán **Clevr/Count**.
 
 ---
 
-## Analysis
+#### Analysis
 
 Việc dự đoán embedding của các **target blocks** buộc mô hình phải hiểu:
 
@@ -2064,9 +2064,9 @@ Do đó, mặc dù I-JEPA hướng tới **semantic representation**, mô hình 
 
 ---
 
-# 6.5 Depth Prediction
+### 6.5 Depth Prediction
 
-## Task
+#### Task
 
 **Depth Prediction** yêu cầu mô hình ước lượng khoảng cách từ camera đến từng vùng trong ảnh.
 
@@ -2080,7 +2080,7 @@ Nếu representation mất thông tin không gian, hiệu năng sẽ giảm đá
 
 ---
 
-## Results
+#### Results
 
 Theo **Table 4**,
 
@@ -2095,7 +2095,7 @@ với khoảng cách đáng kể trong bài toán **Clevr/Dist**.
 
 ---
 
-## Analysis
+#### Analysis
 
 Kết quả này cho thấy:
 
@@ -2106,11 +2106,11 @@ Kết quả này cho thấy:
 
 ---
 
-# 6.6 Why Does I-JEPA Perform Well?
+### 6.6 Why Does I-JEPA Perform Well?
 
 Theo bài báo, có hai nguyên nhân chính.
 
-## Representation Prediction
+#### Representation Prediction
 
 I-JEPA dự đoán **embedding** thay vì **pixel**.
 
@@ -2118,7 +2118,7 @@ Do đó mô hình học các đặc trưng biểu diễn có ý nghĩa, thay vì
 
 ---
 
-## Context-Based Prediction
+#### Context-Based Prediction
 
 Mỗi **Target Block** được dự đoán từ **Context Block**.
 
@@ -2132,7 +2132,7 @@ Nhờ vậy, representation học được vẫn giữ được nhiều thông t
 
 ---
 
-# 6.7 Comparison with Previous Methods
+### 6.7 Comparison with Previous Methods
 
 | Method | View Augmentation | Object Counting | Depth Prediction |
 |----------|-------------------|-----------------|------------------|
@@ -2146,7 +2146,7 @@ Nhờ vậy, representation học được vẫn giữ được nhiều thông t
 
 ---
 
-# 6.8 Main Findings
+### 6.8 Main Findings
 
 Bài báo rút ra ba kết luận chính:
 
@@ -2176,7 +2176,7 @@ Mặc dù không sử dụng **hand-crafted data augmentations**, I-JEPA vẫn v
 
 ---
 
-# Key Takeaways
+### Key Takeaways
 
 - **Local Prediction Tasks** được sử dụng để đánh giá khả năng học **đặc trưng cục bộ** của I-JEPA.
 - Các thí nghiệm được thực hiện trên **CLEVR** với hai nhiệm vụ:
@@ -2188,9 +2188,9 @@ Mặc dù không sử dụng **hand-crafted data augmentations**, I-JEPA vẫn v
 
 ---
 
-# 7. Scalability
+## 7. Scalability
 
-## 7.1 Overview
+### 7.1 Overview
 
 Một trong những đóng góp quan trọng của **I-JEPA** là **khả năng mở rộng (Scalability)**.
 
@@ -2204,9 +2204,9 @@ Kết quả cho thấy I-JEPA vừa **học được representation chất lư�
 
 ---
 
-# 7.2 Model Efficiency
+### 7.2 Model Efficiency
 
-## Motivation
+#### Motivation
 
 Một mô hình Self-Supervised Learning không chỉ cần đạt độ chính xác cao mà còn phải:
 
@@ -2218,7 +2218,7 @@ Do đó, bài báo so sánh **I-JEPA** với các phương pháp SSL khác theo 
 
 ---
 
-## Evaluation Metric
+#### Evaluation Metric
 
 Hiệu quả tính toán được đánh giá bằng:
 
@@ -2234,7 +2234,7 @@ Chi phí huấn luyện càng nhỏ.
 
 ---
 
-## Comparison with MAE
+#### Comparison with MAE
 
 MAE học bằng
 
@@ -2252,7 +2252,7 @@ Do phải tính **Target Representation**, mỗi vòng lặp của I-JEPA chậm
 
 ---
 
-## Why is I-JEPA Still Faster?
+#### Why is I-JEPA Still Faster?
 
 Mặc dù mỗi iteration chậm hơn, I-JEPA **hội tụ nhanh hơn rất nhiều**. Theo bài báo, I-JEPA cần khoảng $5\times$ **ít iteration hơn** để đạt hiệu năng tương đương.
 
@@ -2264,7 +2264,7 @@ Mặc dù chi phí mỗi iteration tăng nhẹ, tổng chi phí huấn luyện v
 
 ---
 
-## Comparison with iBOT
+#### Comparison with iBOT
 
 Các phương pháp như **iBOT** thuộc nhóm **View-Invariance Learning**. Trong mỗi bước huấn luyện, một ảnh phải được tạo thành nhiều **views** thông qua:
 
@@ -2317,15 +2317,15 @@ Do đó, chi phí tính toán giảm đáng kể.
 
 ---
 
-## Main Finding
+#### Main Finding
 
 Theo bài báo, một mô hình **ViT-H/14** được huấn luyện bằng **I-JEPA** vẫn yêu cầu **ít GPU Hours hơn** so với **ViT-S/16** được huấn luyện bằng **iBOT**. Đây là minh chứng rõ ràng cho hiệu quả tính toán của I-JEPA.
 
 ---
 
-# 7.3 Scaling Dataset Size
+### 7.3 Scaling Dataset Size
 
-## Motivation
+#### Motivation
 
 Một đặc điểm quan trọng của các mô hình nền tảng (Foundation Models) là:
 
@@ -2335,7 +2335,7 @@ Bài báo đánh giá điều này bằng cách thay đổi tập dữ liệu pr
 
 ---
 
-## Experimental Setup
+#### Experimental Setup
 
 Hai tập dữ liệu được sử dụng:
 
@@ -2348,7 +2348,7 @@ Trong đó:
 
 ---
 
-## Results
+#### Results
 
 Theo **Table 5**,
 
@@ -2369,7 +2369,7 @@ hiệu năng downstream đều được cải thiện trên:
 
 ---
 
-## Analysis
+#### Analysis
 
 Dữ liệu đa dạng hơn giúp mô hình học được:
 
@@ -2381,9 +2381,9 @@ Do đó representation trở nên tổng quát và dễ chuyển giao hơn sang 
 
 ---
 
-# 7.4 Scaling Model Size
+### 7.4 Scaling Model Size
 
-## Motivation
+#### Motivation
 
 Ngoài dữ liệu, bài báo còn nghiên cứu khả năng mở rộng theo kích thước mô hình.
 
@@ -2393,7 +2393,7 @@ Mục tiêu là trả lời câu hỏi:
 
 ---
 
-## Experimental Setup
+#### Experimental Setup
 
 Các kiến trúc Vision Transformer được mở rộng từ:
 
@@ -2407,7 +2407,7 @@ sau khi pretrain trên **ImageNet-22K**.
 
 ---
 
-## Results
+#### Results
 
 Theo **Table 5**,
 
@@ -2420,7 +2420,7 @@ ViT-G/16 cải thiện đáng kể hiệu năng trên các bài toán phân lo�
 
 ---
 
-## Limitation
+#### Limitation
 
 Tuy nhiên, ViT-G/16 **không cải thiện** các bài toán:
 
@@ -2435,7 +2435,7 @@ Do đó, việc tăng kích thước mô hình không phải lúc nào cũng c�
 
 ---
 
-# 7.5 Scalability Summary
+### 7.5 Scalability Summary
 
 Bài báo cho thấy I-JEPA có khả năng mở rộng theo ba khía cạnh:
 
@@ -2461,7 +2461,7 @@ Bài báo cho thấy I-JEPA có khả năng mở rộng theo ba khía cạnh:
 
 ---
 
-# 7.6 Comparison
+### 7.6 Comparison
 
 | Aspect | MAE | iBOT | I-JEPA |
 |----------|-----|-------|---------|
@@ -2476,7 +2476,7 @@ Bài báo cho thấy I-JEPA có khả năng mở rộng theo ba khía cạnh:
 
 ---
 
-# 7.7 Key Findings
+### 7.7 Key Findings
 
 Bài báo rút ra ba kết luận quan trọng:
 
@@ -2498,7 +2498,7 @@ Việc mở rộng từ **ViT-H/14** lên **ViT-G/16** giúp cải thiện các 
 
 ---
 
-# Key Takeaways
+### Key Takeaways
 
 - **I-JEPA** là một kiến trúc Self-Supervised Learning có **khả năng mở rộng cao** cả về **chi phí tính toán**, **quy mô dữ liệu** và **kích thước mô hình**.
 - Mặc dù mỗi iteration chậm hơn MAE khoảng **7%**, I-JEPA **hội tụ nhanh hơn khoảng 5 lần**, giúp giảm tổng GPU Hours.
@@ -2508,7 +2508,7 @@ Việc mở rộng từ **ViT-H/14** lên **ViT-G/16** giúp cải thiện các 
 
 ---
 
-# Key Contributions
+### Key Contributions
 
 - Đề xuất **I-JEPA** cho Self-Supervised Learning.
 - Dự đoán **latent representation** thay vì pixel.

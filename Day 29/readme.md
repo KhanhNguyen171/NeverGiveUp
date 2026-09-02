@@ -1,3 +1,5 @@
+# Reverse Proxy
+
 Phần **Reverse Proxy** trong *System Design Primer* rất quan trọng vì nó nằm ở lớp **entry point** của hệ thống: client không nhất thiết truy cập trực tiếp vào application server, mà đi qua một thành phần trung gian đứng trước backend.
 
 Điểm cần phân biệt rõ là:
@@ -8,7 +10,7 @@ Dưới đây là cách phân tích lại theo đúng cấu trúc của phần t
 
 ---
 
-# 1. Reverse Proxy là gì?
+## 1. Reverse Proxy là gì?
 
 ![Image](https://images.openai.com/static-rsc-4/95HJd9vbghyJ2tve3KedtI24E9VlxhgUbXfiE4xbGWpIftkAFdzFUPbdsHhKauqEn9FcbiGQnDXWDZV1Gn2p6xEXoJj58BXwA77HajQL15MECnshQ5NhFTooqCm7UNcalP66G83wNmmSB3ALTivMn2qi-T6nRPmMk-vJvGCGNJuk0vrXRVI7TCYHBFsf8Qnr?purpose=fullsize)
 
@@ -95,7 +97,7 @@ Client không cần biết các backend server này tồn tại ở đâu hoặc
 
 ---
 
-# 2. Vì sao cần Reverse Proxy?
+## 2. Vì sao cần Reverse Proxy?
 
 Nếu client truy cập trực tiếp vào backend, kiến trúc đơn giản:
 
@@ -141,9 +143,9 @@ Do đó, reverse proxy không đơn thuần là "server chuyển tiếp request"
 
 ---
 
-# 3. Các lợi ích chính
+## 3. Các lợi ích chính
 
-## 3.1. Increased Security
+### 3.1. Increased Security
 
 Một reverse proxy giúp **ẩn infrastructure phía sau nó**.
 
@@ -197,7 +199,7 @@ Nó chỉ tạo ra một lớp có thể tập trung các cơ chế bảo vệ.
 
 ---
 
-# 4. Increased Scalability and Flexibility
+## 4. Increased Scalability and Flexibility
 
 Một trong những lợi ích lớn nhất là **client không phụ thuộc trực tiếp vào backend**.
 
@@ -278,7 +280,7 @@ mà client không cần biết.
 
 ---
 
-# 5. SSL Termination
+## 5. SSL Termination
 
 Đây là một chức năng rất phổ biến của reverse proxy.
 
@@ -384,7 +386,7 @@ Backend
 
 ---
 
-# 6. Compression
+## 6. Compression
 
 Reverse proxy cũng có thể thực hiện compression trước khi gửi response tới client.
 
@@ -454,7 +456,7 @@ Thay vì để từng application server tự xử lý compression, reverse prox
 
 ---
 
-# 7. Caching
+## 7. Caching
 
 Reverse proxy có thể lưu response vào cache.
 
@@ -533,7 +535,7 @@ Dữ liệu cache có thể cũ hơn dữ liệu trong database.
 
 ---
 
-# 8. Static Content
+## 8. Static Content
 
 Reverse proxy cũng có thể trực tiếp phục vụ static files.
 
@@ -605,11 +607,11 @@ Như vậy application server chỉ tập trung vào dynamic requests.
 
 ---
 
-# 9. Reverse Proxy vs Load Balancer
+## 9. Reverse Proxy vs Load Balancer
 
 Đây là phần dễ gây nhầm lẫn nhất.
 
-## 9.1. Load Balancer
+### 9.1. Load Balancer
 
 Load balancer tập trung vào việc:
 
@@ -642,7 +644,7 @@ Request 4 --> Server A
 
 ---
 
-## 9.2. Reverse Proxy
+### 9.2. Reverse Proxy
 
 Reverse proxy có phạm vi rộng hơn.
 
@@ -681,7 +683,7 @@ vẫn có ý nghĩa.
 
 ---
 
-# 10. Quan hệ giữa Reverse Proxy và Load Balancer
+## 10. Quan hệ giữa Reverse Proxy và Load Balancer
 
 Điểm quan trọng cần ghi nhớ:
 
@@ -729,7 +731,7 @@ $$
 
 ---
 
-# 11. Một ví dụ thực tế
+## 11. Một ví dụ thực tế
 
 Giả sử một website có kiến trúc:
 
@@ -807,9 +809,9 @@ Do đó reverse proxy trở thành **control point** của traffic vào hệ th�
 
 ---
 
-# 12. Disadvantages
+## 12. Disadvantages
 
-## 12.1. Increased Complexity
+### 12.1. Increased Complexity
 
 Thêm reverse proxy nghĩa là thêm một infrastructure component:
 
@@ -844,7 +846,7 @@ Vì vậy phải quản lý thêm:
 
 ---
 
-# 13. Single Point of Failure
+## 13. Single Point of Failure
 
 Nếu chỉ có một reverse proxy:
 
@@ -904,7 +906,7 @@ $$
 
 ---
 
-# 14. Kiến trúc tổng quát cần ghi nhớ
+## 14. Kiến trúc tổng quát cần ghi nhớ
 
 Có thể tóm tắt reverse proxy bằng mô hình:
 
@@ -952,7 +954,7 @@ Reverse proxy tạo ra **một lớp trung gian**, giúp client được tách k
 
 ---
 
-# 15. Reverse Proxy trong toàn bộ System Design
+## 15. Reverse Proxy trong toàn bộ System Design
 
 Nếu đặt nó vào một hệ thống lớn hơn, ta có thể thấy vị trí của reverse proxy như sau:
 

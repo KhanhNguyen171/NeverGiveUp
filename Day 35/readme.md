@@ -162,7 +162,7 @@ Do đó cần phân biệt:
 
 ---
 
-# Transmission Control Protocol (TCP)
+## Transmission Control Protocol (TCP)
 
 ![](img/JdAsdvG.jpg)
 
@@ -174,7 +174,7 @@ Khác với HTTP, TCP không quan tâm trực tiếp đến resource hay API. TC
 
 ---
 
-## TCP connection
+### TCP connection
 
 Một TCP connection được thiết lập thông qua handshake.
 
@@ -199,7 +199,7 @@ TCP cung cấp các cơ chế đảm bảo:
 * flow control;
 * congestion control.
 
-### Sequence numbers
+#### Sequence numbers
 
 Mỗi segment có sequence information để receiver có thể xác định:
 
@@ -215,7 +215,7 @@ $$
 
 TCP có thể sắp xếp lại dữ liệu trước khi đưa lên application layer.
 
-### Acknowledgement
+#### Acknowledgement
 
 Receiver gửi acknowledgement để xác nhận dữ liệu đã nhận.
 
@@ -243,7 +243,7 @@ Timeout
 Retransmission
 $$
 
-### Flow control
+#### Flow control
 
 Flow control bảo vệ receiver khỏi việc sender gửi dữ liệu nhanh hơn khả năng xử lý.
 
@@ -253,7 +253,7 @@ $$
 Sender\ Rate \leq Receiver\ Capacity
 $$
 
-### Congestion control
+#### Congestion control
 
 Congestion control xử lý tình trạng network bị quá tải.
 
@@ -271,7 +271,7 @@ Do đó TCP thường hiệu quả cho các workload cần reliability cao nhưn
 
 ---
 
-## TCP connection pooling
+### TCP connection pooling
 
 Một web server có thể phải duy trì nhiều TCP connections.
 
@@ -311,7 +311,7 @@ Các request có thể tái sử dụng các connection có sẵn.
 
 ---
 
-## Khi nào sử dụng TCP?
+### Khi nào sử dụng TCP?
 
 GitHub System Design Primer đưa ra hai tiêu chí chính:
 
@@ -328,7 +328,7 @@ Các workload điển hình:
 
 ---
 
-# User Datagram Protocol (UDP)
+## User Datagram Protocol (UDP)
 
 ![](img/yzDrJtA.jpg)
 
@@ -358,7 +358,7 @@ UDP không cung cấp congestion control giống TCP.
 
 ---
 
-## TCP vs UDP: bản chất trade-off
+### TCP vs UDP: bản chất trade-off
 
 Có thể biểu diễn đơn giản:
 
@@ -403,7 +403,7 @@ Ví dụ:
 
 ---
 
-## Tại sao mất dữ liệu đôi khi tốt hơn chờ dữ liệu?
+### Tại sao mất dữ liệu đôi khi tốt hơn chờ dữ liệu?
 
 Đây là một trong những insight quan trọng nhất của TCP vs UDP.
 
@@ -447,7 +447,7 @@ Do đó:
 
 ---
 
-## Khi nào sử dụng UDP?
+### Khi nào sử dụng UDP?
 
 Sử dụng UDP khi:
 
@@ -465,7 +465,7 @@ $$
 
 ---
 
-## TCP vs UDP
+### TCP vs UDP
 
 | Property           | TCP                 | UDP                    |
 | ------------------ | ------------------- | ---------------------- |
@@ -483,7 +483,7 @@ $$
 
 ---
 
-### Source(s) and further reading: TCP and UDP
+#### Source(s) and further reading: TCP and UDP
 
 * [Networking for game programming](https://gafferongames.com/post/udp_vs_tcp/)
 * [Key differences between TCP and UDP protocols](http://www.cyberciti.biz/faq/key-differences-between-tcp-and-udp-protocols/)
@@ -494,7 +494,7 @@ $$
 
 ---
 
-# Remote Procedure Call (RPC)
+## Remote Procedure Call (RPC)
 
 ![](img/iF4Mkb5.png)
 
@@ -550,7 +550,7 @@ Remote call thường:
 
 ---
 
-## RPC request flow
+### RPC request flow
 
 Một RPC request có thể được mô hình hóa:
 
@@ -594,7 +594,7 @@ Theo cấu trúc trong System Design Primer:
 
 ---
 
-## Marshalling và Unmarshalling
+### Marshalling và Unmarshalling
 
 Giả sử client có:
 
@@ -635,7 +635,7 @@ Một số công nghệ được GitHub đề cập:
 
 ---
 
-## RPC tập trung vào behavior
+### RPC tập trung vào behavior
 
 RPC thường expose **behavior/action**.
 
@@ -674,7 +674,7 @@ Các service có thể gọi procedure của nhau.
 
 ---
 
-## Ưu điểm của RPC
+### Ưu điểm của RPC
 
 RPC phù hợp khi:
 
@@ -686,11 +686,11 @@ RPC phù hợp khi:
 
 ---
 
-## Disadvantage(s): RPC
+### Disadvantage(s): RPC
 
 [svg](https://github.com/donnemartin/system-design-primer#disadvantages-rpc)
 
-### 1. Tight coupling
+#### 1. Tight coupling
 
 RPC client có xu hướng phụ thuộc mạnh vào service implementation/interface.
 
@@ -702,7 +702,7 @@ $$
 
 Nếu contract thay đổi, client có thể cần thay đổi theo.
 
-### 2. API explosion
+#### 2. API explosion
 
 Nếu mỗi operation cần một RPC endpoint riêng:
 
@@ -717,7 +717,7 @@ restoreUser()
 
 số lượng API có thể tăng nhanh.
 
-### 3. Debugging complexity
+#### 3. Debugging complexity
 
 Request đi qua nhiều lớp:
 
@@ -737,13 +737,13 @@ $$
 
 Do đó debugging khó hơn local function call.
 
-### 4. Infrastructure integration
+#### 4. Infrastructure integration
 
 Một số infrastructure technologies như generic caching hoặc proxying có thể không hoạt động tự nhiên với RPC như với HTTP/REST.
 
 ---
 
-# Representational State Transfer (REST)
+## Representational State Transfer (REST)
 
 [svg](https://github.com/donnemartin/system-design-primer#representational-state-transfer-rest)
 
@@ -777,7 +777,7 @@ và HTTP verbs xác định operation.
 
 ---
 
-## REST resource model
+### REST resource model
 
 Giả sử có resource:
 
@@ -819,11 +819,11 @@ $$
 
 ---
 
-## Four qualities of a RESTful interface
+### Four qualities of a RESTful interface
 
 Theo System Design Primer, RESTful interface có bốn qualities chính.
 
-### 1. Identify resources
+#### 1. Identify resources
 
 Resource được xác định thông qua URI.
 
@@ -839,7 +839,7 @@ Operation được biểu diễn bằng HTTP method.
 
 ---
 
-### 2. Change with representations
+#### 2. Change with representations
 
 REST sử dụng:
 
@@ -861,7 +861,7 @@ PUT /users/123
 
 ---
 
-### 3. Self-descriptive error messages
+#### 3. Self-descriptive error messages
 
 REST tận dụng HTTP status codes.
 
@@ -881,7 +881,7 @@ Thay vì tự định nghĩa một error protocol hoàn toàn mới.
 
 ---
 
-### 4. HATEOAS
+#### 4. HATEOAS
 
 **Hypermedia As The Engine Of Application State (HATEOAS)** cho phép representation chứa các link/action liên quan.
 
@@ -897,7 +897,7 @@ $$
 
 ---
 
-## Statelessness
+### Statelessness
 
 Một property quan trọng của REST là **stateless communication**.
 
@@ -946,11 +946,11 @@ $$
 
 ---
 
-## REST tập trung vào data
+### REST tập trung vào data
 
 Có thể phân biệt tư duy:
 
-### RPC
+#### RPC
 
 $$
 Client
@@ -958,7 +958,7 @@ Client
 Execute\ Operation
 $$
 
-### REST
+#### REST
 
 $$
 Client
@@ -995,9 +995,9 @@ DELETE /users/123
 
 ---
 
-## Disadvantage(s): REST
+### Disadvantage(s): REST
 
-### 1. Không phải mọi operation đều tự nhiên biểu diễn thành resource
+#### 1. Không phải mọi operation đều tự nhiên biểu diễn thành resource
 
 Ví dụ:
 
@@ -1018,7 +1018,7 @@ request body
 
 REST không phải lúc nào cũng là abstraction tự nhiên nhất.
 
-### 2. Limited HTTP verbs
+#### 2. Limited HTTP verbs
 
 REST chủ yếu sử dụng:
 
@@ -1040,7 +1040,7 @@ archiveExpiredDocuments()
 
 không nhất thiết tương ứng trực tiếp với một CRUD operation đơn giản.
 
-### 3. Multiple round trips
+#### 3. Multiple round trips
 
 Một resource phức tạp có thể yêu cầu nhiều request.
 
@@ -1072,7 +1072,7 @@ $$
 
 Nhiều round trips làm tăng latency.
 
-### 4. Payload bloat
+#### 4. Payload bloat
 
 API có thể phát triển theo thời gian.
 
@@ -1104,7 +1104,7 @@ $$
 
 ---
 
-# RPC and REST calls comparison
+## RPC and REST calls comparison
 
 | Operation           | RPC                                     | REST                       |
 | ------------------- | --------------------------------------- | -------------------------- |
@@ -1156,7 +1156,7 @@ $$
 
 ---
 
-# TCP/UDP và RPC/REST nằm ở hai abstraction khác nhau
+## TCP/UDP và RPC/REST nằm ở hai abstraction khác nhau
 
 Một điểm rất dễ nhầm khi học phần Communication là coi TCP, UDP, HTTP, RPC và REST như các lựa chọn cùng một tầng.
 
@@ -1224,7 +1224,7 @@ $$
 
 ---
 
-# Communication trong System Design
+## Communication trong System Design
 
 Phần Communication trở nên quan trọng khi hệ thống bắt đầu được phân tách thành nhiều components.
 
@@ -1290,7 +1290,7 @@ $$
 
 ---
 
-# Communication trade-offs
+## Communication trade-offs
 
 | Requirement             | Possible choice | Reason                            |
 | ----------------------- | --------------- | --------------------------------- |
@@ -1322,7 +1322,7 @@ $$
 
 ---
 
-# Core mental model
+## Core mental model
 
 Có thể cô đọng toàn bộ phần Communication thành bốn câu hỏi:
 
@@ -1362,7 +1362,7 @@ $$
 
 ---
 
-# Summary
+## Summary
 
 Communication trong System Design không đơn thuần là học thuộc HTTP, TCP, UDP, RPC và REST. Mục tiêu chính là hiểu **abstraction và trade-off** giữa chúng.
 

@@ -265,7 +265,7 @@ Bảng thành phần:
 | Regularization  | Kiểm soát overfitting               |
 | Validation      | Kiểm tra generalization             |
 
-# VGG (Visual Geometry Group)
+## VGG (Visual Geometry Group)
 
 Bài báo gốc: [Karen Simonyan & Andrew Zisserman, “Very Deep Convolutional Networks for Large-Scale Image Recognition”, ICLR 2015.](https://arxiv.org/pdf/1409.1556)
 

@@ -1,4 +1,4 @@
-Phần **Content Delivery Network (CDN)** trong `system-design-primer` đang mô tả một pattern rất quan trọng để giải quyết bài toán **latency, throughput và tải lên origin server**. Mình sẽ phân tích theo đúng logic của GitHub, nhưng bổ sung phần lý thuyết và công thức để bạn có thể đưa vào báo cáo học thuật.
+# Content Delivery Network (CDN)
 
 ## 1. CDN là gì?
 
@@ -50,7 +50,7 @@ Do đó giảm **network latency**.
 
 ---
 
-# 2. Kiến trúc cơ bản của CDN
+## 2. Kiến trúc cơ bản của CDN
 
 Một kiến trúc đơn giản có thể biểu diễn:
 
@@ -95,11 +95,11 @@ User không nhất thiết phải lấy file trực tiếp từ origin.
 
 ---
 
-# 3. CDN giải quyết vấn đề gì?
+## 3. CDN giải quyết vấn đề gì?
 
 GitHub đề cập hai lợi ích chính.
 
-## 3.1. Giảm latency
+### 3.1. Giảm latency
 
 Giả sử:
 
@@ -161,7 +161,7 @@ $$
 
 ---
 
-# 4. Giảm tải cho Origin Server
+## 4. Giảm tải cho Origin Server
 
 Giả sử có:
 
@@ -217,11 +217,11 @@ request tới origin.
 
 ---
 
-# 5. Cache Hit và Cache Miss
+## 5. Cache Hit và Cache Miss
 
 Đây là khái niệm quan trọng nhất để hiểu CDN.
 
-## Cache Hit
+### Cache Hit
 
 Nếu CDN đã có content:
 
@@ -240,7 +240,7 @@ Origin không cần xử lý request.
 
 ---
 
-## Cache Miss
+### Cache Miss
 
 Nếu CDN chưa có content:
 
@@ -277,7 +277,7 @@ Các request tiếp theo có thể trở thành cache hit.
 
 ---
 
-# 6. Cache Hit Ratio
+## 6. Cache Hit Ratio
 
 Có thể định nghĩa:
 
@@ -311,14 +311,14 @@ $$
 
 ---
 
-# 7. Push CDN
+## 7. Push CDN
 
 GitHub chia CDN thành hai loại:
 
 1. **Push CDN**
 2. **Pull CDN**
 
-## 7.1. Ý tưởng
+### 7.1. Ý tưởng
 
 Với Push CDN, application/server **chủ động upload content lên CDN**.
 
@@ -360,7 +360,7 @@ Application có thể thay URL:
 
 ---
 
-## 7.2. Đặc điểm Push CDN
+### 7.2. Đặc điểm Push CDN
 
 Push CDN cho phép developer/application kiểm soát:
 
@@ -372,7 +372,7 @@ Push CDN cho phép developer/application kiểm soát:
 
 Điều này làm giảm traffic giữa CDN và origin vì CDN không cần thường xuyên pull lại file.
 
-### Ưu điểm
+#### Ưu điểm
 
 $$
 \text{Predictable CDN content}
@@ -384,7 +384,7 @@ $$
 \text{Less origin traffic}
 $$
 
-### Nhược điểm
+#### Nhược điểm
 
 Application phải quản lý việc upload content.
 
@@ -396,7 +396,7 @@ $$
 
 ---
 
-# 8. Khi nào sử dụng Push CDN?
+## 8. Khi nào sử dụng Push CDN?
 
 Push CDN phù hợp khi:
 
@@ -417,7 +417,7 @@ Large media files
 
 ---
 
-# 9. Pull CDN
+## 9. Pull CDN
 
 Pull CDN hoạt động ngược lại.
 
@@ -435,7 +435,7 @@ CDN chỉ lấy content khi có request đầu tiên.
 
 ---
 
-## 9.1. Cache miss
+### 9.1. Cache miss
 
 Ví dụ user request:
 
@@ -478,7 +478,7 @@ Origin không cần phục vụ toàn bộ request.
 
 ---
 
-# 10. TTL — Time To Live
+## 10. TTL — Time To Live
 
 Pull CDN phụ thuộc rất nhiều vào **TTL**.
 
@@ -508,7 +508,7 @@ CDN requests origin
 
 ---
 
-# 11. Trade-off của TTL
+## 11. Trade-off của TTL
 
 TTL càng dài:
 
@@ -567,7 +567,7 @@ Origin load ↑         Origin load ↓
 
 ---
 
-# 12. Push vs Pull CDN
+## 12. Push vs Pull CDN
 
 | Đặc điểm               | Push CDN             | Pull CDN         |
 | ---------------------- | -------------------- | ---------------- |
@@ -592,7 +592,7 @@ $$
 
 ---
 
-# 13. CDN và DNS
+## 13. CDN và DNS
 
 Một phần quan trọng trong đoạn GitHub là:
 
@@ -636,7 +636,7 @@ Vì vậy DNS là một thành phần quan trọng trong quá trình **traffic s
 
 ---
 
-# 14. CDN không chỉ dành cho static content
+## 14. CDN không chỉ dành cho static content
 
 Các loại content phổ biến:
 
@@ -684,7 +684,7 @@ Origin Server
 
 ---
 
-# 15. CDN cho Dynamic Content
+## 15. CDN cho Dynamic Content
 
 GitHub cũng đề cập rằng một số CDN hỗ trợ dynamic content.
 
@@ -738,7 +738,7 @@ Do đó dynamic CDN cần các cơ chế cache policy phức tạp hơn.
 
 ---
 
-# 16. CDN và Availability
+## 16. CDN và Availability
 
 CDN cũng có thể cải thiện khả năng chịu lỗi.
 
@@ -790,11 +790,11 @@ Do đó CDN nên kết hợp với:
 
 ---
 
-# 17. Nhược điểm của CDN
+## 17. Nhược điểm của CDN
 
 GitHub nêu ba nhược điểm chính.
 
-## 17.1. Cost
+### 17.1. Cost
 
 CDN thường tính phí dựa trên:
 
@@ -828,7 +828,7 @@ $$
 
 ---
 
-## 17.2. Stale Content
+### 17.2. Stale Content
 
 Nếu:
 
@@ -867,7 +867,7 @@ CDN fetches new version
 
 ---
 
-# 18. Cache Invalidation
+## 18. Cache Invalidation
 
 Một trong những vấn đề nổi tiếng trong distributed systems là:
 
@@ -929,7 +929,7 @@ CDN coi đây là object mới.
 
 ---
 
-# 19. CDN trong System Design Interview
+## 19. CDN trong System Design Interview
 
 Khi thiết kế một hệ thống có:
 
@@ -990,7 +990,7 @@ $$
 
 ---
 
-# 20. Cách phân tích CDN trong interview
+## 20. Cách phân tích CDN trong interview
 
 Một cách trả lời có cấu trúc:
 
@@ -1051,7 +1051,7 @@ Origin
 
 ---
 
-# 21. Ý nghĩa quan trọng nhất
+## 21. Ý nghĩa quan trọng nhất
 
 Có thể cô đọng toàn bộ CDN thành:
 

@@ -6,7 +6,7 @@ Phần này trong **System Design Primer** đang giới thiệu DNS dưới góc
 
 ---
 
-# 1. DNS là gì?
+## 1. DNS là gì?
 
 DNS (**Domain Name System**) là hệ thống ánh xạ:
 
@@ -59,7 +59,7 @@ Vì vậy DNS nằm ở **rất gần entry point của hệ thống**.
 
 ---
 
-# 2. DNS có tính hierarchical
+## 2. DNS có tính hierarchical
 
 DNS không phải một database duy nhất chứa toàn bộ domain trên Internet.
 
@@ -114,7 +114,7 @@ www.example.com
 
 ---
 
-# 3. Recursive resolver và authoritative DNS
+## 3. Recursive resolver và authoritative DNS
 
 Đây là phần rất quan trọng nhưng đoạn Primer trên viết khá ngắn.
 
@@ -164,7 +164,7 @@ Authoritative server là nguồn dữ liệu DNS chính thức cho zone/domain �
 
 ---
 
-# 4. DNS caching
+## 4. DNS caching
 
 Nếu mỗi request đều phải đi từ client lên Root → TLD → Authoritative DNS thì Internet sẽ cực kỳ chậm và DNS infrastructure sẽ chịu tải khổng lồ.
 
@@ -202,7 +202,7 @@ Không cần query DNS từ đầu nữa.
 
 ---
 
-# 5. TTL — Time To Live
+## 5. TTL — Time To Live
 
 DNS record có một thuộc tính rất quan trọng:
 
@@ -233,7 +233,7 @@ DNS query lại
 
 ---
 
-# 6. Tại sao DNS propagation xảy ra?
+## 6. Tại sao DNS propagation xảy ra?
 
 Giả sử ban đầu:
 
@@ -291,11 +291,11 @@ $$\boxed{
 
 ---
 
-# 7. Các DNS record quan trọng
+## 7. Các DNS record quan trọng
 
 Primer liệt kê 4 loại record chính.
 
-## 7.1 NS record
+### 7.1 NS record
 
 **NS = Name Server**
 
@@ -315,7 +315,7 @@ Có thể hiểu:
 
 ---
 
-# 8. MX record
+## 8. MX record
 
 **MX = Mail Exchange**
 
@@ -339,7 +339,7 @@ mail system sẽ tra MX record để biết gửi email đến đâu.
 
 ---
 
-# 9. A record
+## 9. A record
 
 **A = Address**
 
@@ -375,7 +375,7 @@ www.example.com
 
 ---
 
-# 10. CNAME
+## 10. CNAME
 
 **CNAME = Canonical Name**
 
@@ -412,7 +412,7 @@ Trong thực tế CNAME rất hữu ích khi sử dụng:
 
 ---
 
-# 11. DNS không chỉ dùng để "đổi domain thành IP"
+## 11. DNS không chỉ dùng để "đổi domain thành IP"
 
 Đây là phần quan trọng nhất khi học **System Design**.
 
@@ -449,7 +449,7 @@ Do đó DNS có thể hỗ trợ:
 
 ---
 
-# 12. Weighted Round Robin
+## 12. Weighted Round Robin
 
 Giả sử có:
 
@@ -500,7 +500,7 @@ mà có thể:
 
 ---
 
-# 13. A/B testing bằng DNS
+## 13. A/B testing bằng DNS
 
 DNS cũng có thể hỗ trợ A/B testing.
 
@@ -543,7 +543,7 @@ Trong khoảng thời gian đó nhiều client có thể tiếp tục nhận cù
 
 ---
 
-# 14. Latency-based routing
+## 14. Latency-based routing
 
 Đây là một kỹ thuật rất quan trọng trong distributed systems.
 
@@ -597,7 +597,7 @@ $$\min \text{Latency}$$
 
 ---
 
-# 15. Geolocation-based routing
+## 15. Geolocation-based routing
 
 Khác với latency-based routing, geolocation routing dựa vào **vị trí của client**.
 
@@ -633,7 +633,7 @@ $$f(\text{client location}) \rightarrow \text{endpoint}$$
 
 ---
 
-# 16. DNS trong kiến trúc lớn
+## 16. DNS trong kiến trúc lớn
 
 Một kiến trúc thực tế có thể trông như:
 
@@ -677,7 +677,7 @@ Regional traffic distribution
 
 ---
 
-# 17. DNS Failover
+## 17. DNS Failover
 
 DNS cũng có thể hỗ trợ failover.
 
@@ -719,7 +719,7 @@ thì một số resolver/client có thể tiếp tục sử dụng endpoint cũ 
 
 ---
 
-# 18. Vì sao DNS có thể trở thành bottleneck?
+## 18. Vì sao DNS có thể trở thành bottleneck?
 
 DNS nằm rất gần entry point của Internet.
 
@@ -755,7 +755,7 @@ Users cannot reach application
 
 ---
 
-# 19. Nhược điểm 1 — DNS lookup latency
+## 19. Nhược điểm 1 — DNS lookup latency
 
 DNS lookup tạo thêm latency.
 
@@ -793,7 +793,7 @@ Do đó DNS được thiết kế dựa rất mạnh vào caching.
 
 ---
 
-# 20. Nhược điểm 2 — DNS propagation
+## 20. Nhược điểm 2 — DNS propagation
 
 Đây là vấn đề đặc biệt quan trọng khi thiết kế deployment.
 
@@ -846,7 +846,7 @@ Traffic có thể đi tới cả hai.
 
 ---
 
-# 21. Nhược điểm 3 — DNS DDoS
+## 21. Nhược điểm 3 — DNS DDoS
 
 DNS infrastructure cũng có thể bị DDoS.
 
@@ -876,7 +876,7 @@ Một ví dụ managed DNS phổ biến là [Cloudflare DNS](https://www.cloudfl
 
 ---
 
-# 22. DNS và Availability
+## 22. DNS và Availability
 
 Nếu nhìn từ góc độ System Design, ta có:
 
@@ -896,7 +896,7 @@ Do đó DNS cần được thiết kế để **highly available**.
 
 ---
 
-# 23. DNS và Scalability
+## 23. DNS và Scalability
 
 DNS giúp scale hệ thống theo một cách rất đặc biệt.
 
@@ -939,7 +939,7 @@ ta có thể xây dựng hệ thống scale rất lớn.
 
 ---
 
-# 24. DNS không phải Load Balancer
+## 24. DNS không phải Load Balancer
 
 Đây là một misconception phổ biến.
 
@@ -983,7 +983,7 @@ Load Balancer có **fine-grained control** hơn.
 
 ---
 
-# 25. Cách tư duy DNS trong System Design Interview
+## 25. Cách tư duy DNS trong System Design Interview
 
 Khi gặp một bài System Design có domain:
 
@@ -1043,7 +1043,7 @@ DNS cache ảnh hưởng thế nào?
 
 ---
 
-# 26. Một ví dụ System Design hoàn chỉnh
+## 26. Một ví dụ System Design hoàn chỉnh
 
 Giả sử thiết kế một hệ thống global:
 
@@ -1084,7 +1084,7 @@ $$LB:
 
 ---
 
-# 27. Tóm tắt kiến thức cần nhớ
+## 27. Tóm tắt kiến thức cần nhớ
 
 Có thể cô đọng toàn bộ phần DNS thành:
 

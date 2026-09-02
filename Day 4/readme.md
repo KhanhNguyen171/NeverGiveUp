@@ -61,7 +61,7 @@ Ta dùng Freeze vì khi dataset nhỏ thì mô hình dễ bị overfitting nếu
 - giảm computation;
 - hạn chế catastrophic forgetting.
 
-# Hugging Face API
+## Hugging Face API
 
 __Hugging Face API__ chủ yếu cung cấp model và inference; fine-tuning model lớn thường được thực hiện bằng `Transformers + PEFT/LoRA + TRL` trên GPU, sau đó upload model/adapter đã fine-tune trở lại Hub.
 

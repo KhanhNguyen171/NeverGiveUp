@@ -77,7 +77,7 @@ Mục tiêu không đơn giản chỉ là "chia đều request", mà là **phân
 
 ---
 
-# 2. Tại sao cần Load Balancer?
+## 2. Tại sao cần Load Balancer?
 
 Tác giả nêu ba lợi ích chính:
 
@@ -87,7 +87,7 @@ Tác giả nêu ba lợi ích chính:
 
 Có thể hiểu thành ba vấn đề lớn.
 
-## 2.1. Health-aware routing
+### 2.1. Health-aware routing
 
 Giả sử có:
 
@@ -139,7 +139,7 @@ $$
 
 ---
 
-# 3. Load Balancing và Overload Prevention
+## 3. Load Balancing và Overload Prevention
 
 Giả sử tổng request rate là: $\lambda$ và có $N$ backend server. Nếu phân phối tương đối đều, request rate trung bình mỗi server là:
 
@@ -191,7 +191,7 @@ Load balancer vì vậy trở thành một **control point** để phân phối 
 
 ---
 
-# 4. Load Balancer không đồng nghĩa với "chia đều"
+## 4. Load Balancer không đồng nghĩa với "chia đều"
 
 Đây là điểm rất quan trọng khi học System Design.
 
@@ -239,9 +239,9 @@ GitHub liệt kê nhiều chiến lược như random, least loaded, session/coo
 
 ---
 
-# 5. Các chiến lược phân phối traffic
+## 5. Các chiến lược phân phối traffic
 
-## 5.1. Random
+### 5.1. Random
 
 Chọn server ngẫu nhiên:
 
@@ -261,7 +261,7 @@ Nhược điểm:
 
 ---
 
-## 5.2. Round Robin
+### 5.2. Round Robin
 
 Các request lần lượt được gửi đến:
 
@@ -288,7 +288,7 @@ Nhược điểm:
 
 ---
 
-## 5.3. Weighted Round Robin
+### 5.3. Weighted Round Robin
 
 Mỗi server có trọng số:
 
@@ -319,7 +319,7 @@ Phù hợp khi backend có capacity khác nhau.
 
 ---
 
-## 5.4. Least Loaded
+### 5.4. Least Loaded
 
 LB gửi request đến server đang ít tải nhất.
 
@@ -343,7 +343,7 @@ Trong đó `Load` có thể dựa trên:
 
 ---
 
-# 6. SSL Termination
+## 6. SSL Termination
 
 GitHub cũng đề cập đến **SSL termination** như một lợi ích của load balancer. ([GitHub][1])
 
@@ -420,7 +420,7 @@ tức là TLS được terminate tại LB rồi **re-encrypt** khi kết nối t
 
 ---
 
-# 7. Session Persistence
+## 7. Session Persistence
 
 Một vấn đề khác là **session persistence**, còn gọi là **sticky session**.
 
@@ -465,7 +465,7 @@ Có thể sử dụng cookie để LB xác định backend tương ứng.
 
 ---
 
-# 8. Sticky Session vs Stateless Architecture
+## 8. Sticky Session vs Stateless Architecture
 
 Tuy nhiên, trong kiến trúc scale lớn, **stateless application** thường được ưu tiên hơn.
 
@@ -517,7 +517,7 @@ với bất kỳ backend healthy nào.
 
 ---
 
-# 9. High Availability của Load Balancer
+## 9. High Availability của Load Balancer
 
 Một sai lầm phổ biến là:
 
@@ -551,7 +551,7 @@ GitHub giải quyết vấn đề này bằng cách triển khai nhiều load ba
 
 ---
 
-# 10. Active-Passive
+## 10. Active-Passive
 
 ```text
                  Client
@@ -597,7 +597,7 @@ Một phần capacity bị idle trong trạng thái bình thường.
 
 ---
 
-# 11. Active-Active
+## 11. Active-Active
 
 ```text
                   Client
@@ -634,7 +634,7 @@ $$
 
 ---
 
-# 12. Layer 4 Load Balancing
+## 12. Layer 4 Load Balancing
 
 [Layer 4 Load Balancing – GitHub](https://github.com/donnemartin/system-design-primer?utm_source=chatgpt.com#layer-4-load-balancing)
 
@@ -684,7 +684,7 @@ Nó chủ yếu xử lý connection/packet-level information.
 
 ---
 
-# 13. Tại sao L4 nhanh?
+## 13. Tại sao L4 nhanh?
 
 L4 không cần parse application payload.
 
@@ -726,7 +726,7 @@ GitHub cũng nhấn mạnh L4 thường cần ít thời gian và computing reso
 
 ---
 
-# 14. Layer 7 Load Balancing
+## 14. Layer 7 Load Balancing
 
 [Layer 7 Load Balancing – GitHub](https://github.com/donnemartin/system-design-primer?utm_source=chatgpt.com#layer-7-load-balancing)
 
@@ -757,7 +757,7 @@ và đưa ra routing decision.
 
 ---
 
-# 15. Ví dụ routing ở Layer 7
+## 15. Ví dụ routing ở Layer 7
 
 Giả sử hệ thống có:
 
@@ -798,7 +798,7 @@ Kiến trúc:
 
 ---
 
-# 16. L4 vs L7
+## 16. L4 vs L7
 
 | Đặc điểm            | Layer 4            | Layer 7                              |
 | ------------------- | ------------------ | ------------------------------------ |
@@ -837,7 +837,7 @@ $$
 
 ---
 
-# 17. Horizontal Scaling
+## 17. Horizontal Scaling
 
 [Horizontal Scaling – GitHub](https://github.com/donnemartin/system-design-primer?utm_source=chatgpt.com#horizontal-scaling)
 
@@ -876,7 +876,7 @@ GitHub nhấn mạnh load balancer giúp hệ thống scale-out bằng cách ph�
 
 ---
 
-# 18. Vì sao Load Balancer là nền tảng của Horizontal Scaling?
+## 18. Vì sao Load Balancer là nền tảng của Horizontal Scaling?
 
 Không có LB:
 
@@ -935,7 +935,7 @@ mà client không cần biết topology bên trong.
 
 ---
 
-# 19. Capacity của hệ thống khi Scale Out
+## 19. Capacity của hệ thống khi Scale Out
 
 Giả sử mỗi server có capacity:
 
@@ -989,7 +989,7 @@ $$
 
 ---
 
-# 20. Stateless Server
+## 20. Stateless Server
 
 Horizontal scaling dẫn đến một nguyên tắc rất quan trọng:
 
@@ -1032,7 +1032,7 @@ $$
 
 ---
 
-# 21. Nhược điểm của Horizontal Scaling
+## 21. Nhược điểm của Horizontal Scaling
 
 GitHub chỉ ra hai vấn đề lớn: complexity và downstream load. ([GitHub][2])
 
@@ -1095,7 +1095,7 @@ $$
 
 ---
 
-# 22. Nhược điểm của Load Balancer
+## 22. Nhược điểm của Load Balancer
 
 GitHub chỉ ra ba trade-off chính:
 
@@ -1139,7 +1139,7 @@ LB trở thành **bottleneck**.
 
 ---
 
-# 23. Load Balancer không loại bỏ bottleneck — nó di chuyển bottleneck
+## 23. Load Balancer không loại bỏ bottleneck — nó di chuyển bottleneck
 
 Đây là cách tư duy tốt hơn khi học System Design.
 
@@ -1201,7 +1201,7 @@ $$
 
 ---
 
-# 24. Tổng hợp kiến trúc
+## 24. Tổng hợp kiến trúc
 
 Một hệ thống web production có thể tiến hóa:
 
@@ -1267,7 +1267,7 @@ là nền tảng của một kiến trúc web có khả năng scale tốt.
 
 ---
 
-# 25. Những trade-off cần nhớ
+## 25. Những trade-off cần nhớ
 
 | Quyết định         | Lợi ích                       | Chi phí                      |
 | ------------------ | ----------------------------- | ---------------------------- |
@@ -1286,7 +1286,7 @@ là nền tảng của một kiến trúc web có khả năng scale tốt.
 
 ---
 
-# 26. Mental model cần nhớ
+## 26. Mental model cần nhớ
 
 Nếu học phần này để **System Design interview**, có thể ghi nhớ theo chuỗi:
 
