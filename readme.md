@@ -4,7 +4,7 @@ Dự án học tập cá nhân tập trung vào các chủ đề về AI, Deep L
 
 ## Tổng quan
 
-- Học tập theo chuỗi 34 ngày, từ nền tảng AI đến các khái niệm nâng cao.
+- Học tập theo chuỗi 38 ngày, từ nền tảng AI đến các khái niệm nâng cao.
 - Mỗi ngày tương ứng với một chủ đề cụ thể và một thư mục riêng.
 - Cấu trúc workspace hỗ trợ cả nội dung học tập chính lẫn tài liệu nghiên cứu mở rộng.
 
@@ -52,6 +52,9 @@ Dự án học tập cá nhân tập trung vào các chủ đề về AI, Deep L
 | [Day 33](Day%2033/) | Cache | Tối ưu hóa hệ thống bằng bộ nhớ đệm. |
 | [Day 34](Day%2034/) | Asynchronism | Quá trình xử lý bất đồng bộ và message queues. |
 | [Day 35](Day%2035/) | Communication | HTTP, TCP, UDP, RPC và REST — Các giao thức giao tiếp trong hệ thống phân tán. |
+| [Day 36](Day%2036/) | Security | Các nguyên tắc bảo mật cơ bản trong thiết kế hệ thống. |
+| [Day 37](Day%2037/) | Robot công nghiệp và hệ quy chiếu | Mô hình hình học, ma trận biến đổi và hệ tọa độ trong robot. |
+| [Day 38](Day%2038/) | Drone, Quay 3D và Định hướng không gian | Ma trận quay và mô hình hóa định hướng của drone trong không gian 3D. |
 
 ## Mục tiêu học tập
 
