@@ -1,0 +1,62 @@
+# Play2Perfect — study configuration
+#
+# Chapter mapping:
+# - Ch. 12: PPO and SAPG
+# - Ch. 13: SAPG
+# - Ch. 14: Policy architecture
+# - Ch. 15: Asymmetric actor-critic
+# - Ch. 19: Vectorized environment
+#
+# This YAML records the important architectural hyperparameters visible in the
+# repository configuration. It is intentionally separated from simulator
+# implementation details.
+
+params:
+  seed: 42
+
+  algo:
+    name: a2c_continuous
+
+  config:
+    name: PlaySAPG
+    gamma: 0.99
+    tau: 0.95
+
+    # Ch. 14.1 — actor/critic MLP capacity.
+    mlp:
+      units: [1024, 1024, 512, 512]
+      activation: elu
+      normalization: layer_norm
+
+    # Ch. 14.2 — recurrent policy for temporal information.
+    rnn:
+      type: lstm
+      units: 1024
+      layers: 1
+
+    # Ch. 12.1 — PPO-style clipping.
+    e_clip: 0.2
+
+    # Ch. 13 — SAPG-related experience/exploration controls.
+    sapg:
+      use_others_experience: true
+      off_policy_ratio: 0.0
+      expl_type: gaussian
+      expl_reward_type: none
+
+    # Ch. 15 — critic can consume privileged state observations.
+    central_value_config:
+      state_list: true
+      mlp:
+        units: [1024, 1024, 512, 512]
+        activation: elu
+        normalization: layer_norm
+
+  env:
+    # Ch. 19 — vectorized simulation.
+    clip_observations: .inf
+    clip_actions: .inf
+
+  exploration:
+    # Ch. 13.2 — large rollout/exploration block used by the training stack.
+    block_size: 4096

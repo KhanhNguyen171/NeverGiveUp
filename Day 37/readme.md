@@ -96,6 +96,8 @@ $$T_{W}^{tool} = T_{W}^{B} \cdot T_{B}^{1} \cdot T_{1}^{2} \cdot T_{2}^{3} \cdot
 
 #### Bảng thông số Denavit-Hartenberg (D-H)
 
+    > DH là một quy ước chuẩn hóa cách mô tả quan hệ giữa hai khớp liên tiếp.
+
 | $i$ | $a_{i-1}$ | $\alpha_{i-1}$ | $d_i$ | $\theta_i$ |
 | :-: | :-: | :-: | :-: | :-: |
 | **1** | $0$ | $0$ | $0$ | $\theta_1$ |

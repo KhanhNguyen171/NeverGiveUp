@@ -55,6 +55,7 @@ Dự án học tập cá nhân tập trung vào các chủ đề về AI, Deep L
 | [Day 36](Day%2036/) | Security | Các nguyên tắc bảo mật cơ bản trong thiết kế hệ thống. |
 | [Day 37](Day%2037/) | Robot công nghiệp và hệ quy chiếu | Mô hình hình học, ma trận biến đổi và hệ tọa độ trong robot. |
 | [Day 38](Day%2038/) | Drone, Quay 3D và Định hướng không gian | Ma trận quay và mô hình hóa định hướng của drone trong không gian 3D. |
+| [Day 39](Day%2039/) | AI Embedding và hình học dữ liệu | Embedding biến dữ liệu thành vector, dùng khoảng cách và cosine similarity để so sánh. |
 
 ## Mục tiêu học tập
 
